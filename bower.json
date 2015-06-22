@@ -15,7 +15,7 @@
     "**/.*",
     "node_modules",
     "bower_components",
-    "code4sa/static/bower_components",
+    "herana/static/bower_components",
     "test",
     "tests"
   ],

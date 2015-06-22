@@ -56,9 +56,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'code4sa.urls'
+ROOT_URLCONF = 'herana.urls'
 
-WSGI_APPLICATION = 'code4sa.wsgi.application'
+WSGI_APPLICATION = 'herana.wsgi.application'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
@@ -93,7 +93,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
-    "code4sa.context_processors.google_analytics",
+    "herana.context_processors.google_analytics",
     )
 
 
@@ -119,8 +119,8 @@ STATICFILES_FINDERS = (
 
 import scss
 scss.config.LOAD_PATHS = [
-        os.path.join(BASE_DIR, 'code4sa', 'static'),
-        os.path.join(BASE_DIR, 'code4sa', 'static', 'bower_components'),
+        os.path.join(BASE_DIR, 'herana', 'static'),
+        os.path.join(BASE_DIR, 'herana', 'static', 'bower_components'),
         ]
 
 # Simplified static file serving.
