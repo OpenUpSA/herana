@@ -46,6 +46,7 @@ INSTALLED_APPS = (
 
     'herana',
     'guardian',
+    'registration'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -167,3 +168,7 @@ LOGGING = {
         }
     }
 }
+
+# Registration
+ACCOUNT_ACTIVATION_DAYS = 7
+REGISTRATION_AUTO_LOGIN = True
