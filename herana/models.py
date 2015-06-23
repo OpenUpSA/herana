@@ -19,17 +19,26 @@ class Faculty(models.Model):
     name = models.CharField(max_length=256)
     institute = models.ForeignKey('Institute')
 
+    def __unicode__(self):
+        return self.name
+
     class Meta:
         verbose_name_plural = _("Faculties")
+
+        permissions = ()
 
 class StrategicObjective(models.Model):
     institute = models.ForeignKey('Institute')
     statement = models.CharField(max_length=512)
 
 
+# Rename name to InstituteAdminUser ?
 class InstituteAdmin(models.Model):
-    user = models.OneToOneField(User)
-    institute = models.ForeignKey('Institute')
+    user = models.OneToOneField(User, related_name='institute_admin')
+    institute = models.ForeignKey('Institute', related_name='institute_admin')
+
+    def __unicode__(self):
+        return self.user.email
 
 
 class ProjectLeader(models.Model):
