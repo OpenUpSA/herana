@@ -1,9 +1,20 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
 
+from guardian.admin import GuardedModelAdmin
+
 import models
 
-admin.site.register(models.Institute)
+
+class PermsAdmin(GuardedModelAdmin):
+    def assign_permissions():
+        pass
+
+
+class InstituteAdmin(GuardedModelAdmin):
+    pass
+
+admin.site.register(models.Institute, InstituteAdmin)
 admin.site.register(models.Faculty)
 admin.site.register(models.StrategicObjective)
 admin.site.register(models.InstituteAdmin)
