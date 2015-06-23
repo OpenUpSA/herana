@@ -1,6 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.utils.translation import ugettext_lazy as _
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 YESNO = (
     ('Y', _('Yes')),
@@ -66,13 +69,17 @@ RECORD_STATUS = (
 
 class Institute(models.Model):
     name = models.CharField(max_length=256)
-    logo = models.ImageField()
+    logo = models.ImageField(blank=True, null=True)
 
+    def __unicode__(self):
+        return self.name
 
 class Faculty(models.Model):
     name = models.CharField(max_length=256)
     institute = models.ForeignKey('Institute')
 
+    class Meta:
+        verbose_name_plural = _("Faculties")
 
 class StrategicObjective(models.Model):
     institute = models.ForeignKey('Institute')
@@ -196,3 +203,11 @@ class ProjectDetail(models.Model):
     collaboration_detail = models.ManyToManyField('Collaborators')
     status = models.PositiveIntegerField(choices=RECORD_STATUS)
     reporting_period = models.ForeignKey('ReportingPeriod')
+
+
+
+@receiver(post_save, sender=Institute)
+def create_institute_admin_group(sender, **kwargs):
+    if kwargs['created']:
+        group_name = "institute_%s_admin" % kwargs['instance'].id
+        Group.objects.create(name=group_name)
