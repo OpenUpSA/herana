@@ -3,6 +3,7 @@ from datetime import date
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
 
+from django.contrib.auth import get_permission_codename
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
@@ -10,6 +11,7 @@ from guardian import shortcuts
 from guardian.admin import GuardedModelAdmin
 
 import models
+from forms import ProjectDetailForm
 
 
 class PermsAdmin(GuardedModelAdmin):
@@ -43,13 +45,7 @@ class StrategicObjectiveInline(admin.TabularInline):
 
 
 class InstituteAdmin(GuardedModelAdmin):
-
     inlines = [StrategicObjectiveInline]
-    def has_module_permission(self, request):
-        # if request.user.is_superuser:
-        #     return True
-        # return False
-        return True
 
 
 class InstituteAdminUserAdmin(UserAdmin):
@@ -63,7 +59,6 @@ class InstituteAdminUserAdmin(UserAdmin):
 
 
 class FacultyAdmin(admin.ModelAdmin):
-
     fields = ('name',)
 
     def save_model(self, request, obj, form, change):
@@ -76,7 +71,11 @@ class FacultyAdmin(admin.ModelAdmin):
                 if request.user.institute_admin.institute == obj.institute:
                     return True
                 return False
-            return True
+
+            opts = self.opts
+            codename = get_permission_codename('change', opts)
+            return request.user.has_perm("%s.%s" % (opts.app_label, codename))
+
         return True
 
     def has_delete_permission(self, request, obj=None):
@@ -86,7 +85,11 @@ class FacultyAdmin(admin.ModelAdmin):
                     return True
                 return False
             # Should faculties be deleted by InstituteAdmins?
-            return True
+
+            opts = self.opts
+            codename = get_permission_codename('change', opts)
+            return request.user.has_perm("%s.%s" % (opts.app_label, codename))
+
         return True
 
     def get_queryset(self, request):
@@ -108,9 +111,11 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request, obj=None):
         # Can only be added if all existing reporting periods are closed.
-        if not self.model.objects.filter(is_active=True):
-            return True
-        return False
+        if self.model.objects.filter(is_active=True):
+            return False
+        opts = self.opts
+        codename = get_permission_codename('add', opts)
+        return request.user.has_perm("%s.%s" % (opts.app_label, codename))
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -122,23 +127,31 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
                 obj.save()
 
     def get_readonly_fields(self, request, obj=None):
-        import ipdb; ipdb.set_trace()
         if obj and obj.is_active == False:
             return self.readonly_fields + ('is_active',)
         return self.readonly_fields
 
 
+class ProjectHeaderAdmin(admin.ModelAdmin):
+    fields = ('name', 'is_flagship', 'is_leader')
+
+    def save_model(self, request, obj, form, change):
+        obj.proj_leader = request.user.project_leader
+        obj.faculty = request.user.project_leader.faculty
+        obj.save()
+
+class ProjectDetailAdmin(admin.ModelAdmin):
+    form = ProjectDetailForm
 
 
 admin.site.register(models.Institute, InstituteAdmin)
 # admin.site.register(models.InstituteAdmin, InstituteAdminUserAdmin)
 admin.site.register(models.Faculty, FacultyAdmin)
 admin.site.register(models.ReportingPeriod, ReportingPeriodAdmin)
-admin.site.register(models.ProjectLeader)
-admin.site.register(models.StrategicObjective)
 admin.site.register(models.InstituteAdmin)
-admin.site.register(models.ProjectHeader)
-admin.site.register(models.ProjectDetail)
+admin.site.register(models.ProjectLeader)
+admin.site.register(models.ProjectHeader, ProjectHeaderAdmin)
+admin.site.register(models.ProjectDetail, ProjectDetailAdmin)
 
 admin.site.unregister(User)
 admin.site.register(User, InstituteAdminUserAdmin)

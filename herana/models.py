@@ -27,8 +27,6 @@ class Faculty(models.Model):
     class Meta:
         verbose_name_plural = _("Faculties")
 
-        permissions = ()
-
 class StrategicObjective(models.Model):
     institute = models.ForeignKey('Institute')
     statement = models.CharField(max_length=512)
@@ -44,7 +42,7 @@ class InstituteAdmin(models.Model):
 
 
 class ProjectLeader(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, related_name='project_leader')
     institute = models.ForeignKey('Institute')
     faculty = models.ForeignKey('Faculty')
     staff_no = models.CharField(max_length=64)
@@ -61,10 +59,6 @@ class ReportingPeriod(models.Model):
 
     def __unicode__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        import ipdb; ipdb.set_trace()
-        super(ReportingPeriod, self).save(*args, **kwargs)
 
 class FocusArea(models.Model):
     choice = models.CharField(max_length=256)
@@ -116,6 +110,9 @@ class ProjectHeader(models.Model):
     is_leader = models.BooleanField(default=False)
     # status = models.ChoiceField()
 
+    def __unicode__(self):
+        return self.name
+
 
 class ProjectDetail(models.Model):
     header = models.ForeignKey(ProjectHeader)
@@ -165,30 +162,16 @@ class ProjectDetail(models.Model):
     reporting_period = models.ForeignKey('ReportingPeriod')
 
 
-
-@receiver(post_save, sender=Institute)
-def create_institute_admin_group(sender, **kwargs):
-    if kwargs['created']:
-        group_name = "inst_%s_admin" % kwargs['instance'].id
-        Group.objects.create(name=group_name)
-
-
-@receiver(post_delete, sender=Institute)
-def delete_institute_admin_group(sender, **kwargs):
-    group_name = "inst_%s_admin" % kwargs['instance'].id
-    Group.objects.get(name=group_name).delete()
-
-
 @receiver(post_save, sender=InstituteAdmin)
 def assign_institute_admin_to_group(sender, **kwargs):
     if kwargs['created']:
         try:
-            g = Group.objects.get(name='InstituteAdmin')
+            g = Group.objects.get(name='InstituteAdmins')
         except exceptions.ObjectDoesNotExist:
             # Move this to migrations file
-            g = Group.objects.create(name='InstituteAdmin')
+            g = Group.objects.create(name='InstituteAdmins')
             admin_permissions = [
-                'add_projectleader', 'delete_projectleader, change_projectleader',
+                'add_projectleader', 'delete_projectleader', 'change_projectleader',
                 'add_faculty', 'delete_faculty', 'change_faculty',
                 'add_reportingperiod', 'change_reportingperiod', 'delete_reportingperiod'
             ]
@@ -205,3 +188,27 @@ def remove_institute_admin_from_group(sender, **kwargs):
     g = Group.objects.get(name='InstituteAdmin')
     kwargs['instance'].user.groups.remove(g)
 
+
+@receiver(post_save, sender=ProjectLeader)
+def assign_project_leader_to_group(sender, **kwargs):
+    if kwargs['created']:
+        try:
+            g = Group.objects.get(name='ProjectLeaders')
+        except exceptions.ObjectDoesNotExist:
+            # Move this to migrations file
+            g = Group.objects.create(name='ProjectLeaders')
+            admin_permissions = [
+                'add_projectheader', 'delete_projectheader', 'change_projectheader',
+                'add_projectdetail', 'delete_projectdetail', 'change_projectdetail',
+            ]
+            perms = Permission.objects.filter(codename__in=admin_permissions)
+            for perm in perms:
+                g.permissions.add(perm)
+            g.save()
+
+        kwargs['instance'].user.groups.add(g)
+
+@receiver(post_delete, sender=ProjectLeader)
+def remove_institute_admin_from_group(sender, **kwargs):
+    g = Group.objects.get(name='ProjectLeaders')
+    kwargs['instance'].user.groups.remove(g)
