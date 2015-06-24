@@ -33,12 +33,22 @@ class InstituteAdminInline(admin.TabularInline):
     can_delete = False
 
 
+class StrategicObjectiveInline(admin.StackedInline):
+    model = models.StrategicObjective
+    inline_classes = ('grp-collapse grp-open',)
+    extra = 7
+    verbose_name_plural = _('Strategic Objectives')
+    # verbose_name = _('Strategic objectives of the Institute')
+
+
 class InstituteAdmin(GuardedModelAdmin):
 
+    inlines = [StrategicObjectiveInline]
     def has_module_permission(self, request):
-        if request.user.is_superuser:
-            return True
-        return False
+        # if request.user.is_superuser:
+        #     return True
+        # return False
+        return True
 
 
 class InstituteAdminUserAdmin(UserAdmin):
@@ -53,9 +63,9 @@ class InstituteAdminUserAdmin(UserAdmin):
 
 class FacultyAdmin(admin.ModelAdmin):
 
-    @property
-    def permcode(self):
-        return 'faculty'
+    # @property
+    # def permcode(self):
+    #     return 'faculty'
 
     fields = ('name',)
 
@@ -88,14 +98,25 @@ class FacultyAdmin(admin.ModelAdmin):
         return self.model.objects.filter(institute=request.user.institute_admin.institute)
 
 
+class ReportingPeriodAdmin(admin.ModelAdmin):
+    fields = ('name', 'description')
+
+    def get_queryset(self, request):
+        return self.models.objects.filter(institute=request.user.institute_admin.institute)
+
+    # def has_module_permission(self, request):
+    #     import ipdb; ipdb.set_trace()
+    #     # if request.user.
+
+
 
 admin.site.register(models.Institute, InstituteAdmin)
 # admin.site.register(models.InstituteAdmin, InstituteAdminUserAdmin)
 admin.site.register(models.Faculty, FacultyAdmin)
+admin.site.register(models.ReportingPeriod, ReportingPeriodAdmin)
+admin.site.register(models.ProjectLeader)
 admin.site.register(models.StrategicObjective)
 admin.site.register(models.InstituteAdmin)
-admin.site.register(models.ProjectLeader)
-admin.site.register(models.ReportingPeriod)
 admin.site.register(models.ProjectHeader)
 admin.site.register(models.ProjectDetail)
 

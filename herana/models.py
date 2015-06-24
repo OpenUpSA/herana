@@ -1,9 +1,11 @@
 from django.db import models
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
 from django.utils.translation import ugettext_lazy as _
 
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+
+from django.core import exceptions
 
 from model_utils import *
 
@@ -50,10 +52,12 @@ class ProjectLeader(models.Model):
 
 
 class ReportingPeriod(models.Model):
+    institute = models.ForeignKey('Institute', related_name='reporting_period')
     name = models.CharField(max_length=128)
     description = models.TextField()
     open_date = models.DateField(auto_now_add=True)
-    close_date = models.DateField()
+    close_date = models.DateField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
 
 
 class FocusArea(models.Model):
@@ -167,3 +171,31 @@ def create_institute_admin_group(sender, **kwargs):
 def delete_institute_admin_group(sender, **kwargs):
     group_name = "inst_%s_admin" % kwargs['instance'].id
     Group.objects.get(name=group_name).delete()
+
+
+@receiver(post_save, sender=InstituteAdmin)
+def assign_institute_admin_to_group(sender, **kwargs):
+    if kwargs['created']:
+        try:
+            g = Group.objects.get(name='InstituteAdmin')
+        except exceptions.ObjectDoesNotExist:
+            # Move this to migrations file
+            g = Group.objects.create(name='InstituteAdmin')
+            admin_permissions = [
+                'add_projectleader', 'delete_projectleader, change_projectleader',
+                'add_faculty', 'delete_faculty', 'change_faculty',
+                'add_reportingperiod', 'change_reportingperiod', 'delete_reportingperiod'
+            ]
+            perms = Permission.objects.filter(codename__in=admin_permissions)
+            for perm in perms:
+                g.permissions.add(perm)
+            g.save()
+
+        kwargs['instance'].user.groups.add(g)
+
+
+@receiver(post_delete, sender=InstituteAdmin)
+def remove_institute_admin_from_group(sender, **kwargs):
+    g = Group.objects.get(name='InstituteAdmin')
+    kwargs['instance'].user.groups.remove(g)
+
