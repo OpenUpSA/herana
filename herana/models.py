@@ -56,9 +56,15 @@ class ReportingPeriod(models.Model):
     name = models.CharField(max_length=128)
     description = models.TextField()
     open_date = models.DateField(auto_now_add=True)
-    close_date = models.DateField(null=True, blank=True)
-    is_active = models.BooleanField(default=True)
+    close_date = models.DateField(blank=True)
+    is_active = models.BooleanField(default=True, verbose_name=_('Open'))
 
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        import ipdb; ipdb.set_trace()
+        super(ReportingPeriod, self).save(*args, **kwargs)
 
 class FocusArea(models.Model):
     choice = models.CharField(max_length=256)

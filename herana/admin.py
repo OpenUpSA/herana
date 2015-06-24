@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
 
@@ -24,7 +26,6 @@ class PermsAdmin(GuardedModelAdmin):
         return self.perms_queryset(request, 'herana.change_%s' % self.permcode)
 
     def assign_permissions(self, user, obj):
-        import ipdb; ipdb.set_trace()
         shortcuts.assign_perm('herana.change_%s' % self.permcode, user, obj)
 
 
@@ -33,12 +34,12 @@ class InstituteAdminInline(admin.TabularInline):
     can_delete = False
 
 
-class StrategicObjectiveInline(admin.StackedInline):
+class StrategicObjectiveInline(admin.TabularInline):
     model = models.StrategicObjective
     inline_classes = ('grp-collapse grp-open',)
     extra = 7
     verbose_name_plural = _('Strategic Objectives')
-    # verbose_name = _('Strategic objectives of the Institute')
+    verbose_name = _('Strategic objectives of the Institute')
 
 
 class InstituteAdmin(GuardedModelAdmin):
@@ -62,10 +63,6 @@ class InstituteAdminUserAdmin(UserAdmin):
 
 
 class FacultyAdmin(admin.ModelAdmin):
-
-    # @property
-    # def permcode(self):
-    #     return 'faculty'
 
     fields = ('name',)
 
@@ -99,14 +96,37 @@ class FacultyAdmin(admin.ModelAdmin):
 
 
 class ReportingPeriodAdmin(admin.ModelAdmin):
-    fields = ('name', 'description')
+    fields = ('name', 'description', 'is_active', 'open_date', 'close_date')
+    readonly_fields = ('open_date', 'close_date')
+    list_display = ('name', 'description', 'open_date', 'close_date', 'is_active')
+
+    # actions = ['close_reporting_period']
 
     def get_queryset(self, request):
-        return self.models.objects.filter(institute=request.user.institute_admin.institute)
+        return self.model.objects\
+                .filter(institute=request.user.institute_admin.institute)
 
-    # def has_module_permission(self, request):
-    #     import ipdb; ipdb.set_trace()
-    #     # if request.user.
+    def has_add_permission(self, request, obj=None):
+        # Can only be added if all existing reporting periods are closed.
+        if not self.model.objects.filter(is_active=True):
+            return True
+        return False
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.institute = request.user.institute_admin.institute
+            obj.save()
+        else:
+            if obj.is_active == False:
+                obj.close_date = date.today()
+                obj.save()
+
+    def get_readonly_fields(self, request, obj=None):
+        import ipdb; ipdb.set_trace()
+        if obj and obj.is_active == False:
+            return self.readonly_fields + ('is_active',)
+        return self.readonly_fields
+
 
 
 
