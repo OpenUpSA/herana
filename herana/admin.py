@@ -5,13 +5,24 @@ from django.contrib import admin
 
 from django.contrib.auth import get_permission_codename
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from guardian import shortcuts
 from guardian.admin import GuardedModelAdmin
 
 import models
 from forms import ProjectDetailForm
+
+
+def user_has_perm(request, opts, perm_type):
+    """
+    Return True if user has the permission to perform specific action
+        param obj request: Current request object
+        param obj opts: options for current ModelAdmin instance
+        param str perm_type: type of permission to check for
+    """
+    codename = get_permission_codename(perm_type, opts)
+    return request.user.has_perm("%s.%s" % (opts.app_label, codename))
 
 
 class PermsAdmin(GuardedModelAdmin):
@@ -111,11 +122,15 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request, obj=None):
         # Can only be added if all existing reporting periods are closed.
-        if self.model.objects.filter(is_active=True):
-            return False
-        opts = self.opts
-        codename = get_permission_codename('add', opts)
-        return request.user.has_perm("%s.%s" % (opts.app_label, codename))
+        if not request.user.is_superuser:
+            if user_has_perm(request, self.opts, 'add'):
+                institute = request.user.institute_admin.institute
+                if self.model.objects\
+                                .filter(institute=institute)\
+                                .filter(is_active=True):
+                    return False
+                return True
+        return False
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -142,6 +157,17 @@ class ProjectHeaderAdmin(admin.ModelAdmin):
 
 class ProjectDetailAdmin(admin.ModelAdmin):
     form = ProjectDetailForm
+
+    def has_add_permission(self, request, obj=None):
+        if not request.user.is_superuser:
+            if user_has_perm(request, self.opts, 'add'):
+                # Can only add if a reporting period is open
+                institute = request.user.project_leader.institute
+                if models.ReportingPeriod.objects\
+                            .filter(institute=institute)\
+                            .filter(is_active=True):
+                    return True
+        return False
 
 
 admin.site.register(models.Institute, InstituteAdmin)

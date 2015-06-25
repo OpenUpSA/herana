@@ -37,8 +37,8 @@ NUMBER_AUTHORS = (
 ADV_GROUP_FREQ = (
     (1, _('Monthly')),
     (2, _('Quarterly')),
-    (3, ('Annually')),
-    (4, ('Ad hoc'))
+    (3, _('Annually')),
+    (4, _('Ad hoc'))
 )
 
 INITIATIVE_PARTIES = (
@@ -48,11 +48,11 @@ INITIATIVE_PARTIES = (
 )
 
 RESEARCH_CLASSIFICATION = (
-    (1, ('The project conducted original research')),
-    (2, ('The project collected new data and conducted original research to complete the project')),
-    (3, ('The project collected new data and applied existing knowledge to the data collected to complete the project')),
-    (4, ('No new data was required and existing knowledge was applied to complete the project')),
-    (5, ('Not applicable'))
+    (1, _('The project conducted original research')),
+    (2, _('The project collected new data and conducted original research to complete the project')),
+    (3, _('The project collected new data and applied existing knowledge to the data collected to complete the project')),
+    (4, _('No new data was required and existing knowledge was applied to complete the project')),
+    (5, _('Not applicable'))
 )
 
 RECORD_STATUS = (

@@ -49,6 +49,9 @@ class ProjectLeader(models.Model):
     position = models.CharField(max_length=128)
 
 
+    def __unicode__(self):
+        return self.user.username
+
 class ReportingPeriod(models.Model):
     institute = models.ForeignKey('Institute', related_name='reporting_period')
     name = models.CharField(max_length=128)

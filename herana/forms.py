@@ -6,5 +6,5 @@ from models import ProjectDetail
 class ProjectDetailForm(forms.ModelForm):
     class Meta:
         model = ProjectDetail
-        exclude = ()
+        exclude = ('status', 'reporting_period')
 
