@@ -77,7 +77,7 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 import dj_database_url
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///db.sqlite3')
+    'default': dj_database_url.config(default='postgres://herana:herana@localhost:5432/herana')
 }
 
 # Internationalization
