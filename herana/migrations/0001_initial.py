@@ -41,6 +41,10 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=256)),
             ],
+            options={
+                'verbose_name_plural': 'Faculties',
+                'permissions': (),
+            },
         ),
         migrations.CreateModel(
             name='FocusArea',
@@ -54,15 +58,15 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=256)),
-                ('logo', models.ImageField(upload_to=b'')),
+                ('logo', models.ImageField(null=True, upload_to=b'', blank=True)),
             ],
         ),
         migrations.CreateModel(
             name='InstituteAdmin',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('institute', models.ForeignKey(to='herana.Institute')),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+                ('institute', models.ForeignKey(related_name='institute_admin', to='herana.Institute')),
+                ('user', models.OneToOneField(related_name='institute_admin', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
@@ -167,7 +171,9 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=128)),
                 ('description', models.TextField()),
                 ('open_date', models.DateField(auto_now_add=True)),
-                ('close_date', models.DateField()),
+                ('close_date', models.DateField(null=True, blank=True)),
+                ('is_active', models.BooleanField(default=True)),
+                ('institute', models.ForeignKey(related_name='reporting_period', to='herana.Institute')),
             ],
         ),
         migrations.CreateModel(

@@ -45,6 +45,8 @@ INSTALLED_APPS = (
     'django_extensions',
 
     'herana',
+    'guardian',
+    'registration'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -56,6 +58,13 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
+)
+
+ANONYMOUS_USER_ID = -1
 
 ROOT_URLCONF = 'herana.urls'
 
@@ -159,3 +168,7 @@ LOGGING = {
         }
     }
 }
+
+# Registration
+ACCOUNT_ACTIVATION_DAYS = 7
+REGISTRATION_AUTO_LOGIN = True

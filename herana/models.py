@@ -1,91 +1,48 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from django.utils.translation import ugettext_lazy as _
 
-YESNO = (
-    ('Y', _('Yes')),
-    ('N', _('No')),
-)
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
-FOCUS_AREAS = (
-    (1, _('Teaching and learning')),
-    (2, _('Research')),
-    (3, _('Service (Professional Discipline-Based)')),
-    (4, _('Other'))
-)
+from django.core import exceptions
 
-CLASSIFICATION = (
-    (1, _('Project')),
-    (2, _('Programme')),
-    (3, _('Service')),
-    (4, _('Other'))
-)
-
-INITIATION_STATEMENTS = (
-    (1, _('Approached or invited by funder, company, NGO, government, research institute or by another university to submit a proposal for the project')),
-    (2, _('Informed by the university research or contracts office about the reach project')),
-    (3, _('Initiated by colleagues at own university')),
-    (4, _('Initiated by project leader')),
-    (5, _('Initiated by project leader in collaboration with colleagues')),
-    (6, _('Follow-on or continuation from existing project')),
-    (7, _('Project assigned to project leader')),
-)
-
-NUMBER_AUTHORS = (
-    (1, _('One author')),
-    (1, _('More than one author'))
-)
-
-ADV_GROUP_FREQ = (
-    (1, _('Monthly')),
-    (2, _('Quarterly')),
-    (3, ('Annually')),
-    (4, ('Ad hoc'))
-)
-
-INITIATIVE_PARTIES = (
-    (1, _('A third party has been contracted to develop the product / service / intervention / policy')),
-    (2, _('The project team will develop the product / service / intervention / policy')),
-    (3, _('Other')),
-)
-
-RESEARCH_CLASSIFICATION = (
-    (1, ('The project conducted original research')),
-    (2, ('The project collected new data and conducted original research to complete the project')),
-    (3, ('The project collected new data and applied existing knowledge to the data collected to complete the project')),
-    (4, ('No new data was required and existing knowledge was applied to complete the project')),
-    (5, ('Not applicable'))
-)
-
-RECORD_STATUS = (
-    (1, 'Incomplete'),
-    (2, 'Final'),
-    (3, 'Rejected')
-)
+from model_utils import *
 
 
 class Institute(models.Model):
     name = models.CharField(max_length=256)
-    logo = models.ImageField()
+    logo = models.ImageField(blank=True, null=True)
 
+    def __unicode__(self):
+        return self.name
 
 class Faculty(models.Model):
     name = models.CharField(max_length=256)
     institute = models.ForeignKey('Institute')
 
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = _("Faculties")
 
 class StrategicObjective(models.Model):
     institute = models.ForeignKey('Institute')
     statement = models.CharField(max_length=512)
 
 
+# Rename name to InstituteAdminUser ?
 class InstituteAdmin(models.Model):
-    user = models.OneToOneField(User)
-    institute = models.ForeignKey('Institute')
+    user = models.OneToOneField(User, related_name='institute_admin')
+    institute = models.ForeignKey('Institute', related_name='institute_admin')
+
+    def __unicode__(self):
+        return self.user.email
 
 
 class ProjectLeader(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, related_name='project_leader')
     institute = models.ForeignKey('Institute')
     faculty = models.ForeignKey('Faculty')
     staff_no = models.CharField(max_length=64)
@@ -93,11 +50,15 @@ class ProjectLeader(models.Model):
 
 
 class ReportingPeriod(models.Model):
+    institute = models.ForeignKey('Institute', related_name='reporting_period')
     name = models.CharField(max_length=128)
     description = models.TextField()
     open_date = models.DateField(auto_now_add=True)
-    close_date = models.DateField()
+    close_date = models.DateField(blank=True)
+    is_active = models.BooleanField(default=True, verbose_name=_('Open'))
 
+    def __unicode__(self):
+        return self.name
 
 class FocusArea(models.Model):
     choice = models.CharField(max_length=256)
@@ -149,6 +110,9 @@ class ProjectHeader(models.Model):
     is_leader = models.BooleanField(default=False)
     # status = models.ChoiceField()
 
+    def __unicode__(self):
+        return self.name
+
 
 class ProjectDetail(models.Model):
     header = models.ForeignKey(ProjectHeader)
@@ -196,3 +160,55 @@ class ProjectDetail(models.Model):
     collaboration_detail = models.ManyToManyField('Collaborators')
     status = models.PositiveIntegerField(choices=RECORD_STATUS)
     reporting_period = models.ForeignKey('ReportingPeriod')
+
+
+@receiver(post_save, sender=InstituteAdmin)
+def assign_institute_admin_to_group(sender, **kwargs):
+    if kwargs['created']:
+        try:
+            g = Group.objects.get(name='InstituteAdmins')
+        except exceptions.ObjectDoesNotExist:
+            # Move this to migrations file
+            g = Group.objects.create(name='InstituteAdmins')
+            admin_permissions = [
+                'add_projectleader', 'delete_projectleader', 'change_projectleader',
+                'add_faculty', 'delete_faculty', 'change_faculty',
+                'add_reportingperiod', 'change_reportingperiod', 'delete_reportingperiod'
+            ]
+            perms = Permission.objects.filter(codename__in=admin_permissions)
+            for perm in perms:
+                g.permissions.add(perm)
+            g.save()
+
+        kwargs['instance'].user.groups.add(g)
+
+
+@receiver(post_delete, sender=InstituteAdmin)
+def remove_institute_admin_from_group(sender, **kwargs):
+    g = Group.objects.get(name='InstituteAdmin')
+    kwargs['instance'].user.groups.remove(g)
+
+
+@receiver(post_save, sender=ProjectLeader)
+def assign_project_leader_to_group(sender, **kwargs):
+    if kwargs['created']:
+        try:
+            g = Group.objects.get(name='ProjectLeaders')
+        except exceptions.ObjectDoesNotExist:
+            # Move this to migrations file
+            g = Group.objects.create(name='ProjectLeaders')
+            admin_permissions = [
+                'add_projectheader', 'delete_projectheader', 'change_projectheader',
+                'add_projectdetail', 'delete_projectdetail', 'change_projectdetail',
+            ]
+            perms = Permission.objects.filter(codename__in=admin_permissions)
+            for perm in perms:
+                g.permissions.add(perm)
+            g.save()
+
+        kwargs['instance'].user.groups.add(g)
+
+@receiver(post_delete, sender=ProjectLeader)
+def remove_institute_admin_from_group(sender, **kwargs):
+    g = Group.objects.get(name='ProjectLeaders')
+    kwargs['instance'].user.groups.remove(g)
