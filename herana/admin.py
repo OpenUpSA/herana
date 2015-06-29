@@ -158,6 +158,8 @@ class ProjectHeaderAdmin(admin.ModelAdmin):
 class ProjectDetailAdmin(admin.ModelAdmin):
     form = ProjectDetailForm
 
+    save_as = True
+
     def has_add_permission(self, request, obj=None):
         if not request.user.is_superuser:
             if user_has_perm(request, self.opts, 'add'):
@@ -169,6 +171,12 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                     return True
         return False
 
+    def save_model(self, request, obj, form, change):
+        reporting_period = request.user.project_leader.institute.reporting_period.get(is_active=True)
+        if not change:
+            obj.status = 1
+            obj.reporting_period = reporting_period
+            obj.save()
 
 admin.site.register(models.Institute, InstituteAdmin)
 # admin.site.register(models.InstituteAdmin, InstituteAdminUserAdmin)
@@ -178,6 +186,8 @@ admin.site.register(models.InstituteAdmin)
 admin.site.register(models.ProjectLeader)
 admin.site.register(models.ProjectHeader, ProjectHeaderAdmin)
 admin.site.register(models.ProjectDetail, ProjectDetailAdmin)
+
+admin.site.register(models.FocusArea)
 
 admin.site.unregister(User)
 admin.site.register(User, InstituteAdminUserAdmin)

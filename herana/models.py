@@ -31,6 +31,9 @@ class StrategicObjective(models.Model):
     institute = models.ForeignKey('Institute')
     statement = models.CharField(max_length=512)
 
+    def __unicode__(self):
+        return self.statement
+
 
 # Rename name to InstituteAdminUser ?
 class InstituteAdmin(models.Model):
@@ -124,7 +127,7 @@ class ProjectDetail(models.Model):
     header = models.ForeignKey(ProjectHeader, related_name='project_detail')
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
-    ongoing = models.NullBooleanField()
+    ongoing = models.CharField(choices=YESNO, max_length=1, null=True)
     multi_faculty = models.CharField(choices=YESNO, max_length=1, null=True)
     description = models.TextField(null=True)
     focus_area = models.ManyToManyField('FocusArea')
@@ -169,10 +172,7 @@ class ProjectDetail(models.Model):
     reporting_period = models.ForeignKey('ReportingPeriod')
 
     def __unicode__(self):
-        return self.header.name
-
-    # def clean_fields(self, exclude=None):
-    #     import ipdb; ipdb.set_trace()
+        return '%s - %s' % (self.header.name, self.reporting_period.name)
 
 @receiver(post_save, sender=InstituteAdmin)
 def assign_institute_admin_to_group(sender, **kwargs):
