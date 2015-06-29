@@ -55,8 +55,67 @@ RESEARCH_CLASSIFICATION = (
     (5, _('Not applicable'))
 )
 
+PROJECT_STATUS = (
+    (1, _('Complete')),
+    (2, _('Ongoing'))
+)
+
 RECORD_STATUS = (
-    (1, 'Incomplete'),
+    (1, 'Draft'),
     (2, 'Final'),
     (3, 'Rejected')
 )
+
+CAPTURE_LABELS = {
+    'header': _('Name of flagship engagement project'),
+    'project_status': _(),
+    'start_date': _(),
+    'end_date': _(),
+    'faculty': (' In which faculty/school is the project located?'),
+    'multi_faculty': _('Does the project span multiple faculties/schools?'),
+    'description': _('Please provide a short description of the project.'),
+    'focus_area': _('In which of the following areas would you place your project?'),
+    'focus_area_text': _('If other was chosen above, please describe.'),
+    'classification': _('How would you classify this flagship engagement activity?'),
+    'strategic_objectives': _('What are the 4 main strategic objectives of the project?'),
+    'outcomes': _(),
+    'beneficiaries': _(),
+    'initiation': _(),
+    'authors': _(),
+    'amendments_permitted': _(),
+    'public_domain': _('Will the written up findings or data or other outputs of the project be available electronically in the public domain?'),
+    'public_domain_url': _('URL'),
+    'adv_group': _(),
+    'adv_group_rep': _(),
+    'adv_group_freq': _(),
+    'team_members': _(),
+    'new_initiative': _(),
+    'new_initiative_text': _(),
+    'new_initiative_party': _(),
+    'new_initiative_party_text': _(),
+    'new_initiative_party_text': _(),
+    'funding': _(),
+    'research': _(),
+    'research_text': _(),
+    'phd_research': _(),
+    'phd_research_name': _(),
+    'outputs': _(),
+    'curriculum_changes': _(),
+    'curriculum_changes_text': _(),
+    'new_courses': _(),
+    'new_course_detail': _(),
+    'students_involved': _(),
+    'student_types': _(),
+    'student_nature': _(),
+    'student_nature_text': _(),
+    'course_requirement': _(),
+    'course_req_detail': _(),
+    'external_collaboration': _(),
+    'collaboration_detail': _(),
+    'status': _(),
+    'reporting_period': _(),
+}
+
+CAPTURE_HELP = {
+
+}

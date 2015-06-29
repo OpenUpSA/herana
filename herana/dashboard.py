@@ -31,6 +31,7 @@ class CustomIndexDashboard(Dashboard):
             models=(
                 'herana.models.Institute',
                 'herana.models.Faculty',
+                'herana.models.ReportingPeriod'
                 ),
         ))
 

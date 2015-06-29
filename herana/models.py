@@ -124,23 +124,36 @@ class ProjectHeader(models.Model):
 
 
 class ProjectDetail(models.Model):
-    header = models.ForeignKey(ProjectHeader, related_name='project_detail')
+    header = models.ForeignKey(ProjectHeader, related_name='project_detail',
+                               verbose_name=CAPTURE_LABELS['header'])
+    project_status = models.CharField(choices=PROJECT_STATUS, max_length=1, null=True)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
-    ongoing = models.CharField(choices=YESNO, max_length=1, null=True)
-    multi_faculty = models.CharField(choices=YESNO, max_length=1, null=True)
-    description = models.TextField(null=True)
-    focus_area = models.ManyToManyField('FocusArea')
-    focus_area_text = models.CharField(max_length=256, null=True)
-    classification = models.PositiveIntegerField(choices=CLASSIFICATION, null=True)
-    strategic_objectives = models.ManyToManyField('StrategicObjective')
+    faculty = models.ForeignKey('Faculty',
+                                verbose_name=CAPTURE_LABELS['faculty'], null=True)
+    multi_faculty = models.CharField(choices=YESNO, max_length=1, null=True,
+                                     verbose_name=CAPTURE_LABELS['multi_faculty'])
+    description = models.TextField(null=True, verbose_name=CAPTURE_LABELS['description'])
+    focus_area = models.ManyToManyField('FocusArea',
+                                        verbose_name=CAPTURE_LABELS['focus_area'],
+                                        help_text='''Select ALL applicable<br>''')
+    focus_area_text = models.CharField(max_length=256, null=True,
+                                       verbose_name=CAPTURE_LABELS['focus_area_text'],
+                                       help_text='')
+    classification = models.PositiveIntegerField(choices=CLASSIFICATION, null=True,
+                                                 verbose_name=CAPTURE_LABELS['classification'])
+    strategic_objectives = models.ManyToManyField('StrategicObjective',
+                                                  verbose_name=CAPTURE_LABELS['strategic_objectives'])
     outcomes = models.TextField(null=True)
     beneficiaries = models.TextField(null=True)
     initiation = models.PositiveIntegerField(choices=INITIATION_STATEMENTS, null=True)
     authors = models.PositiveIntegerField(choices=NUMBER_AUTHORS, null=True)
     amendments_permitted = models.CharField(choices=YESNO, max_length=1, null=True)
-    public_domain = models.CharField(choices=YESNO, max_length=1, null=True)
-    public_domain_url = models.URLField(null=True)
+    public_domain = models.CharField(choices=YESNO, max_length=1, null=True,
+                                     verbose_name=CAPTURE_LABELS['public_domain'],
+                                     help_text='If yes, please provide the URL')
+    public_domain_url = models.URLField(null=True,
+                                        verbose_name=CAPTURE_LABELS['public_domain_url'])
     adv_group = models.CharField(choices=YESNO, max_length=1, null=True)
     adv_group_rep = models.ManyToManyField('AdvisoryGroupRep')
     adv_group_freq = models.PositiveIntegerField(choices=ADV_GROUP_FREQ, null=True)
@@ -168,7 +181,7 @@ class ProjectDetail(models.Model):
     course_req_detail = models.ManyToManyField('CourseReqDetail')
     external_collaboration = models.CharField(choices=YESNO, max_length=1, null=True)
     collaboration_detail = models.ManyToManyField('Collaborators')
-    status = models.PositiveIntegerField(choices=RECORD_STATUS)
+    record_status = models.PositiveIntegerField(choices=RECORD_STATUS)
     reporting_period = models.ForeignKey('ReportingPeriod')
 
     def __unicode__(self):
