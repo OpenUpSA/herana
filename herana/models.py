@@ -57,7 +57,7 @@ class ReportingPeriod(models.Model):
     name = models.CharField(max_length=128)
     description = models.TextField()
     open_date = models.DateField(auto_now_add=True)
-    close_date = models.DateField(blank=True)
+    close_date = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=True, verbose_name=_('Open'))
 
     def __unicode__(self):
@@ -65,6 +65,9 @@ class ReportingPeriod(models.Model):
 
 class FocusArea(models.Model):
     choice = models.CharField(max_length=256)
+
+    def __unicode__(self):
+        return self.choice
 
 class AdvisoryGroupRep(models.Model):
     choice = models.CharField(max_length=256)
@@ -118,52 +121,58 @@ class ProjectHeader(models.Model):
 
 
 class ProjectDetail(models.Model):
-    header = models.ForeignKey(ProjectHeader)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    ongoing = models.BooleanField()
-    multi_faculty = models.CharField(choices=YESNO, max_length=1)
-    description = models.TextField()
+    header = models.ForeignKey(ProjectHeader, related_name='project_detail')
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
+    ongoing = models.NullBooleanField()
+    multi_faculty = models.CharField(choices=YESNO, max_length=1, null=True)
+    description = models.TextField(null=True)
     focus_area = models.ManyToManyField('FocusArea')
-    focus_area_text = models.CharField(max_length=256)
-    classification = models.PositiveIntegerField(choices=CLASSIFICATION)
+    focus_area_text = models.CharField(max_length=256, null=True)
+    classification = models.PositiveIntegerField(choices=CLASSIFICATION, null=True)
     strategic_objectives = models.ManyToManyField('StrategicObjective')
-    outcomes = models.TextField()
-    beneficiaries = models.TextField()
-    initiation = models.PositiveIntegerField(choices=INITIATION_STATEMENTS)
-    authors = models.PositiveIntegerField(choices=NUMBER_AUTHORS)
-    amendments_permitted = models.CharField(choices=YESNO, max_length=1)
-    public_domain = models.CharField(choices=YESNO, max_length=1)
-    public_domain_url = models.URLField()
-    adv_group = models.CharField(choices=YESNO, max_length=1)
+    outcomes = models.TextField(null=True)
+    beneficiaries = models.TextField(null=True)
+    initiation = models.PositiveIntegerField(choices=INITIATION_STATEMENTS, null=True)
+    authors = models.PositiveIntegerField(choices=NUMBER_AUTHORS, null=True)
+    amendments_permitted = models.CharField(choices=YESNO, max_length=1, null=True)
+    public_domain = models.CharField(choices=YESNO, max_length=1, null=True)
+    public_domain_url = models.URLField(null=True)
+    adv_group = models.CharField(choices=YESNO, max_length=1, null=True)
     adv_group_rep = models.ManyToManyField('AdvisoryGroupRep')
-    adv_group_freq = models.PositiveIntegerField(choices=ADV_GROUP_FREQ)
+    adv_group_freq = models.PositiveIntegerField(choices=ADV_GROUP_FREQ, null=True)
     team_members = models.ManyToManyField(ResearchTeamMember)
-    new_initiative = models.CharField(choices=YESNO, max_length=1)
-    new_initiative_text = models.TextField()
-    new_initiative_party = models.PositiveIntegerField(choices=INITIATIVE_PARTIES)
-    new_initiative_party_text = models.TextField()
+    new_initiative = models.CharField(choices=YESNO, max_length=1, null=True)
+    new_initiative_text = models.TextField(null=True)
+    new_initiative_party = models.PositiveIntegerField(choices=INITIATIVE_PARTIES, null=True)
+    new_initiative_party_text = models.TextField(null=True)
+    new_initiative_party_text = models.TextField(null=True)
     funding = models.ManyToManyField(ProjectFunding)
-    research = models.PositiveIntegerField(choices=RESEARCH_CLASSIFICATION)
-    research_text = models.TextField()
-    phd_research = models.CharField(choices=YESNO, max_length=1)
+    research = models.PositiveIntegerField(choices=RESEARCH_CLASSIFICATION, null=True)
+    research_text = models.TextField(null=True)
+    phd_research = models.CharField(choices=YESNO, max_length=1, null=True)
     phd_research_name = models.ManyToManyField('PHDStudent')
     outputs = models.ManyToManyField('ProjectOutputs')
-    curriculum_changes = models.CharField(choices=YESNO, max_length=1)
-    curriculum_changes_text = models.TextField()
-    new_courses = models.CharField(choices=YESNO, max_length=1)
-    new_course_detail = models.ManyToManyField('NewCourseDetail')
-    students_involved = models.CharField(choices=YESNO, max_length=1)
+    curriculum_changes = models.CharField(choices=YESNO, max_length=1, null=True)
+    curriculum_changes_text = models.TextField(null=True)
+    new_courses = models.CharField(choices=YESNO, max_length=1, null=True)
+    new_course_detail = models.ManyToManyField('NewCourseDetail',)
+    students_involved = models.CharField(choices=YESNO, max_length=1, null=True)
     student_types = models.ManyToManyField('StudentType')
     student_nature = models.ManyToManyField(StudentParticipationNature)
-    student_nature_text = models.CharField(max_length=128)
-    course_requirement = models.CharField(choices=YESNO, max_length=1)
+    student_nature_text = models.CharField(max_length=128, null=True)
+    course_requirement = models.CharField(choices=YESNO, max_length=1, null=True)
     course_req_detail = models.ManyToManyField('CourseReqDetail')
-    external_collaboration = models.CharField(choices=YESNO, max_length=1)
+    external_collaboration = models.CharField(choices=YESNO, max_length=1, null=True)
     collaboration_detail = models.ManyToManyField('Collaborators')
     status = models.PositiveIntegerField(choices=RECORD_STATUS)
     reporting_period = models.ForeignKey('ReportingPeriod')
 
+    def __unicode__(self):
+        return self.header.name
+
+    # def clean_fields(self, exclude=None):
+    #     import ipdb; ipdb.set_trace()
 
 @receiver(post_save, sender=InstituteAdmin)
 def assign_institute_admin_to_group(sender, **kwargs):
