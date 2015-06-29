@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = (
+    'grappelli.dashboard',
     'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -176,3 +177,7 @@ LOGGING = {
 # Registration
 ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_AUTO_LOGIN = True
+
+# Grappelli
+GRAPPELLI_INDEX_DASHBOARD = 'herana.dashboard.CustomIndexDashboard'
+GRAPPELLI_ADMIN_TITLE = 'Herana'
