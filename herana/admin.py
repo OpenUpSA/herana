@@ -1,5 +1,6 @@
 from datetime import date
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
 
@@ -23,6 +24,16 @@ def user_has_perm(request, opts, perm_type):
     """
     codename = get_permission_codename(perm_type, opts)
     return request.user.has_perm("%s.%s" % (opts.app_label, codename))
+
+def get_user_institute(request):
+    """
+    Return the institute to which the user belongs
+    """
+    try:
+        if request.user.project_leader:
+            return request.user.project_leader.institute
+    except ObjectDoesNotExist:
+        return request.user.institute_admin.institute
 
 
 class PermsAdmin(GuardedModelAdmin):
@@ -155,9 +166,25 @@ class ProjectHeaderAdmin(admin.ModelAdmin):
         obj.faculty = request.user.project_leader.faculty
         obj.save()
 
+class ReportingPeriodFilter(admin.SimpleListFilter):
+    title = "Reporting Period"
+    parameter_name = 'reporting_period'
+
+    def lookups(self, request, model_admin):
+        reporting_periods = list(models.ReportingPeriod.objects.filter(institute=get_user_institute(request)))
+
+        return [(rp.id, rp.name) for rp in reporting_periods]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(reporting_period=self.value())
+        else:
+            return queryset
 
 class ProjectDetailAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'record_status',)
+    readonly_fields = ('reporting_period',)
+    list_filter = (ReportingPeriodFilter, 'record_status')
     form = ProjectDetailForm
     save_as = True
 
@@ -171,6 +198,33 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                             .filter(is_active=True):
                     return True
         return False
+
+    def has_change_permission(self, request, obj=None):
+        if not request.user.is_superuser:
+            if user_has_perm(request, self.opts, 'change'):
+                return True
+            if user_has_perm(request, self.opts, 'view'):
+                return True
+        return False
+
+    def get_queryset(self, request):
+        if user_has_perm(request, self.opts, 'view'):
+            return self.model.objects\
+                .filter(header__proj_leader__institute=get_user_institute(request))\
+                .exclude(record_status=1)
+        if user_has_perm(request, self.opts, 'change'):
+            return self.model.objects\
+                .filter(header__proj_leader__institute=get_user_institute(request))\
+
+    def get_readonly_fields(self, request, obj=None):
+        # For users with view access, all fields are readonly
+        if user_has_perm(request, self.opts, 'view'):
+            readonly_fields = []
+            for field in self.form.base_fields.keys():
+                if field not in self.form.Meta.exclude:
+                    readonly_fields.append(field)
+            return readonly_fields
+        return self.readonly_fields
 
     def save_model(self, request, obj, form, change):
         # This assumes that only one reporting period can be active at a time for a given Institute.

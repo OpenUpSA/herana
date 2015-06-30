@@ -183,9 +183,17 @@ class ProjectDetail(models.Model):
     collaboration_detail = models.ManyToManyField('Collaborators')
     record_status = models.PositiveIntegerField(choices=RECORD_STATUS)
     reporting_period = models.ForeignKey('ReportingPeriod')
+    # rejected = models.BooleanField(default=False)
+    # rejected_detail = models.TextField(null=True)
 
     def __unicode__(self):
         return '%s - %s' % (self.header.name, self.reporting_period.name)
+
+    class Meta:
+        permissions = (
+            ('view_projectdetail', 'Can only view project details'),
+            ('reject_projectdetail', 'Can reject the project which has been submitted')
+        )
 
 
 @receiver(post_save, sender=InstituteAdmin)
@@ -200,6 +208,7 @@ def assign_institute_admin_to_group(sender, **kwargs):
                 'add_projectleader', 'delete_projectleader', 'change_projectleader',
                 'add_faculty', 'delete_faculty', 'change_faculty',
                 'add_reportingperiod', 'change_reportingperiod', 'delete_reportingperiod',
+                'change_projectdetail', 'view_projectdetail', 'reject_projectdetail'
             ]
             perms = Permission.objects.filter(codename__in=admin_permissions)
             for perm in perms:
