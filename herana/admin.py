@@ -155,9 +155,10 @@ class ProjectHeaderAdmin(admin.ModelAdmin):
         obj.faculty = request.user.project_leader.faculty
         obj.save()
 
-class ProjectDetailAdmin(admin.ModelAdmin):
-    form = ProjectDetailForm
 
+class ProjectDetailAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'record_status',)
+    form = ProjectDetailForm
     save_as = True
 
     def has_add_permission(self, request, obj=None):
@@ -172,11 +173,15 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return False
 
     def save_model(self, request, obj, form, change):
+        # This assumes that only one reporting period can be active at a time for a given Institute.
         reporting_period = request.user.project_leader.institute.reporting_period.get(is_active=True)
         if not change:
-            obj.status = 1
             obj.reporting_period = reporting_period
-            obj.save()
+            if request.POST['_draft']:
+                obj.record_status = 1
+            else:
+                obj.record_status = 2
+        obj.save()
 
 admin.site.register(models.Institute, InstituteAdmin)
 # admin.site.register(models.InstituteAdmin, InstituteAdminUserAdmin)

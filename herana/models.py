@@ -187,6 +187,7 @@ class ProjectDetail(models.Model):
     def __unicode__(self):
         return '%s - %s' % (self.header.name, self.reporting_period.name)
 
+
 @receiver(post_save, sender=InstituteAdmin)
 def assign_institute_admin_to_group(sender, **kwargs):
     if kwargs['created']:
@@ -198,7 +199,7 @@ def assign_institute_admin_to_group(sender, **kwargs):
             admin_permissions = [
                 'add_projectleader', 'delete_projectleader', 'change_projectleader',
                 'add_faculty', 'delete_faculty', 'change_faculty',
-                'add_reportingperiod', 'change_reportingperiod', 'delete_reportingperiod'
+                'add_reportingperiod', 'change_reportingperiod', 'delete_reportingperiod',
             ]
             perms = Permission.objects.filter(codename__in=admin_permissions)
             for perm in perms:
