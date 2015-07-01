@@ -1,7 +1,10 @@
 from datetime import date
 
-from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import ugettext_lazy as _
+from django.forms import CheckboxSelectMultiple
+from django.db import models
 
 from django.contrib.auth import get_permission_codename
 from django.contrib.auth.admin import UserAdmin
@@ -10,7 +13,18 @@ from django.contrib.auth.models import User, Group
 from guardian import shortcuts
 from guardian.admin import GuardedModelAdmin
 
-import models
+from models import (
+    Institute,
+    Faculty,
+    ReportingPeriod,
+    InstituteAdmin,
+    StrategicObjective,
+    ProjectLeader,
+    ProjectHeader,
+    ProjectDetail,
+    FocusArea
+)
+
 from forms import ProjectDetailForm
 
 
@@ -23,6 +37,16 @@ def user_has_perm(request, opts, perm_type):
     """
     codename = get_permission_codename(perm_type, opts)
     return request.user.has_perm("%s.%s" % (opts.app_label, codename))
+
+def get_user_institute(user):
+    """
+    Return the institute to which the user belongs
+    """
+    try:
+        if user.project_leader:
+            return user.project_leader.institute
+    except ObjectDoesNotExist:
+        return user.institute_admin.institute
 
 
 class PermsAdmin(GuardedModelAdmin):
@@ -43,19 +67,19 @@ class PermsAdmin(GuardedModelAdmin):
 
 
 class InstituteAdminInline(admin.TabularInline):
-    model = models.InstituteAdmin
+    model = InstituteAdmin
     can_delete = False
 
 
 class StrategicObjectiveInline(admin.TabularInline):
-    model = models.StrategicObjective
+    model = StrategicObjective
     inline_classes = ('grp-collapse grp-open',)
     extra = 7
     verbose_name_plural = _('Strategic Objectives')
     verbose_name = _('Strategic objectives of the Institute')
 
 
-class InstituteAdmin(GuardedModelAdmin):
+class InstitutionAdmin(GuardedModelAdmin):
     inlines = [StrategicObjectiveInline]
 
 
@@ -155,26 +179,72 @@ class ProjectHeaderAdmin(admin.ModelAdmin):
         obj.faculty = request.user.project_leader.faculty
         obj.save()
 
+class ReportingPeriodFilter(admin.SimpleListFilter):
+    title = "Reporting Period"
+    parameter_name = 'reporting_period'
+
+    def lookups(self, request, model_admin):
+        reporting_periods = list(ReportingPeriod.objects.filter(institute=get_user_institute(request.user)))
+
+        return [(rp.id, rp.name) for rp in reporting_periods]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(reporting_period=self.value())
+        else:
+            return queryset
 
 class ProjectDetailAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'record_status',)
+    list_filter = (ReportingPeriodFilter, 'record_status')
     form = ProjectDetailForm
     save_as = True
+    formfield_overrides = {
+        models.ManyToManyField: {'widget': CheckboxSelectMultiple},
+    }
 
     def has_add_permission(self, request, obj=None):
         if not request.user.is_superuser:
             if user_has_perm(request, self.opts, 'add'):
                 # Can only add if a reporting period is open
                 institute = request.user.project_leader.institute
-                if models.ReportingPeriod.objects\
+                if ReportingPeriod.objects\
                             .filter(institute=institute)\
                             .filter(is_active=True):
                     return True
         return False
 
+    def has_change_permission(self, request, obj=None):
+        if not request.user.is_superuser:
+            if user_has_perm(request, self.opts, 'change'):
+                return True
+            if user_has_perm(request, self.opts, 'view'):
+                return True
+        return False
+
+    def get_queryset(self, request):
+        qs = self.model.objects\
+                .filter(header__proj_leader__institute=get_user_institute(request.user))
+        if user_has_perm(request, self.opts, 'view'):
+            # Don't include draft records
+            return qs.exclude(record_status=1)
+        if user_has_perm(request, self.opts, 'change'):
+            return qs
+
+    def get_readonly_fields(self, request, obj=None):
+        # For users with view access, all fields are readonly
+        if user_has_perm(request, self.opts, 'view'):
+            readonly_fields = []
+            for field in self.form.base_fields.keys():
+                if field not in self.form.Meta.exclude:
+                    readonly_fields.append(field)
+            return readonly_fields
+        return self.readonly_fields
+
     def save_model(self, request, obj, form, change):
         # This assumes that only one reporting period can be active at a time for a given Institute.
-        reporting_period = request.user.project_leader.institute.reporting_period.get(is_active=True)
+        institute = get_user_institute(request.user)
+        reporting_period = institute.reporting_period.get(is_active=True)
         if not change:
             obj.reporting_period = reporting_period
             if request.POST['_draft']:
@@ -183,16 +253,29 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                 obj.record_status = 2
         obj.save()
 
-admin.site.register(models.Institute, InstituteAdmin)
-# admin.site.register(models.InstituteAdmin, InstituteAdminUserAdmin)
-admin.site.register(models.Faculty, FacultyAdmin)
-admin.site.register(models.ReportingPeriod, ReportingPeriodAdmin)
-admin.site.register(models.InstituteAdmin)
-admin.site.register(models.ProjectLeader)
-admin.site.register(models.ProjectHeader, ProjectHeaderAdmin)
-admin.site.register(models.ProjectDetail, ProjectDetailAdmin)
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "header":
+            kwargs["queryset"] = ProjectHeader.objects.filter(proj_leader__user=request.user)
+        if db_field.name == "faculty":
+            kwargs["queryset"] = Faculty.objects.filter(institute=get_user_institute(request.user))
+        return super(ProjectDetailAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-admin.site.register(models.FocusArea)
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "strategic_objectives":
+            kwargs["queryset"] = StrategicObjective.objects.filter(institute=get_user_institute(request.user))
+        return super(ProjectDetailAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+
+
+admin.site.register(Institute, InstitutionAdmin)
+# admin.site.register(InstituteAdmin, InstituteAdminUserAdmin)
+admin.site.register(Faculty, FacultyAdmin)
+admin.site.register(ReportingPeriod, ReportingPeriodAdmin)
+admin.site.register(InstituteAdmin)
+admin.site.register(ProjectLeader)
+admin.site.register(ProjectHeader, ProjectHeaderAdmin)
+admin.site.register(ProjectDetail, ProjectDetailAdmin)
+
+admin.site.register(FocusArea)
 
 admin.site.unregister(User)
 admin.site.register(User, InstituteAdminUserAdmin)
