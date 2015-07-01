@@ -126,61 +126,96 @@ class ProjectHeader(models.Model):
 class ProjectDetail(models.Model):
     header = models.ForeignKey(ProjectHeader, related_name='project_detail',
                                verbose_name=CAPTURE_LABELS['header'])
-    project_status = models.CharField(choices=PROJECT_STATUS, max_length=1, null=True)
-    start_date = models.DateField(null=True)
-    end_date = models.DateField(null=True)
-    faculty = models.ForeignKey('Faculty',
-                                verbose_name=CAPTURE_LABELS['faculty'], null=True)
+    project_status = models.CharField(choices=PROJECT_STATUS, max_length=1, null=True,
+                                      verbose_name=CAPTURE_LABELS['project_status'])
+    start_date = models.DateField(null=True,
+                                  verbose_name=CAPTURE_LABELS['start_date'])
+    end_date = models.DateField(null=True,
+                                verbose_name=CAPTURE_LABELS['end_date'])
+    faculty = models.ForeignKey('Faculty', null=True,
+                                verbose_name=CAPTURE_LABELS['faculty'])
     multi_faculty = models.CharField(choices=YESNO, max_length=1, null=True,
                                      verbose_name=CAPTURE_LABELS['multi_faculty'])
-    description = models.TextField(null=True, verbose_name=CAPTURE_LABELS['description'])
+    description = models.TextField(null=True,
+                                   verbose_name=CAPTURE_LABELS['description'])
     focus_area = models.ManyToManyField('FocusArea',
                                         verbose_name=CAPTURE_LABELS['focus_area'],
-                                        help_text='''Select ALL applicable<br>''')
+                                        help_text=CAPTURE_HELP['focus_areas'])
     focus_area_text = models.CharField(max_length=256, null=True,
-                                       verbose_name=CAPTURE_LABELS['focus_area_text'],
-                                       help_text='')
+                                       verbose_name=CAPTURE_LABELS['focus_area_text'])
     classification = models.PositiveIntegerField(choices=CLASSIFICATION, null=True,
                                                  verbose_name=CAPTURE_LABELS['classification'])
     strategic_objectives = models.ManyToManyField('StrategicObjective',
-                                                  verbose_name=CAPTURE_LABELS['strategic_objectives'])
-    outcomes = models.TextField(null=True)
-    beneficiaries = models.TextField(null=True)
-    initiation = models.PositiveIntegerField(choices=INITIATION_STATEMENTS, null=True)
-    authors = models.PositiveIntegerField(choices=NUMBER_AUTHORS, null=True)
-    amendments_permitted = models.CharField(choices=YESNO, max_length=1, null=True)
+                                                  verbose_name=CAPTURE_LABELS['strategic_objectives'],
+                                                  help_text=CAPTURE_HELP['strategic_objectives'])
+    outcomes = models.TextField(null=True,
+                                verbose_name=CAPTURE_LABELS['outcomes'])
+    beneficiaries = models.TextField(null=True,
+                                     verbose_name=CAPTURE_LABELS['beneficiaries'])
+    initiation = models.PositiveIntegerField(choices=INITIATION_STATEMENTS, null=True,
+                                             verbose_name=CAPTURE_LABELS['initiation'])
+    authors = models.PositiveIntegerField(choices=NUMBER_AUTHORS, null=True,
+                                          verbose_name=CAPTURE_LABELS['authors'])
+    amendments_permitted = models.CharField(choices=YESNO, max_length=1, null=True,
+                                            verbose_name=CAPTURE_LABELS['amendments_permitted'])
     public_domain = models.CharField(choices=YESNO, max_length=1, null=True,
                                      verbose_name=CAPTURE_LABELS['public_domain'],
                                      help_text='If yes, please provide the URL')
     public_domain_url = models.URLField(null=True,
                                         verbose_name=CAPTURE_LABELS['public_domain_url'])
-    adv_group = models.CharField(choices=YESNO, max_length=1, null=True)
-    adv_group_rep = models.ManyToManyField('AdvisoryGroupRep')
-    adv_group_freq = models.PositiveIntegerField(choices=ADV_GROUP_FREQ, null=True)
-    team_members = models.ManyToManyField(ResearchTeamMember)
-    new_initiative = models.CharField(choices=YESNO, max_length=1, null=True)
-    new_initiative_text = models.TextField(null=True)
-    new_initiative_party = models.PositiveIntegerField(choices=INITIATIVE_PARTIES, null=True)
-    new_initiative_party_text = models.TextField(null=True)
-    new_initiative_party_text = models.TextField(null=True)
-    funding = models.ManyToManyField(ProjectFunding)
-    research = models.PositiveIntegerField(choices=RESEARCH_CLASSIFICATION, null=True)
-    research_text = models.TextField(null=True)
-    phd_research = models.CharField(choices=YESNO, max_length=1, null=True)
-    phd_research_name = models.ManyToManyField('PHDStudent')
-    outputs = models.ManyToManyField('ProjectOutputs')
-    curriculum_changes = models.CharField(choices=YESNO, max_length=1, null=True)
-    curriculum_changes_text = models.TextField(null=True)
-    new_courses = models.CharField(choices=YESNO, max_length=1, null=True)
-    new_course_detail = models.ManyToManyField('NewCourseDetail',)
-    students_involved = models.CharField(choices=YESNO, max_length=1, null=True)
-    student_types = models.ManyToManyField('StudentType')
-    student_nature = models.ManyToManyField(StudentParticipationNature)
-    student_nature_text = models.CharField(max_length=128, null=True)
-    course_requirement = models.CharField(choices=YESNO, max_length=1, null=True)
-    course_req_detail = models.ManyToManyField('CourseReqDetail')
-    external_collaboration = models.CharField(choices=YESNO, max_length=1, null=True)
-    collaboration_detail = models.ManyToManyField('Collaborators')
+    adv_group = models.CharField(choices=YESNO, max_length=1, null=True,
+                                 verbose_name=CAPTURE_LABELS['adv_group'])
+    adv_group_rep = models.ManyToManyField('AdvisoryGroupRep',
+                                           verbose_name=CAPTURE_LABELS['adv_group_rep'])
+    adv_group_freq = models.PositiveIntegerField(choices=ADV_GROUP_FREQ, null=True,
+                                                 verbose_name=CAPTURE_LABELS['adv_group_freq'])
+    team_members = models.ManyToManyField(ResearchTeamMember,
+                                          verbose_name=CAPTURE_LABELS['team_members'])
+    new_initiative = models.CharField(choices=YESNO, max_length=1, null=True,
+                                      verbose_name=CAPTURE_LABELS['new_initiative'])
+    new_initiative_text = models.TextField(null=True,
+                                           verbose_name=CAPTURE_LABELS['new_initiative_text'])
+    new_initiative_party = models.PositiveIntegerField(choices=INITIATIVE_PARTIES, null=True,
+                                                       verbose_name=CAPTURE_LABELS['new_initiative_party'])
+    new_initiative_party_text = models.TextField(null=True,
+                                                 verbose_name=CAPTURE_LABELS['new_initiative_party_text'])
+    funding = models.ManyToManyField(ProjectFunding,
+                                     verbose_name=CAPTURE_LABELS['funding'])
+    research = models.PositiveIntegerField(choices=RESEARCH_CLASSIFICATION, null=True,
+                                           verbose_name=CAPTURE_LABELS['research'])
+    research_text = models.TextField(null=True,
+                                     verbose_name=CAPTURE_LABELS['research_text'],
+                                     help_text=CAPTURE_HELP['research_text'])
+    phd_research = models.CharField(choices=YESNO, max_length=1, null=True,
+                                    verbose_name=CAPTURE_LABELS['phd_research'])
+    phd_research_name = models.ManyToManyField('PHDStudent',
+                                               verbose_name=CAPTURE_LABELS['phd_research_name'])
+    outputs = models.ManyToManyField('ProjectOutputs',
+                                     verbose_name=CAPTURE_LABELS['outputs'])
+    curriculum_changes = models.CharField(choices=YESNO, max_length=1, null=True,
+                                          verbose_name=CAPTURE_LABELS['curriculum_changes'])
+    curriculum_changes_text = models.TextField(null=True,
+                                               verbose_name=CAPTURE_LABELS['curriculum_changes_text'])
+    new_courses = models.CharField(choices=YESNO, max_length=1, null=True,
+                                   verbose_name=CAPTURE_LABELS['new_courses'])
+    new_course_detail = models.ManyToManyField('NewCourseDetail',
+                                               verbose_name=CAPTURE_LABELS['new_course_detail'])
+    students_involved = models.CharField(choices=YESNO, max_length=1, null=True,
+                                         verbose_name=CAPTURE_LABELS['students_involved'])
+    student_types = models.ManyToManyField('StudentType',
+                                           verbose_name=CAPTURE_LABELS['student_types'])
+    student_nature = models.ManyToManyField(StudentParticipationNature,
+                                            verbose_name=CAPTURE_LABELS['student_nature'])
+    student_nature_text = models.CharField(max_length=128, null=True,
+                                           verbose_name=CAPTURE_LABELS['student_nature_text'])
+    course_requirement = models.CharField(choices=YESNO, max_length=1, null=True,
+                                          verbose_name=CAPTURE_LABELS['course_requirement'])
+    course_req_detail = models.ManyToManyField('CourseReqDetail',
+                                               verbose_name=CAPTURE_LABELS['course_req_detail'])
+    external_collaboration = models.CharField(choices=YESNO, max_length=1, null=True,
+                                              verbose_name=CAPTURE_LABELS['external_collaboration'])
+    collaboration_detail = models.ManyToManyField('Collaborators',
+                                                  verbose_name=CAPTURE_LABELS['collaboration_detail'])
     record_status = models.PositiveIntegerField(choices=RECORD_STATUS)
     reporting_period = models.ForeignKey('ReportingPeriod')
     # rejected = models.BooleanField(default=False)

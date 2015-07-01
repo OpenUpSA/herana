@@ -6,7 +6,7 @@ from models import ProjectDetail
 class ProjectDetailForm(forms.ModelForm):
     class Meta:
         model = ProjectDetail
-        exclude = ('status', 'reporting_period')
+        exclude = ('record_status', 'reporting_period')
 
     def _clean_fields(self):
         # If we are saving a draft, only the header field is required.
