@@ -67,55 +67,105 @@ RECORD_STATUS = (
 )
 
 CAPTURE_LABELS = {
-    'header': _('Name of flagship engagement project'),
-    'project_status': _(),
-    'start_date': _(),
-    'end_date': _(),
-    'faculty': (' In which faculty/school is the project located?'),
-    'multi_faculty': _('Does the project span multiple faculties/schools?'),
-    'description': _('Please provide a short description of the project.'),
-    'focus_area': _('In which of the following areas would you place your project?'),
-    'focus_area_text': _('If other was chosen above, please describe.'),
-    'classification': _('How would you classify this flagship engagement activity?'),
-    'strategic_objectives': _('What are the 4 main strategic objectives of the project?'),
-    'outcomes': _(),
-    'beneficiaries': _(),
-    'initiation': _(),
-    'authors': _(),
-    'amendments_permitted': _(),
-    'public_domain': _('Will the written up findings or data or other outputs of the project be available electronically in the public domain?'),
-    'public_domain_url': _('URL'),
-    'adv_group': _(),
-    'adv_group_rep': _(),
-    'adv_group_freq': _(),
-    'team_members': _(),
-    'new_initiative': _(),
-    'new_initiative_text': _(),
-    'new_initiative_party': _(),
-    'new_initiative_party_text': _(),
-    'new_initiative_party_text': _(),
-    'funding': _(),
-    'research': _(),
-    'research_text': _(),
-    'phd_research': _(),
-    'phd_research_name': _(),
-    'outputs': _(),
-    'curriculum_changes': _(),
-    'curriculum_changes_text': _(),
-    'new_courses': _(),
-    'new_course_detail': _(),
-    'students_involved': _(),
-    'student_types': _(),
-    'student_nature': _(),
-    'student_nature_text': _(),
-    'course_requirement': _(),
-    'course_req_detail': _(),
-    'external_collaboration': _(),
-    'collaboration_detail': _(),
-    'status': _(),
-    'reporting_period': _(),
+    'header': _(
+        'Please select the engagement project for which you wish to capture the details.'),
+    'project_status': _(
+        'Project statutus'),
+    'start_date': _(
+        'Start date'),
+    'end_date': _(
+        'End date'),
+    'faculty': (
+        'In which faculty/school is the project located?'),
+    'multi_faculty': _(
+        'Does the project span multiple faculties/schools?'),
+    'description': _(
+        'Please provide a short description of the project.'),
+    'focus_area': _(
+        'In which of the following areas would you place your project?'),
+    'focus_area_text': _(
+        'If other was chosen above, please describe.'),
+    'classification': _(
+        'How would you classify this flagship engagement activity?'),
+    'strategic_objectives': _(
+        'What are the 4 main strategic objectives of the project?'),
+    'outcomes': _(
+        'What are the planned outcomes of the project?'),
+    'beneficiaries': _(
+        'Who are the intended beneficiaries of the project?'),
+    'initiation': _(
+        'Which one of the following statements best describes how the project was initiated?'),
+    'authors': _(
+        'How many authors were involved in the writing of the project proposal/plan?'),
+    'amendments_permitted': _(
+        'To the best of your knowledge, are deviations or amendments to the request for proposal permitted by the funder?'),
+    'public_domain': _(
+        'Will the written up findings or data or other outputs of the project be available electronically in the public domain?'),
+    'public_domain_url': _(
+        'URL'),
+    'adv_group': _(
+        'Does the project have an advisory group?'),
+    'adv_group_rep': _(
+        'If yes, are any of the following members of the advisory group?'),
+    'adv_group_freq': _(
+        'How often does the advisory group meet?'),
+    'team_members': _(
+        'Are any of the following members of the research team?'),
+    'new_initiative': _(
+        'Will any of the findings/results/outcomes of the project be used to implement or develop new products/services/interventions/policies?'),
+    'new_initiative_text': _(
+        'If yes, please describe'),
+    'new_initiative_party': _(
+        'Who will implement or develop these new products/services/interventions/policies?'),
+    'new_initiative_party_text': _(
+        'Please provide the name of the third party or describe how the product / service / intervention / policy will be developed and/or implemented'),
+    'funding': _(
+        'Please list sources of project funding, the number of years for which funding has been secured, and the amount of funding (in US$)'),
+    'research': _(
+        'In terms of the research done for the project (if applicable), which statement best describes the project'),
+    'research_text': _(
+        'Please describe'),
+    'phd_research': _(
+        'Is a student\'s PhD research linked to this project?'),
+    'phd_research_name': _(
+        'If yes, please provide their names'),
+    'outputs': _(
+        'Please list the completed publications and other outputs for this project'),
+    'curriculum_changes': _(
+        'Has the project lead to any contributions or changes to the curriculum?'),
+    'curriculum_changes_text': _(
+        'If yes, please describe the types of changes made to the curriculum as a result of the project'),
+    'new_courses': _(
+        'Have any new courses/modules/programmes been introduced as a result of this project?'),
+    'new_course_detail': _(
+        'If yes, please describe'),
+    'students_involved': _(
+        'Are students involved in the project?'),
+    'student_types': _(
+        'If yes, please indicate types of students participating'),
+    'student_nature': _(
+        'What is the nature of student participation in the project?'),
+    'student_nature_text': _(
+        'If other was selected, please describe.'),
+    'course_requirement': _(
+        'Is participation in the project a requirement for the completion of an existing course/degree offered by the university?'),
+    'course_req_detail': _(
+        'If yes, please describe'),
+    'external_collaboration': _(
+        'Did you collaborate with academics from other universities on the project?'),
+    'collaboration_detail': _(
+        'If yes, please describe'),
+    'record_status': _(
+        'Record status'),
+    'reporting_period': _(
+        'Period in which the record was captured.'),
 }
 
 CAPTURE_HELP = {
-
+    'focus_areas': _(
+        '''Select ALL applicable<br>'''),
+    'strategic_objectives': (
+        '''Only select 4 options. <br>'''),
+    'research_text': _(
+        '''If <b>1, 2 or 3</b> selected, please provide a short description of the data collected or the original research conducted <br> If <b>4 or 5</b> selected, please explain why it was not necessary to collect new data or conduct original research''')
 }
