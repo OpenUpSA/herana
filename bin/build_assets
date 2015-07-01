@@ -10,6 +10,6 @@ echo "-----> running collectstatic"
 python $MANAGE_FILE collectstatic --noinput -i docs 2>&1
 
 echo "-----> Building assets"
-python $MANAGE_FILE assets build 2>&1 
+# python $MANAGE_FILE assets build 2>&1
 
 echo
