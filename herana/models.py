@@ -2,12 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User, Group, Permission
 from django.utils.translation import ugettext_lazy as _
 
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 
 from django.core import exceptions
 
-from model_utils import *
+from model_utils import *  # noqa
 
 
 class Institute(models.Model):
@@ -305,6 +305,12 @@ def assign_project_leader_to_group(sender, **kwargs):
 
 
 @receiver(post_delete, sender=ProjectLeader)
-def remove_institute_admin_from_group(sender, **kwargs):
+def remove_user_from_project_leaders(sender, **kwargs):
     g = Group.objects.get(name='ProjectLeaders')
     kwargs['instance'].user.groups.remove(g)
+
+
+@receiver(pre_save, sender=User)
+def set_user_as_staff(sender, instance, **kwargs):
+    if not instance.is_staff:
+        instance.is_staff = True
