@@ -81,17 +81,16 @@ class AdvisoryGroupRep(models.Model):
     code = models.PositiveIntegerField(unique=True)
     choice = models.CharField(max_length=256)
 
+    def __unicode__(self):
+        return self.choice
+
 
 class ResearchTeamMember(models.Model):
     code = models.PositiveIntegerField(unique=True)
     choice = models.CharField(max_length=256)
 
-
-class ProjectFunding(models.Model):
-    funder = models.CharField(max_length=256)
-    amount = models.DecimalField(decimal_places=2, max_digits=10)
-    years = models.DecimalField(decimal_places=2, max_digits=5)
-    renewable = models.BooleanField(choices=YESNO)
+    def __unicode__(self):
+        return self.choice
 
 
 class PHDStudent(models.Model):
@@ -102,41 +101,58 @@ class ProjectOutputs(models.Model):
     code = models.PositiveIntegerField(unique=True)
     choice = models.CharField(max_length=128)\
 
-
-class NewCourseDetail(models.Model):
-    code = models.CharField(max_length=32)
-    name = models.CharField(max_length=128)
+    def __unicode__(self):
+        return self.choice
 
 
 class StudentType(models.Model):
     code = models.PositiveIntegerField(unique=True)
     choice = models.CharField(max_length=32)
 
+    def __unicode__(self):
+        return self.choice
+
 
 class StudentParticipationNature(models.Model):
     code = models.PositiveIntegerField(unique=True)
     choice = models.CharField(max_length=128)
 
+    def __unicode__(self):
+        return self.choice
+
+
+class ProjectFunding(models.Model):
+    funder = models.CharField(max_length=256)
+    amount = models.DecimalField(decimal_places=2, max_digits=10)
+    years = models.DecimalField(decimal_places=2, max_digits=5)
+    renewable = models.BooleanField(choices=YESNO)
+    project = models.ForeignKey('ProjectDetail')
+
+
+class NewCourseDetail(models.Model):
+    code = models.CharField(max_length=32)
+    name = models.CharField(max_length=128)
+    project = models.ForeignKey('ProjectDetail')
+
 
 class CourseReqDetail(models.Model):
     code = models.CharField(max_length=32)
     name = models.CharField(max_length=128)
+    project = models.ForeignKey('ProjectDetail')
 
 
 class Collaborators(models.Model):
     name = models.CharField(max_length=128)
     university = models.CharField(max_length=128)
+    project = models.ForeignKey('ProjectDetail')
 
 
 class ProjectHeader(models.Model):
     name = models.CharField(max_length=512)
-    faculty = models.ForeignKey('Faculty')
     proj_leader = models.ForeignKey('ProjectLeader')
     date_created = models.DateField(auto_now_add=True)
-
     is_flagship = models.BooleanField(default=False)
     is_leader = models.BooleanField(default=False)
-    # status = models.ChoiceField()
 
     def __unicode__(self):
         return self.name
@@ -149,8 +165,8 @@ class ProjectHeader(models.Model):
 class ProjectDetail(models.Model):
     header = models.ForeignKey(ProjectHeader, related_name='project_detail',
                                verbose_name=CAPTURE_LABELS['header'])
-    project_status = models.CharField(choices=PROJECT_STATUS, max_length=1, null=True,
-                                      verbose_name=CAPTURE_LABELS['project_status'])
+    project_status = models.PositiveIntegerField(choices=PROJECT_STATUS, null=True,
+                                                 verbose_name=CAPTURE_LABELS['project_status'])
     start_date = models.DateField(null=True,
                                   verbose_name=CAPTURE_LABELS['start_date'])
     end_date = models.DateField(null=True,
@@ -202,8 +218,6 @@ class ProjectDetail(models.Model):
                                                        verbose_name=CAPTURE_LABELS['new_initiative_party'])
     new_initiative_party_text = models.TextField(null=True,
                                                  verbose_name=CAPTURE_LABELS['new_initiative_party_text'])
-    funding = models.ManyToManyField(ProjectFunding,
-                                     verbose_name=CAPTURE_LABELS['funding'])
     research = models.PositiveIntegerField(choices=RESEARCH_CLASSIFICATION, null=True,
                                            verbose_name=CAPTURE_LABELS['research'])
     research_text = models.TextField(null=True,
@@ -221,8 +235,6 @@ class ProjectDetail(models.Model):
                                                verbose_name=CAPTURE_LABELS['curriculum_changes_text'])
     new_courses = models.CharField(choices=YESNO, max_length=1, null=True,
                                    verbose_name=CAPTURE_LABELS['new_courses'])
-    new_course_detail = models.ManyToManyField('NewCourseDetail',
-                                               verbose_name=CAPTURE_LABELS['new_course_detail'])
     students_involved = models.CharField(choices=YESNO, max_length=1, null=True,
                                          verbose_name=CAPTURE_LABELS['students_involved'])
     student_types = models.ManyToManyField('StudentType',
@@ -233,12 +245,8 @@ class ProjectDetail(models.Model):
                                            verbose_name=CAPTURE_LABELS['student_nature_text'])
     course_requirement = models.CharField(choices=YESNO, max_length=1, null=True,
                                           verbose_name=CAPTURE_LABELS['course_requirement'])
-    course_req_detail = models.ManyToManyField('CourseReqDetail',
-                                               verbose_name=CAPTURE_LABELS['course_req_detail'])
     external_collaboration = models.CharField(choices=YESNO, max_length=1, null=True,
                                               verbose_name=CAPTURE_LABELS['external_collaboration'])
-    collaboration_detail = models.ManyToManyField('Collaborators',
-                                                  verbose_name=CAPTURE_LABELS['collaboration_detail'])
     record_status = models.PositiveIntegerField(choices=RECORD_STATUS)
     reporting_period = models.ForeignKey('ReportingPeriod')
     # rejected = models.BooleanField(default=False)
