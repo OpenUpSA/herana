@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name='AdvisoryGroupRep',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('code', models.PositiveIntegerField()),
+                ('code', models.PositiveIntegerField(unique=True)),
                 ('choice', models.CharField(max_length=256)),
             ],
         ),
@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
             name='FocusArea',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('code', models.PositiveIntegerField()),
+                ('code', models.PositiveIntegerField(unique=True)),
                 ('choice', models.CharField(max_length=256)),
             ],
         ),
@@ -172,7 +172,7 @@ class Migration(migrations.Migration):
             name='ProjectOutputs',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('code', models.PositiveIntegerField()),
+                ('code', models.PositiveIntegerField(unique=True)),
                 ('choice', models.CharField(max_length=128)),
             ],
         ),
@@ -192,7 +192,7 @@ class Migration(migrations.Migration):
             name='ResearchTeamMember',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('code', models.PositiveIntegerField()),
+                ('code', models.PositiveIntegerField(unique=True)),
                 ('choice', models.CharField(max_length=256)),
             ],
         ),
@@ -208,7 +208,7 @@ class Migration(migrations.Migration):
             name='StudentParticipationNature',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('code', models.PositiveIntegerField()),
+                ('code', models.PositiveIntegerField(unique=True)),
                 ('choice', models.CharField(max_length=128)),
             ],
         ),
@@ -216,7 +216,7 @@ class Migration(migrations.Migration):
             name='StudentType',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('code', models.PositiveIntegerField()),
+                ('code', models.PositiveIntegerField(unique=True)),
                 ('choice', models.CharField(max_length=32)),
             ],
         ),

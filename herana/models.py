@@ -70,7 +70,7 @@ class ReportingPeriod(models.Model):
 
 
 class FocusArea(models.Model):
-    code = models.PositiveIntegerField()
+    code = models.PositiveIntegerField(unique=True)
     choice = models.CharField(max_length=256)
 
     def __unicode__(self):
@@ -78,12 +78,12 @@ class FocusArea(models.Model):
 
 
 class AdvisoryGroupRep(models.Model):
-    code = models.PositiveIntegerField()
+    code = models.PositiveIntegerField(unique=True)
     choice = models.CharField(max_length=256)
 
 
 class ResearchTeamMember(models.Model):
-    code = models.PositiveIntegerField()
+    code = models.PositiveIntegerField(unique=True)
     choice = models.CharField(max_length=256)
 
 
@@ -99,7 +99,7 @@ class PHDStudent(models.Model):
 
 
 class ProjectOutputs(models.Model):
-    code = models.PositiveIntegerField()
+    code = models.PositiveIntegerField(unique=True)
     choice = models.CharField(max_length=128)\
 
 
@@ -109,12 +109,12 @@ class NewCourseDetail(models.Model):
 
 
 class StudentType(models.Model):
-    code = models.PositiveIntegerField()
+    code = models.PositiveIntegerField(unique=True)
     choice = models.CharField(max_length=32)
 
 
 class StudentParticipationNature(models.Model):
-    code = models.PositiveIntegerField()
+    code = models.PositiveIntegerField(unique=True)
     choice = models.CharField(max_length=128)
 
 
