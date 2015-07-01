@@ -25,6 +25,29 @@ def populate_questionnaire_options(apps, schema_editor):
             obj = model(code=code, choice=choice)
             obj.save()
 
+def backwards(apps, schema_editor):
+    FocusArea = apps.get_model('herana', "FocusArea")
+    AdvisoryGroupRep = apps.get_model('herana', "AdvisoryGroupRep")
+    ResearchTeamMember = apps.get_model('herana', "ResearchTeamMember")
+    ProjectOutputs = apps.get_model('herana', "ProjectOutputs")
+    StudentType = apps.get_model('herana', "StudentType")
+    StudentParticipationNature = apps.get_model('herana', "StudentParticipationNature")
+
+
+    option_models = [
+        FocusArea,
+        AdvisoryGroupRep,
+        ResearchTeamMember,
+        ProjectOutputs,
+        StudentType,
+        StudentParticipationNature
+    ]
+
+    for model in option_models:
+        qs = model.objects.all()
+        for item in qs:
+            item.delete()
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -34,9 +57,9 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(
                 populate_questionnaire_options,
+                backwards
             ),
     ]
-
 
 FOCUS_AREAS = [
     (1, 'Teaching and learning'),
