@@ -60,7 +60,7 @@ RECORD_STATUS = (
 
 CAPTURE_LABELS = {
     'name': _(
-        'Please select the engagement project for which you wish to capture the details.'),
+        'Please enter the name of the engagement project for which you wish to capture the details.'),
     'is_leader': _('Are you the designated leader of this engagement project?'),
     'is_flagship': _('Do you consider this to be your flagship engagement project?'),
     'project_status': _(

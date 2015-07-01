@@ -12,7 +12,7 @@ class ProjectDetailForm(forms.ModelForm):
         # If we are saving a draft, only the header field is required.
         if '_draft' in self.data:
             for name, field in self.fields.items():
-                if not name == 'header':
+                if not name == 'name':
                     field.required = False
         super(ProjectDetailForm, self)._clean_fields()
 
