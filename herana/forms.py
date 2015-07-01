@@ -27,10 +27,10 @@ class ProjectDetailForm(forms.ModelForm):
                 msg = "If other was chosen above, please describe."
                 self.add_error('focus_area_text', msg)
 
-    def clean_strategic_objectives(self):
-        if len(self.cleaned_data['strategic_objectives']) != 4:
-            msg = "Please select 4 options."
-            self.add_error('strategic_objectives', msg)
+    # def clean_strategic_objectives(self):
+    #     if len(self.cleaned_data['strategic_objectives']) != 4:
+    #         msg = "Please select 4 options."
+    #         self.add_error('strategic_objectives', msg)
 
     def clean_public_domain_url(self):
         if self.cleaned_data['public_domain'] == 'Y' and self.cleaned_data['public_domain_url'] == '':

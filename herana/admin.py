@@ -20,7 +20,6 @@ from models import (
     InstituteAdmin,
     StrategicObjective,
     ProjectLeader,
-    # ProjectHeader,
     ProjectDetail,
     FocusArea,
     ProjectFunding
@@ -172,14 +171,6 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
         return self.readonly_fields
 
 
-# class ProjectHeaderAdmin(admin.ModelAdmin):
-#     fields = ('name', 'is_flagship', 'is_leader')
-
-#     def save_model(self, request, obj, form, change):
-#         obj.proj_leader = request.user.project_leader
-#         obj.faculty = request.user.project_leader.faculty
-#         obj.save()
-
 class ReportingPeriodFilter(admin.SimpleListFilter):
     title = "Reporting Period"
     parameter_name = 'reporting_period'
@@ -229,7 +220,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = self.model.objects\
-                .filter(header__proj_leader__institute=get_user_institute(request.user))
+                .filter(proj_leader__institute=get_user_institute(request.user))
         if user_has_perm(request, self.opts, 'view'):
             # Don't include draft records
             return qs.exclude(record_status=1)
@@ -260,8 +251,6 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         obj.save()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        # if db_field.name == "header":
-        #     kwargs["queryset"] = ProjectHeader.objects.filter(proj_leader__user=request.user)
         if db_field.name == "faculty":
             kwargs["queryset"] = Faculty.objects.filter(institute=get_user_institute(request.user))
         return super(ProjectDetailAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
@@ -278,7 +267,6 @@ admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(ReportingPeriod, ReportingPeriodAdmin)
 admin.site.register(InstituteAdmin)
 admin.site.register(ProjectLeader)
-# admin.site.register(ProjectHeader, ProjectHeaderAdmin)
 admin.site.register(ProjectDetail, ProjectDetailAdmin)
 
 admin.site.register(FocusArea)

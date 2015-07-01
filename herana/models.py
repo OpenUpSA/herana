@@ -243,7 +243,7 @@ class ProjectDetail(models.Model):
     rejected_detail = models.TextField(null=True)
 
     def __unicode__(self):
-        return '%s - %s' % (self.header.name, self.reporting_period.name)
+        return '%s - %s' % (self.name, self.reporting_period.name)
 
     class Meta:
         verbose_name='Project detail'
