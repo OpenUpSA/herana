@@ -56,12 +56,13 @@ PROJECT_STATUS = (
 RECORD_STATUS = (
     (1, 'Draft'),
     (2, 'Final'),
-    (3, 'Rejected')
 )
 
 CAPTURE_LABELS = {
-    'header': _(
+    'name': _(
         'Please select the engagement project for which you wish to capture the details.'),
+    'is_leader': _('Are you the designated leader of this engagement project?'),
+    'is_flagship': _('Do you consider this to be your flagship engagement project?'),
     'project_status': _(
         'Project status'),
     'start_date': _(

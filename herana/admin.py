@@ -20,9 +20,10 @@ from models import (
     InstituteAdmin,
     StrategicObjective,
     ProjectLeader,
-    ProjectHeader,
+    # ProjectHeader,
     ProjectDetail,
-    FocusArea
+    FocusArea,
+    ProjectFunding
 )
 
 from forms import ProjectDetailForm
@@ -171,13 +172,13 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
         return self.readonly_fields
 
 
-class ProjectHeaderAdmin(admin.ModelAdmin):
-    fields = ('name', 'is_flagship', 'is_leader')
+# class ProjectHeaderAdmin(admin.ModelAdmin):
+#     fields = ('name', 'is_flagship', 'is_leader')
 
-    def save_model(self, request, obj, form, change):
-        obj.proj_leader = request.user.project_leader
-        obj.faculty = request.user.project_leader.faculty
-        obj.save()
+#     def save_model(self, request, obj, form, change):
+#         obj.proj_leader = request.user.project_leader
+#         obj.faculty = request.user.project_leader.faculty
+#         obj.save()
 
 class ReportingPeriodFilter(admin.SimpleListFilter):
     title = "Reporting Period"
@@ -194,6 +195,9 @@ class ReportingPeriodFilter(admin.SimpleListFilter):
         else:
             return queryset
 
+class FundingInline(admin.TabularInline):
+    model = ProjectFunding
+
 class ProjectDetailAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'record_status',)
     list_filter = (ReportingPeriodFilter, 'record_status')
@@ -202,6 +206,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
+    # inlines = [FundingInline,]
 
     def has_add_permission(self, request, obj=None):
         if not request.user.is_superuser:
@@ -245,6 +250,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         # This assumes that only one reporting period can be active at a time for a given Institute.
         institute = get_user_institute(request.user)
         reporting_period = institute.reporting_period.get(is_active=True)
+        obj.proj_leader = request.user.project_leader
         if not change:
             obj.reporting_period = reporting_period
             if request.POST['_draft']:
@@ -254,8 +260,8 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         obj.save()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "header":
-            kwargs["queryset"] = ProjectHeader.objects.filter(proj_leader__user=request.user)
+        # if db_field.name == "header":
+        #     kwargs["queryset"] = ProjectHeader.objects.filter(proj_leader__user=request.user)
         if db_field.name == "faculty":
             kwargs["queryset"] = Faculty.objects.filter(institute=get_user_institute(request.user))
         return super(ProjectDetailAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
@@ -272,7 +278,7 @@ admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(ReportingPeriod, ReportingPeriodAdmin)
 admin.site.register(InstituteAdmin)
 admin.site.register(ProjectLeader)
-admin.site.register(ProjectHeader, ProjectHeaderAdmin)
+# admin.site.register(ProjectHeader, ProjectHeaderAdmin)
 admin.site.register(ProjectDetail, ProjectDetailAdmin)
 
 admin.site.register(FocusArea)

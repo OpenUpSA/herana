@@ -93,13 +93,9 @@ class ResearchTeamMember(models.Model):
         return self.choice
 
 
-class PHDStudent(models.Model):
-    name = models.CharField(max_length=128)
-
-
 class ProjectOutputs(models.Model):
     code = models.PositiveIntegerField(unique=True)
-    choice = models.CharField(max_length=128)\
+    choice = models.CharField(max_length=128)
 
     def __unicode__(self):
         return self.choice
@@ -129,6 +125,11 @@ class ProjectFunding(models.Model):
     project = models.ForeignKey('ProjectDetail')
 
 
+class PHDStudent(models.Model):
+    name = models.CharField(max_length=128)
+    project = models.ForeignKey('ProjectDetail')
+
+
 class NewCourseDetail(models.Model):
     code = models.CharField(max_length=32)
     name = models.CharField(max_length=128)
@@ -147,24 +148,15 @@ class Collaborators(models.Model):
     project = models.ForeignKey('ProjectDetail')
 
 
-class ProjectHeader(models.Model):
-    name = models.CharField(max_length=512)
+class ProjectDetail(models.Model):
+    name = models.CharField(max_length=512,
+                            verbose_name=CAPTURE_LABELS['name'])
     proj_leader = models.ForeignKey('ProjectLeader')
     date_created = models.DateField(auto_now_add=True)
-    is_flagship = models.BooleanField(default=False)
-    is_leader = models.BooleanField(default=False)
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        verbose_name='Project'
-        verbose_name_plural='Projects'
-
-
-class ProjectDetail(models.Model):
-    header = models.ForeignKey(ProjectHeader, related_name='project_detail',
-                               verbose_name=CAPTURE_LABELS['header'])
+    is_leader = models.CharField(choices=YESNO, max_length=1, null=True,
+                                 verbose_name=CAPTURE_LABELS['is_leader'])
+    is_flagship = models.CharField(choices=YESNO, max_length=1, null=True,
+                                   verbose_name=CAPTURE_LABELS['is_flagship'])
     project_status = models.PositiveIntegerField(choices=PROJECT_STATUS, null=True,
                                                  verbose_name=CAPTURE_LABELS['project_status'])
     start_date = models.DateField(null=True,
@@ -225,8 +217,6 @@ class ProjectDetail(models.Model):
                                      help_text=CAPTURE_HELP['research_text'])
     phd_research = models.CharField(choices=YESNO, max_length=1, null=True,
                                     verbose_name=CAPTURE_LABELS['phd_research'])
-    phd_research_name = models.ManyToManyField('PHDStudent',
-                                               verbose_name=CAPTURE_LABELS['phd_research_name'])
     outputs = models.ManyToManyField('ProjectOutputs',
                                      verbose_name=CAPTURE_LABELS['outputs'])
     curriculum_changes = models.CharField(choices=YESNO, max_length=1, null=True,
@@ -239,7 +229,7 @@ class ProjectDetail(models.Model):
                                          verbose_name=CAPTURE_LABELS['students_involved'])
     student_types = models.ManyToManyField('StudentType',
                                            verbose_name=CAPTURE_LABELS['student_types'])
-    student_nature = models.ManyToManyField(StudentParticipationNature,
+    student_nature = models.ManyToManyField('StudentParticipationNature',
                                             verbose_name=CAPTURE_LABELS['student_nature'])
     student_nature_text = models.CharField(max_length=128, null=True,
                                            verbose_name=CAPTURE_LABELS['student_nature_text'])
@@ -249,8 +239,8 @@ class ProjectDetail(models.Model):
                                               verbose_name=CAPTURE_LABELS['external_collaboration'])
     record_status = models.PositiveIntegerField(choices=RECORD_STATUS)
     reporting_period = models.ForeignKey('ReportingPeriod')
-    # rejected = models.BooleanField(default=False)
-    # rejected_detail = models.TextField(null=True)
+    rejected = models.BooleanField(default=False)
+    rejected_detail = models.TextField(null=True)
 
     def __unicode__(self):
         return '%s - %s' % (self.header.name, self.reporting_period.name)

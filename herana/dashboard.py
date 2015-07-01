@@ -49,7 +49,6 @@ class CustomIndexDashboard(Dashboard):
             column=1,
             collapsible=False,
             models=(
-                'herana.models.ProjectHeader',
                 'herana.models.ProjectDetail'),
         ))
 
