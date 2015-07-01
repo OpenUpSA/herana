@@ -17,6 +17,7 @@ class Institute(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class Faculty(models.Model):
     name = models.CharField(max_length=256)
     institute = models.ForeignKey('Institute')
@@ -26,6 +27,7 @@ class Faculty(models.Model):
 
     class Meta:
         verbose_name_plural = _("Faculties")
+
 
 class StrategicObjective(models.Model):
     institute = models.ForeignKey('Institute')
@@ -51,9 +53,9 @@ class ProjectLeader(models.Model):
     staff_no = models.CharField(max_length=64)
     position = models.CharField(max_length=128)
 
-
     def __unicode__(self):
         return self.user.username
+
 
 class ReportingPeriod(models.Model):
     institute = models.ForeignKey('Institute', related_name='reporting_period')
@@ -66,17 +68,21 @@ class ReportingPeriod(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class FocusArea(models.Model):
     choice = models.CharField(max_length=256)
 
     def __unicode__(self):
         return self.choice
 
+
 class AdvisoryGroupRep(models.Model):
     choice = models.CharField(max_length=256)
 
+
 class ResearchTeamMember(models.Model):
     choice = models.CharField(max_length=256)
+
 
 class ProjectFunding(models.Model):
     funder = models.CharField(max_length=256)
@@ -84,25 +90,32 @@ class ProjectFunding(models.Model):
     years = models.DecimalField(decimal_places=2, max_digits=5)
     renewable = models.BooleanField(choices=YESNO)
 
+
 class PHDStudent(models.Model):
     name = models.CharField(max_length=128)
 
+
 class ProjectOutputs(models.Model):
     choice = models.CharField(max_length=128)\
+
 
 class NewCourseDetail(models.Model):
     code = models.CharField(max_length=32)
     name = models.CharField(max_length=128)
 
+
 class StudentType(models.Model):
     choice = models.CharField(max_length=32)
+
 
 class StudentParticipationNature(models.Model):
     choice = models.CharField(max_length=128)
 
+
 class CourseReqDetail(models.Model):
     code = models.CharField(max_length=32)
     name = models.CharField(max_length=128)
+
 
 class Collaborators(models.Model):
     name = models.CharField(max_length=128)
@@ -121,6 +134,10 @@ class ProjectHeader(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        verbose_name='Project'
+        verbose_name_plural='Projects'
 
 
 class ProjectDetail(models.Model):
@@ -225,6 +242,8 @@ class ProjectDetail(models.Model):
         return '%s - %s' % (self.header.name, self.reporting_period.name)
 
     class Meta:
+        verbose_name='Project detail'
+        verbose_name_plural='Project details'
         permissions = (
             ('view_projectdetail', 'Can only view project details'),
             ('reject_projectdetail', 'Can reject the project which has been submitted')
@@ -277,6 +296,7 @@ def assign_project_leader_to_group(sender, **kwargs):
             g.save()
 
         kwargs['instance'].user.groups.add(g)
+
 
 @receiver(post_delete, sender=ProjectLeader)
 def remove_institute_admin_from_group(sender, **kwargs):
