@@ -5,13 +5,6 @@ YESNO = (
     ('N', _('No')),
 )
 
-FOCUS_AREAS = (
-    (1, _('Teaching and learning')),
-    (2, _('Research')),
-    (3, _('Service (Professional Discipline-Based)')),
-    (4, _('Other'))
-)
-
 CLASSIFICATION = (
     (1, _('Project')),
     (2, _('Programme')),
@@ -31,7 +24,7 @@ INITIATION_STATEMENTS = (
 
 NUMBER_AUTHORS = (
     (1, _('One author')),
-    (1, _('More than one author'))
+    (2, _('More than one author'))
 )
 
 ADV_GROUP_FREQ = (
@@ -70,7 +63,7 @@ CAPTURE_LABELS = {
     'header': _(
         'Please select the engagement project for which you wish to capture the details.'),
     'project_status': _(
-        'Project statutus'),
+        'Project status'),
     'start_date': _(
         'Start date'),
     'end_date': _(
