@@ -311,6 +311,7 @@ def assign_project_leader_to_group(sender, **kwargs):
             g = Group.objects.create(name='ProjectLeaders')
             admin_permissions = [
                 'add_projectdetail', 'delete_projectdetail', 'change_projectdetail',
+                'add_projectfunding', 'delete_projectfunding', 'change_projectfunding'
             ]
             perms = Permission.objects.filter(codename__in=admin_permissions)
             for perm in perms:

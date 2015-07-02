@@ -78,8 +78,8 @@ class StrategicObjectiveInline(admin.TabularInline):
     model = StrategicObjective
     inline_classes = ('grp-collapse grp-open',)
     extra = 7
-    verbose_name_plural = _('Strategic Objectives')
     verbose_name = _('Strategic objectives of the Institute')
+    verbose_name_plural = _('Strategic Objectives')
 
 
 class InstitutionAdmin(GuardedModelAdmin):
@@ -195,6 +195,12 @@ class ProjectFundingInline(admin.TabularInline):
     model = ProjectFunding
     extra = 2
     inline_classes = ('grp-collapse grp-open',)
+    verbose_name = _('Funding detail')
+    verbose_name_plural = _('Project funding')
+    # radio_fields = {
+    #     'renewable': admin.HORIZONTAL
+    # }
+
 
 
 class ProjectDetailAdmin(admin.ModelAdmin):
@@ -229,6 +235,9 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         'course_requirement': admin.HORIZONTAL,
         'external_collaboration': admin.HORIZONTAL
     }
+
+    class Media:
+        js = ('javascript/app.js',)
 
     def has_add_permission(self, request, obj=None):
         if not request.user.is_superuser:
