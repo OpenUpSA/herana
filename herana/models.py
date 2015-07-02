@@ -78,7 +78,7 @@ class ProjectLeader(models.Model):
 
 
 # ------------------------------------------------------------------------------
-# Models for questionnaire foreign keys
+# Models for questionnaire many-to-many keys
 # ------------------------------------------------------------------------------
 
 class FocusArea(models.Model):
@@ -137,7 +137,7 @@ class ProjectFunding(models.Model):
     funder = models.CharField(max_length=256)
     amount = models.DecimalField(decimal_places=2, max_digits=10)
     years = models.DecimalField(decimal_places=2, max_digits=5)
-    renewable = models.BooleanField(choices=YESNO)
+    renewable = models.CharField(choices=YESNO, max_length=1, null=True)
     project = models.ForeignKey('ProjectDetail')
 
 
@@ -177,7 +177,7 @@ class ProjectDetail(models.Model):
                                                  verbose_name=CAPTURE_LABELS['project_status'])
     start_date = models.DateField(null=True,
                                   verbose_name=CAPTURE_LABELS['start_date'])
-    end_date = models.DateField(null=True,
+    end_date = models.DateField(null=True, blank=True,
                                 verbose_name=CAPTURE_LABELS['end_date'])
     faculty = models.ForeignKey('Faculty', null=True,
                                 verbose_name=CAPTURE_LABELS['faculty'])
@@ -188,7 +188,7 @@ class ProjectDetail(models.Model):
     focus_area = models.ManyToManyField('FocusArea',
                                         verbose_name=CAPTURE_LABELS['focus_area'],
                                         help_text=CAPTURE_HELP['focus_areas'])
-    focus_area_text = models.CharField(max_length=256, null=True,
+    focus_area_text = models.CharField(max_length=256, null=True, blank=True,
                                        verbose_name=CAPTURE_LABELS['focus_area_text'])
     classification = models.PositiveIntegerField(choices=CLASSIFICATION, null=True,
                                                  verbose_name=CAPTURE_LABELS['classification'])
@@ -208,11 +208,11 @@ class ProjectDetail(models.Model):
     public_domain = models.CharField(choices=YESNO, max_length=1, null=True,
                                      verbose_name=CAPTURE_LABELS['public_domain'],
                                      help_text='If yes, please provide the URL')
-    public_domain_url = models.URLField(null=True,
+    public_domain_url = models.URLField(null=True, blank=True,
                                         verbose_name=CAPTURE_LABELS['public_domain_url'])
     adv_group = models.CharField(choices=YESNO, max_length=1, null=True,
                                  verbose_name=CAPTURE_LABELS['adv_group'])
-    adv_group_rep = models.ManyToManyField('AdvisoryGroupRep',
+    adv_group_rep = models.ManyToManyField('AdvisoryGroupRep', blank=True,
                                            verbose_name=CAPTURE_LABELS['adv_group_rep'])
     adv_group_freq = models.PositiveIntegerField(choices=ADV_GROUP_FREQ, null=True,
                                                  verbose_name=CAPTURE_LABELS['adv_group_freq'])
@@ -220,7 +220,7 @@ class ProjectDetail(models.Model):
                                           verbose_name=CAPTURE_LABELS['team_members'])
     new_initiative = models.CharField(choices=YESNO, max_length=1, null=True,
                                       verbose_name=CAPTURE_LABELS['new_initiative'])
-    new_initiative_text = models.TextField(null=True,
+    new_initiative_text = models.TextField(null=True, blank=True,
                                            verbose_name=CAPTURE_LABELS['new_initiative_text'])
     new_initiative_party = models.PositiveIntegerField(choices=INITIATIVE_PARTIES, null=True,
                                                        verbose_name=CAPTURE_LABELS['new_initiative_party'])
@@ -228,7 +228,7 @@ class ProjectDetail(models.Model):
                                                  verbose_name=CAPTURE_LABELS['new_initiative_party_text'])
     research = models.PositiveIntegerField(choices=RESEARCH_CLASSIFICATION, null=True,
                                            verbose_name=CAPTURE_LABELS['research'])
-    research_text = models.TextField(null=True,
+    research_text = models.TextField(null=True, blank=True,
                                      verbose_name=CAPTURE_LABELS['research_text'],
                                      help_text=CAPTURE_HELP['research_text'])
     phd_research = models.CharField(choices=YESNO, max_length=1, null=True,
@@ -237,17 +237,17 @@ class ProjectDetail(models.Model):
                                      verbose_name=CAPTURE_LABELS['outputs'])
     curriculum_changes = models.CharField(choices=YESNO, max_length=1, null=True,
                                           verbose_name=CAPTURE_LABELS['curriculum_changes'])
-    curriculum_changes_text = models.TextField(null=True,
+    curriculum_changes_text = models.TextField(null=True, blank=True,
                                                verbose_name=CAPTURE_LABELS['curriculum_changes_text'])
     new_courses = models.CharField(choices=YESNO, max_length=1, null=True,
                                    verbose_name=CAPTURE_LABELS['new_courses'])
     students_involved = models.CharField(choices=YESNO, max_length=1, null=True,
                                          verbose_name=CAPTURE_LABELS['students_involved'])
-    student_types = models.ManyToManyField('StudentType',
+    student_types = models.ManyToManyField('StudentType', blank=True,
                                            verbose_name=CAPTURE_LABELS['student_types'])
     student_nature = models.ManyToManyField('StudentParticipationNature',
                                             verbose_name=CAPTURE_LABELS['student_nature'])
-    student_nature_text = models.CharField(max_length=128, null=True,
+    student_nature_text = models.CharField(max_length=128, null=True, blank=True,
                                            verbose_name=CAPTURE_LABELS['student_nature_text'])
     course_requirement = models.CharField(choices=YESNO, max_length=1, null=True,
                                           verbose_name=CAPTURE_LABELS['course_requirement'])
