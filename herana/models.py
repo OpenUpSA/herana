@@ -10,12 +10,24 @@ from django.core import exceptions
 from model_utils import *  # noqa
 
 
+# ------------------------------------------------------------------------------
+# Models for administration of an institute
+# ------------------------------------------------------------------------------
+
 class Institute(models.Model):
     name = models.CharField(max_length=256)
     logo = models.ImageField(blank=True, null=True)
 
     def __unicode__(self):
         return self.name
+
+
+class StrategicObjective(models.Model):
+    institute = models.ForeignKey('Institute')
+    statement = models.CharField(max_length=512)
+
+    def __unicode__(self):
+        return self.statement
 
 
 class Faculty(models.Model):
@@ -29,13 +41,21 @@ class Faculty(models.Model):
         verbose_name_plural = _("Faculties")
 
 
-class StrategicObjective(models.Model):
-    institute = models.ForeignKey('Institute')
-    statement = models.CharField(max_length=512)
+class ReportingPeriod(models.Model):
+    institute = models.ForeignKey('Institute', related_name='reporting_period')
+    name = models.CharField(max_length=128)
+    description = models.TextField()
+    open_date = models.DateField(auto_now_add=True)
+    close_date = models.DateField(null=True, blank=True)
+    is_active = models.BooleanField(default=True, verbose_name=_('Open'))
 
     def __unicode__(self):
-        return self.statement
+        return self.name
 
+
+# ------------------------------------------------------------------------------
+# Models for users
+# ------------------------------------------------------------------------------
 
 # Rename name to InstituteAdminUser ?
 class InstituteAdmin(models.Model):
@@ -57,17 +77,9 @@ class ProjectLeader(models.Model):
         return self.user.username
 
 
-class ReportingPeriod(models.Model):
-    institute = models.ForeignKey('Institute', related_name='reporting_period')
-    name = models.CharField(max_length=128)
-    description = models.TextField()
-    open_date = models.DateField(auto_now_add=True)
-    close_date = models.DateField(null=True, blank=True)
-    is_active = models.BooleanField(default=True, verbose_name=_('Open'))
-
-    def __unicode__(self):
-        return self.name
-
+# ------------------------------------------------------------------------------
+# Models for questionairre foreign keys
+# ------------------------------------------------------------------------------
 
 class FocusArea(models.Model):
     code = models.PositiveIntegerField(unique=True)
@@ -116,6 +128,10 @@ class StudentParticipationNature(models.Model):
     def __unicode__(self):
         return self.choice
 
+
+# ------------------------------------------------------------------------------
+# Models for questionairre inlines
+# ------------------------------------------------------------------------------
 
 class ProjectFunding(models.Model):
     funder = models.CharField(max_length=256)
@@ -254,6 +270,10 @@ class ProjectDetail(models.Model):
         )
 
 
+# ------------------------------------------------------------------------------
+# Model signals
+# ------------------------------------------------------------------------------
+
 @receiver(post_save, sender=InstituteAdmin)
 def assign_institute_admin_to_group(sender, **kwargs):
     if kwargs['created']:
@@ -272,7 +292,6 @@ def assign_institute_admin_to_group(sender, **kwargs):
             for perm in perms:
                 g.permissions.add(perm)
             g.save()
-
         kwargs['instance'].user.groups.add(g)
 
 
@@ -297,7 +316,6 @@ def assign_project_leader_to_group(sender, **kwargs):
             for perm in perms:
                 g.permissions.add(perm)
             g.save()
-
         kwargs['instance'].user.groups.add(g)
 
 
