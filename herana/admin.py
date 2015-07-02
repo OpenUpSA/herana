@@ -56,22 +56,103 @@ def get_user_institute(user):
     except ObjectDoesNotExist:
         return user.institute_admin.institute
 
+# ------------------------------------------------------------------------------
+# Formsets
+# ------------------------------------------------------------------------------
 
-class PermsAdmin(GuardedModelAdmin):
-    def save_model(self, request, obj, form, change):
-        super(PermsAdmin, self).save_model(request, obj, form, change)
-        self.assign_permissions(request.user, obj)
+class ProjectDetailFormSet(forms.models.BaseInlineFormSet):
+    def is_valid(self):
+        return super(ProjectDetailFormSet, self).is_valid() and \
+                    not any([bool(e) for e in self.errors])
 
-    def perms_queryset(self, request, perm):
-        if request.user.is_superuser:
-            return super(PermsAdmin, self).get_queryset(request)
-        return shortcuts.get_objects_for_user(request.user, [perm])
+    def clean(self, error_msg):
+        count = 0
+        for form in self.forms:
+            try:
+                if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
+                    count += 1
+            except AttributeError:
+                # annoyingly, if a subform is invalid Django explicity raises
+                # an AttributeError for cleaned_data
+                pass
+        if count < 1:
+            raise forms.ValidationError(error_msg)
 
-    def get_queryset(self, request):
-        return self.perms_queryset(request, 'herana.change_%s' % self.permcode)
 
-    def assign_permissions(self, user, obj):
-        shortcuts.assign_perm('herana.change_%s' % self.permcode, user, obj)
+class PHDStudentFormSet(ProjectDetailFormSet):
+    def clean(self):
+        if self.instance.phd_research == 'Y':
+            error_msg = 'Please enter the PhD student\'s name.'
+            super(PHDStudentFormSet, self).clean(error_msg)
+
+
+class NewCourseDetailFormSet(ProjectDetailFormSet):
+    def clean(self):
+        if self.instance.new_courses == 'Y':
+            error_msg = 'Please enter the course\'s details.'
+            super(NewCourseDetailFormSet, self).clean(error_msg)
+
+
+class CourseReqDetailFormSet(ProjectDetailFormSet):
+    def clean(self):
+        if self.instance.course_requirement == 'Y':
+            error_msg = 'Please enter the course\'s details.'
+            super(CourseReqDetailFormSet, self).clean(error_msg)
+
+
+class CollaboratorsFormSet(ProjectDetailFormSet):
+    def clean(self):
+        if self.instance.external_collaboration == 'Y':
+            error_msg = 'Please enter the collaborator\'s details.'
+            super(CollaboratorsFormSet, self).clean(error_msg)
+
+
+# ------------------------------------------------------------------------------
+# Inlines
+# ------------------------------------------------------------------------------
+
+class ProjectFundingInline(admin.TabularInline):
+    model = ProjectFunding
+    extra = 1
+    inline_classes = ('grp-collapse grp-open',)
+    verbose_name = _('funding source')
+    verbose_name_plural = _('Please list sources of project funding, the number of years for which funding has been secured, and the amount of funding (in US$).')
+
+
+class PHDStudentInline(admin.TabularInline):
+    model = PHDStudent
+    formset = PHDStudentFormSet
+    extra = 1
+    inline_classes = ('grp-collapse grp-open',)
+    verbose_name = _('student')
+    verbose_name_plural = _('If yes, please provide their names.')
+
+
+class NewCourseDetailInline(admin.TabularInline):
+    model = NewCourseDetail
+    # formset = NewCourseDetailFormSet
+    extra = 1
+    inline_classes = ('grp-collapse grp-open',)
+    verbose_name = _('new course')
+    verbose_name_plural = _('If yes, please provide the new course details')
+
+
+class CourseReqDetailInline(admin.TabularInline):
+    model = CourseReqDetail
+    formset = CourseReqDetailFormSet
+    extra = 1
+    inline_classes = ('grp-collapse grp-open',)
+    verbose_name = _('required course')
+    verbose_name_plural = _('If yes, please provide the course details.')
+
+
+class CollaboratorsInline(admin.TabularInline):
+    model = Collaborators
+    formset = CollaboratorsFormSet
+    extra = 1
+    inline_classes = ('grp-collapse grp-open',)
+    verbose_name = _('collaborator')
+    verbose_name_plural = _('If yes, please provide the collaborator details.')
 
 
 class InstituteAdminInline(admin.TabularInline):
@@ -87,7 +168,32 @@ class StrategicObjectiveInline(admin.TabularInline):
     verbose_name_plural = _('Strategic Objectives')
 
 
-class InstitutionAdmin(GuardedModelAdmin):
+# ------------------------------------------------------------------------------
+# Filters
+# ------------------------------------------------------------------------------
+
+class ReportingPeriodFilter(admin.SimpleListFilter):
+    title = "Reporting Period"
+    parameter_name = 'reporting_period'
+
+    def lookups(self, request, model_admin):
+        reporting_periods = list(ReportingPeriod.objects.filter(
+            institute=get_user_institute(request.user)))
+
+        return [(rp.id, rp.name) for rp in reporting_periods]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(reporting_period=self.value())
+        else:
+            return queryset
+
+
+# ------------------------------------------------------------------------------
+# ModelAdmins
+# ------------------------------------------------------------------------------
+
+class InstitutionAdmin(admin.ModelAdmin):
     inlines = [StrategicObjectiveInline]
 
 
@@ -177,122 +283,6 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
         if obj and obj.is_active == False:
             return self.readonly_fields + ('is_active',)
         return self.readonly_fields
-
-
-class ReportingPeriodFilter(admin.SimpleListFilter):
-    title = "Reporting Period"
-    parameter_name = 'reporting_period'
-
-    def lookups(self, request, model_admin):
-        reporting_periods = list(ReportingPeriod.objects.filter(
-            institute=get_user_institute(request.user)))
-
-        return [(rp.id, rp.name) for rp in reporting_periods]
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(reporting_period=self.value())
-        else:
-            return queryset
-
-
-class ProjectFundingInline(admin.TabularInline):
-    model = ProjectFunding
-    extra = 1
-    inline_classes = ('grp-collapse grp-open',)
-    verbose_name = _('funding source')
-    verbose_name_plural = _('Please list sources of project funding, the number of years for which funding has been secured, and the amount of funding (in US$).')
-
-# ------------------------------------------------------------------------------
-# Formsets
-# ------------------------------------------------------------------------------
-
-class ProjectDetailFormSet(forms.models.BaseInlineFormSet):
-    def is_valid(self):
-        return super(ProjectDetailFormSet, self).is_valid() and \
-                    not any([bool(e) for e in self.errors])
-
-    def clean(self, error_msg):
-        count = 0
-        for form in self.forms:
-            try:
-                if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
-                    count += 1
-            except AttributeError:
-                # annoyingly, if a subform is invalid Django explicity raises
-                # an AttributeError for cleaned_data
-                pass
-        if count < 1:
-            raise forms.ValidationError(error_msg)
-
-
-class PHDStudentFormSet(ProjectDetailFormSet):
-    def clean(self):
-        if self.instance.phd_research == 'Y':
-            error_msg = 'Please enter the PhD student\'s name.'
-            super(PHDStudentFormSet, self).clean(error_msg)
-
-
-class NewCourseDetailFormSet(ProjectDetailFormSet):
-    def clean(self):
-        if self.instance.new_courses == 'Y':
-            error_msg = 'Please enter the course\'s details.'
-            super(NewCourseDetailFormSet, self).clean(error_msg)
-
-
-class CourseReqDetailFormSet(ProjectDetailFormSet):
-    def clean(self):
-        if self.instance.course_requirement == 'Y':
-            error_msg = 'Please enter the course\'s details.'
-            super(CourseReqDetailFormSet, self).clean(error_msg)
-
-
-class CollaboratorsFormSet(ProjectDetailFormSet):
-    def clean(self):
-        if self.instance.external_collaboration == 'Y':
-            error_msg = 'Please enter the collaborator\'s details.'
-            super(CollaboratorsFormSet, self).clean(error_msg)
-
-
-# ------------------------------------------------------------------------------
-# Inlines
-# ------------------------------------------------------------------------------
-
-
-class PHDStudentInline(admin.TabularInline):
-    model = PHDStudent
-    formset = PHDStudentFormSet
-    extra = 1
-    inline_classes = ('grp-collapse grp-open',)
-    verbose_name = _('student')
-    verbose_name_plural = _('If yes, please provide their names.')
-
-
-class NewCourseDetailInline(admin.TabularInline):
-    model = NewCourseDetail
-    # formset = NewCourseDetailFormSet
-    extra = 1
-    inline_classes = ('grp-collapse grp-open',)
-    verbose_name = _('new course')
-    verbose_name_plural = _('If yes, please provide the new course details')
-
-
-class CourseReqDetailInline(admin.TabularInline):
-    model = CourseReqDetail
-    formset = CourseReqDetailFormSet
-    extra = 1
-    inline_classes = ('grp-collapse grp-open',)
-    verbose_name = _('required course')
-    verbose_name_plural = _('If yes, please provide the course details.')
-
-
-class CollaboratorsInline(admin.TabularInline):
-    model = Collaborators
-    formset = CollaboratorsFormSet
-    extra = 1
-    inline_classes = ('grp-collapse grp-open',)
-    verbose_name = _('collaborator')
-    verbose_name_plural = _('If yes, please provide the collaborator details.')
 
 
 class ProjectDetailAdmin(admin.ModelAdmin):
@@ -406,14 +396,11 @@ class ProjectDetailAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Institute, InstitutionAdmin)
-# admin.site.register(InstituteAdmin, InstituteAdminUserAdmin)
 admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(ReportingPeriod, ReportingPeriodAdmin)
 admin.site.register(InstituteAdmin)
 admin.site.register(ProjectLeader)
 admin.site.register(ProjectDetail, ProjectDetailAdmin)
-
-admin.site.register(FocusArea)
 
 admin.site.unregister(User)
 admin.site.register(User, InstituteAdminUserAdmin)
