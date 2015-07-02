@@ -1,5 +1,6 @@
 from datetime import date
 
+from django import forms
 from django.contrib import admin
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
@@ -199,15 +200,68 @@ class ProjectFundingInline(admin.TabularInline):
     model = ProjectFunding
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
-    verbose_name = _('Funding detail')
-    verbose_name_plural = _('Project funding')
-    # radio_fields = {
-    #     'renewable': admin.HORIZONTAL
-    # }
+    verbose_name = _('funding source')
+    verbose_name_plural = _('Please list sources of project funding, the number of years for which funding has been secured, and the amount of funding (in US$).')
+
+# ------------------------------------------------------------------------------
+# Formsets
+# ------------------------------------------------------------------------------
+
+class ProjectDetailFormSet(forms.models.BaseInlineFormSet):
+    def is_valid(self):
+        return super(ProjectDetailFormSet, self).is_valid() and \
+                    not any([bool(e) for e in self.errors])
+
+    def clean(self, error_msg):
+        count = 0
+        for form in self.forms:
+            try:
+                if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
+                    count += 1
+            except AttributeError:
+                # annoyingly, if a subform is invalid Django explicity raises
+                # an AttributeError for cleaned_data
+                pass
+        if count < 1:
+            raise forms.ValidationError(error_msg)
+
+
+class PHDStudentFormSet(ProjectDetailFormSet):
+    def clean(self):
+        if self.instance.phd_research == 'Y':
+            error_msg = 'Please enter the PhD student\'s name.'
+            super(PHDStudentFormSet, self).clean(error_msg)
+
+
+class NewCourseDetailFormSet(ProjectDetailFormSet):
+    def clean(self):
+        if self.instance.new_courses == 'Y':
+            error_msg = 'Please enter the course\'s details.'
+            super(NewCourseDetailFormSet, self).clean(error_msg)
+
+
+class CourseReqDetailFormSet(ProjectDetailFormSet):
+    def clean(self):
+        if self.instance.course_requirement == 'Y':
+            error_msg = 'Please enter the course\'s details.'
+            super(CourseReqDetailFormSet, self).clean(error_msg)
+
+
+class CollaboratorsFormSet(ProjectDetailFormSet):
+    def clean(self):
+        if self.instance.external_collaboration == 'Y':
+            error_msg = 'Please enter the collaborator\'s details.'
+            super(CollaboratorsFormSet, self).clean(error_msg)
+
+
+# ------------------------------------------------------------------------------
+# Inlines
+# ------------------------------------------------------------------------------
 
 
 class PHDStudentInline(admin.TabularInline):
     model = PHDStudent
+    formset = PHDStudentFormSet
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('student')
@@ -216,6 +270,7 @@ class PHDStudentInline(admin.TabularInline):
 
 class NewCourseDetailInline(admin.TabularInline):
     model = NewCourseDetail
+    # formset = NewCourseDetailFormSet
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('new course')
@@ -224,6 +279,7 @@ class NewCourseDetailInline(admin.TabularInline):
 
 class CourseReqDetailInline(admin.TabularInline):
     model = CourseReqDetail
+    formset = CourseReqDetailFormSet
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('required course')
@@ -232,6 +288,7 @@ class CourseReqDetailInline(admin.TabularInline):
 
 class CollaboratorsInline(admin.TabularInline):
     model = Collaborators
+    formset = CollaboratorsFormSet
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('collaborator')
@@ -242,7 +299,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'record_status',)
     list_filter = (ReportingPeriodFilter, 'record_status')
     form = ProjectDetailForm
-    save_as = True
+    # save_as = True
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
@@ -324,13 +381,13 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         # for a given Institute.
         institute = get_user_institute(request.user)
         reporting_period = institute.reporting_period.get(is_active=True)
-        obj.proj_leader = request.user.project_leader
         if not change:
             obj.reporting_period = reporting_period
             if request.POST['_draft']:
                 obj.record_status = 1
             else:
                 obj.record_status = 2
+        obj.proj_leader = request.user.project_leader
         obj.save()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
