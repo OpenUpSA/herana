@@ -22,7 +22,11 @@ from models import (
     ProjectLeader,
     ProjectDetail,
     FocusArea,
-    ProjectFunding
+    ProjectFunding,
+    PHDStudent,
+    NewCourseDetail,
+    CourseReqDetail,
+    Collaborators
 )
 
 from forms import ProjectDetailForm
@@ -193,7 +197,7 @@ class ReportingPeriodFilter(admin.SimpleListFilter):
 
 class ProjectFundingInline(admin.TabularInline):
     model = ProjectFunding
-    extra = 2
+    extra = 1
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('Funding detail')
     verbose_name_plural = _('Project funding')
@@ -202,16 +206,54 @@ class ProjectFundingInline(admin.TabularInline):
     # }
 
 
+class PHDStudentInline(admin.TabularInline):
+    model = PHDStudent
+    extra = 1
+    inline_classes = ('grp-collapse grp-open',)
+    verbose_name = _('student')
+    verbose_name_plural = _('If yes, please provide their names.')
+
+
+class NewCourseDetailInline(admin.TabularInline):
+    model = NewCourseDetail
+    extra = 1
+    inline_classes = ('grp-collapse grp-open',)
+    verbose_name = _('new course')
+    verbose_name_plural = _('If yes, please provide the new course details')
+
+
+class CourseReqDetailInline(admin.TabularInline):
+    model = CourseReqDetail
+    extra = 1
+    inline_classes = ('grp-collapse grp-open',)
+    verbose_name = _('required course')
+    verbose_name_plural = _('If yes, please provide the course details.')
+
+
+class CollaboratorsInline(admin.TabularInline):
+    model = Collaborators
+    extra = 1
+    inline_classes = ('grp-collapse grp-open',)
+    verbose_name = _('collaborator')
+    verbose_name_plural = _('If yes, please provide the collaborator details.')
+
 
 class ProjectDetailAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'record_status',)
     list_filter = (ReportingPeriodFilter, 'record_status')
     form = ProjectDetailForm
     save_as = True
-    inlines = [ProjectFundingInline]
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
+
+    inlines = [
+        ProjectFundingInline,
+        PHDStudentInline,
+        NewCourseDetailInline,
+        CourseReqDetailInline,
+        CollaboratorsInline,
+    ]
 
     radio_fields = {
         'is_leader': admin.HORIZONTAL,
