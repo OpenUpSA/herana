@@ -6,7 +6,7 @@ from models import ProjectDetail
 class ProjectDetailForm(forms.ModelForm):
     class Meta:
         model = ProjectDetail
-        exclude = ('proj_leader', 'date_created', 'record_status', 'reporting_period',)
+        exclude = ('proj_leader', 'date_created', 'record_status', 'reporting_period', 'rejected', 'rejected_detail')
 
     def _clean_fields(self):
         # If we are saving a draft, only the header field is required.
@@ -27,10 +27,11 @@ class ProjectDetailForm(forms.ModelForm):
                 msg = "If other was chosen above, please describe."
                 self.add_error('focus_area_text', msg)
 
-    # def clean_strategic_objectives(self):
-    #     if len(self.cleaned_data['strategic_objectives']) != 4:
-    #         msg = "Please select 4 options."
-    #         self.add_error('strategic_objectives', msg)
+    def clean_strategic_objectives(self):
+        if self.cleaned_data['strategic_objectives'].exists():
+            if len(self.cleaned_data['strategic_objectives']) != 4:
+                msg = "Please select only 4 options."
+                self.add_error('strategic_objectives', msg)
 
     def clean_public_domain_url(self):
         if self.cleaned_data['public_domain'] == 'Y' and self.cleaned_data['public_domain_url'] == '':
@@ -50,5 +51,24 @@ class ProjectDetailForm(forms.ModelForm):
             msg = "Please describe how the product / service / intervention / policy will be developed and/or implemented."
             self.add_error('new_initiative_party_text', msg)
 
+    def clean_research_text(self):
+        if not self.cleaned_data['research'] is None and self.cleaned_data['research_text'] == '':
+            msg = "Please provide a description for your choice in the field above."
+            self.add_error('research_text', msg)
+
+    def clean_curriculum_changes_text(self):
+        if self.cleaned_data['curriculum_changes'] == 'Y' and self.cleaned_data['curriculum_changes_text'] == '':
+            msg = "Please describe the types of changes made to the curriculum as a result of the project."
+            self.add_error('curriculum_changes_text', msg)
+
+    def clean_student_types(self):
+        if self.cleaned_data['students_involved'] == 'Y' and not self.cleaned_data['student_types'].exists():
+            msg = "Please indicate the types of students involved."
+            self.add_error('student_types', msg)
+
+    def clean_student_nature_text(self):
+        if self.cleaned_data['student_nature'] == 6 and self.cleaned_data['student_nature_text'] == 'Y':
+            msg = "Please describe the nature of student participation."
+            self.add_error('student_types', msg)
 
 
