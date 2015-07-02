@@ -78,7 +78,7 @@ class ProjectLeader(models.Model):
 
 
 # ------------------------------------------------------------------------------
-# Models for questionairre foreign keys
+# Models for questionnaire foreign keys
 # ------------------------------------------------------------------------------
 
 class FocusArea(models.Model):
@@ -130,7 +130,7 @@ class StudentParticipationNature(models.Model):
 
 
 # ------------------------------------------------------------------------------
-# Models for questionairre inlines
+# Models for questionnaire inlines
 # ------------------------------------------------------------------------------
 
 class ProjectFunding(models.Model):
@@ -311,7 +311,11 @@ def assign_project_leader_to_group(sender, **kwargs):
             g = Group.objects.create(name='ProjectLeaders')
             admin_permissions = [
                 'add_projectdetail', 'delete_projectdetail', 'change_projectdetail',
-                'add_projectfunding', 'delete_projectfunding', 'change_projectfunding'
+                'add_projectfunding', 'delete_projectfunding', 'change_projectfunding',
+                'add_phdstudent', 'delete_phdstudent', 'change_phdstudent',
+                'add_newcoursedetail', 'delete_newcoursedetail', 'change_newcoursedetail',
+                'add_coursereqdetail', 'delete_coursereqdetail', 'change_coursereqdetail',
+                'add_collaborators', 'delete_collaborators', 'change_collaborators',
             ]
             perms = Permission.objects.filter(codename__in=admin_permissions)
             for perm in perms:
