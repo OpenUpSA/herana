@@ -1,13 +1,80 @@
 from django.db import models
-from django.contrib.auth.models import User, Group, Permission
+from django.contrib.auth.models import Group, Permission
 from django.utils.translation import ugettext_lazy as _
-
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
-
 from django.core import exceptions
+from django.conf import settings
+
+from django.utils import timezone
+
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 from model_utils import *  # noqa
+
+
+class CustomUserManager(BaseUserManager):
+    def _create_user(self, email, password,
+                     is_staff, is_superuser, **extra_fields):
+        """
+        Creates and saves a User with the given username, email and password.
+        """
+        now = timezone.now()
+        if not email:
+            raise ValueError('The given email must be set')
+        email = self.normalize_email(email)
+        user = self.model(email=email,
+                          is_staff=is_staff, is_active=True,
+                          is_superuser=is_superuser,
+                          date_joined=now, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_user(self, email, password=None, **extra_fields):
+        return self._create_user(email, password, False, False,
+                                 **extra_fields)
+
+    def create_superuser(self, email, password, **extra_fields):
+        return self._create_user(email, password, True, True,
+                                 **extra_fields)
+
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+
+    first_name = models.CharField(_('first name'), max_length=30, blank=True)
+    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    is_staff = models.BooleanField(_('staff status'), default=False,
+        help_text=_('Designates whether the user can log into this admin '
+                    'site.'))
+    is_active = models.BooleanField(_('active'), default=True,
+        help_text=_('Designates whether this user should be treated as '
+                    'active. Unselect this instead of deleting accounts.'))
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    def get_full_name(self):
+        """
+        Returns the first_name plus the last_name, with a space in between.
+        """
+        full_name = '%s %s' % (self.first_name, self.last_name)
+        return full_name.strip()
+
+    def get_short_name(self):
+        "Returns the short name for the user."
+        return self.first_name
+
+    def email_user(self, subject, message, from_email=None, **kwargs):
+        """
+        Sends an email to this User.
+        """
+        send_mail(subject, message, from_email, [self.email], **kwargs)
+
+    objects = CustomUserManager()
 
 
 # ------------------------------------------------------------------------------
@@ -59,7 +126,7 @@ class ReportingPeriod(models.Model):
 
 # Rename name to InstituteAdminUser ?
 class InstituteAdmin(models.Model):
-    user = models.OneToOneField(User, related_name='institute_admin')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='institute_admin')
     institute = models.ForeignKey('Institute', related_name='institute_admin')
 
     def __unicode__(self):
@@ -67,7 +134,7 @@ class InstituteAdmin(models.Model):
 
 
 class ProjectLeader(models.Model):
-    user = models.OneToOneField(User, related_name='project_leader')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='project_leader')
     institute = models.ForeignKey('Institute')
     faculty = models.ForeignKey('Faculty')
     staff_no = models.CharField(max_length=64)
@@ -330,7 +397,7 @@ def remove_user_from_project_leaders(sender, **kwargs):
     kwargs['instance'].user.groups.remove(g)
 
 
-@receiver(pre_save, sender=User)
+@receiver(pre_save, sender=settings.AUTH_USER_MODEL)
 def set_user_as_staff(sender, instance, **kwargs):
     if not instance.is_staff:
         instance.is_staff = True

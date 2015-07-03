@@ -9,7 +9,8 @@ from django.db import models
 
 from django.contrib.auth import get_permission_codename
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
+from django.contrib.auth.forms import UserCreationForm
 
 from guardian import shortcuts
 from guardian.admin import GuardedModelAdmin
@@ -27,7 +28,8 @@ from models import (
     PHDStudent,
     NewCourseDetail,
     CourseReqDetail,
-    Collaborators
+    Collaborators,
+    CustomUser
 )
 
 from forms import ProjectDetailForm
@@ -188,6 +190,39 @@ class ReportingPeriodFilter(admin.SimpleListFilter):
         else:
             return queryset
 
+# ------------------------------------------------------------------------------
+# Custom User Admin
+# ------------------------------------------------------------------------------
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = CustomUser
+        fields = ("email",)
+
+
+class CustomUserAdmin(UserAdmin):
+    add_form = CustomUserCreationForm
+
+    list_display = ('email', 'first_name', 'last_name', 'is_staff')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
+
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name')}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
+                                       'groups', 'user_permissions')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'password1', 'password2'),
+        }),
+    )
+
+    search_fields = ('email', 'first_name', 'last_name')
+    ordering = ('email',)
+
 
 # ------------------------------------------------------------------------------
 # ModelAdmins
@@ -197,14 +232,14 @@ class InstitutionAdmin(admin.ModelAdmin):
     inlines = [StrategicObjectiveInline]
 
 
-class InstituteAdminUserAdmin(UserAdmin):
-    inlines = [InstituteAdminInline]
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
+# class InstituteAdminUserAdmin(UserAdmin):
+#     inlines = [InstituteAdminInline]
+#     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
 
-    def has_module_permission(self, request):
-        if request.user.is_superuser:
-            return True
-        return False
+#     def has_module_permission(self, request):
+#         if request.user.is_superuser:
+#             return True
+#         return False
 
 
 class FacultyAdmin(admin.ModelAdmin):
@@ -402,5 +437,5 @@ admin.site.register(InstituteAdmin)
 admin.site.register(ProjectLeader)
 admin.site.register(ProjectDetail, ProjectDetailAdmin)
 
-admin.site.unregister(User)
-admin.site.register(User, InstituteAdminUserAdmin)
+# admin.site.register(User, InstituteAdminUserAdmin)
+admin.site.register(CustomUser, CustomUserAdmin)
