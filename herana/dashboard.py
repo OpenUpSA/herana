@@ -20,6 +20,7 @@ class CustomIndexDashboard(Dashboard):
             collapsible=False,
             models=(
                 'django.contrib.*',
+                'herana.models.CustomUser',
                 'herana.models.InstituteAdmin',
                 'herana.models.ProjectLeader',),
         ))
