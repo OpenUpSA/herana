@@ -181,3 +181,7 @@ REGISTRATION_AUTO_LOGIN = True
 # Grappelli
 GRAPPELLI_INDEX_DASHBOARD = 'herana.dashboard.CustomIndexDashboard'
 GRAPPELLI_ADMIN_TITLE = 'Herana'
+
+# Custom User Model
+AUTH_USER_MODEL = 'herana.CustomUser'
+
