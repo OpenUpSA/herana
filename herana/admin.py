@@ -201,6 +201,7 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class CustomUserAdmin(UserAdmin):
+    inlines = [InstituteAdminInline]
     add_form = CustomUserCreationForm
 
     list_display = ('email', 'first_name', 'last_name', 'is_staff')
@@ -228,18 +229,8 @@ class CustomUserAdmin(UserAdmin):
 # ModelAdmins
 # ------------------------------------------------------------------------------
 
-class InstitutionAdmin(admin.ModelAdmin):
+class InstituteModelAdmin(admin.ModelAdmin):
     inlines = [StrategicObjectiveInline]
-
-
-# class InstituteAdminUserAdmin(UserAdmin):
-#     inlines = [InstituteAdminInline]
-#     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
-
-#     def has_module_permission(self, request):
-#         if request.user.is_superuser:
-#             return True
-#         return False
 
 
 class FacultyAdmin(admin.ModelAdmin):
@@ -430,7 +421,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
             db_field, request, **kwargs)
 
 
-admin.site.register(Institute, InstitutionAdmin)
+admin.site.register(Institute, InstituteModelAdmin)
 admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(ReportingPeriod, ReportingPeriodAdmin)
 admin.site.register(InstituteAdmin)
