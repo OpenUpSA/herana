@@ -240,6 +240,19 @@ class FacultyAdmin(admin.ModelAdmin):
         obj.institute = request.user.institute_admin.institute
         obj.save()
 
+    def has_add_permission(self, request, obj=None):
+        if not request.user.is_superuser:
+            if obj:
+                if request.user.institute_admin.institute == obj.institute:
+                    return True
+                return False
+
+            opts = self.opts
+            codename = get_permission_codename('change', opts)
+            return request.user.has_perm("%s.%s" % (opts.app_label, codename))
+
+        return False
+
     def has_change_permission(self, request, obj=None):
         if not request.user.is_superuser:
             if obj:
@@ -251,7 +264,7 @@ class FacultyAdmin(admin.ModelAdmin):
             codename = get_permission_codename('change', opts)
             return request.user.has_perm("%s.%s" % (opts.app_label, codename))
 
-        return True
+        return False
 
     def has_delete_permission(self, request, obj=None):
         if not request.user.is_superuser:
@@ -424,7 +437,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
 admin.site.register(Institute, InstituteModelAdmin)
 admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(ReportingPeriod, ReportingPeriodAdmin)
-admin.site.register(InstituteAdmin)
+# admin.site.register(InstituteAdmin)
 admin.site.register(ProjectLeader)
 admin.site.register(ProjectDetail, ProjectDetailAdmin)
 

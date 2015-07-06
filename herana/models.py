@@ -77,7 +77,7 @@ class ProjectLeader(models.Model):
     position = models.CharField(max_length=128)
 
     def __unicode__(self):
-        return self.user.username
+        return self.user.email
 
 
 # ------------------------------------------------------------------------------
