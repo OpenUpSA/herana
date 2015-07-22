@@ -23,7 +23,7 @@ class ProjectDetailForm(forms.ModelForm):
             self.add_error('end_date', msg)
 
         if cleaned_data.get('end_date') and cleaned_data.get('start_date'):
-            if cleaned_data.get('end_date') > cleaned_data.get('start_date'):
+            if cleaned_data.get('end_date') < cleaned_data.get('start_date'):
                 msg = "The project end date cannot be before the project start date."
                 self.add_error('end_date', msg)
 
