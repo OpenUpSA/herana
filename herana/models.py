@@ -219,8 +219,10 @@ class ProjectDetail(models.Model):
                                            verbose_name=CAPTURE_LABELS['adv_group_rep'])
     adv_group_freq = models.PositiveIntegerField(choices=ADV_GROUP_FREQ, null=True, default=None, blank=True,
                                                  verbose_name=CAPTURE_LABELS['adv_group_freq'])
-    team_members = models.ManyToManyField(ResearchTeamMember,
+    team_members = models.ManyToManyField(ResearchTeamMember, blank=True,
                                           verbose_name=CAPTURE_LABELS['team_members'])
+    team_members_text = models.TextField(null=True, blank=True,
+                                        verbose_name=CAPTURE_LABELS['team_members_text'])
     new_initiative = models.CharField(choices=YESNO, max_length=1, null=True,
                                       verbose_name=CAPTURE_LABELS['new_initiative'])
     new_initiative_text = models.TextField(null=True, blank=True,

@@ -106,6 +106,8 @@ CAPTURE_LABELS = {
         'A2.7: How often does the advisory group meet?'),
     'team_members': _(
         'A3.1: Are any of the following members of the research team?'),
+    'team_members_text': _(
+        "If other was selected, please describe."),
     'new_initiative': _(
         'A3.2: Will any of the findings / results / outcomes of the project be used to implement or develop new products / services / interventions / policies?'),
     'new_initiative_text': _(
