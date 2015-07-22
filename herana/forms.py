@@ -1,6 +1,6 @@
 from django import forms
 
-from models import ProjectDetail, ProjectFunding, PHDStudent
+from models import ProjectDetail
 
 class ProjectDetailForm(forms.ModelForm):
     class Meta:
