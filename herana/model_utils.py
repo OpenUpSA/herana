@@ -28,6 +28,7 @@ NUMBER_AUTHORS = (
 )
 
 ADV_GROUP_FREQ = (
+    (None, _("N/A")),
     (1, _('Monthly')),
     (2, _('Quarterly')),
     (3, _('Annually')),

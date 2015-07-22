@@ -127,7 +127,7 @@ class PHDStudentInline(admin.TabularInline):
 
 class NewCourseDetailInline(admin.TabularInline):
     model = NewCourseDetail
-    # formset = NewCourseDetailFormSet
+    formset = NewCourseDetailFormSet
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('new course')
