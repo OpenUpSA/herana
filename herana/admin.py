@@ -9,11 +9,7 @@ from django.db import models
 
 from django.contrib.auth import get_permission_codename
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import Group
 from django.contrib.auth.forms import UserCreationForm
-
-from guardian import shortcuts
-from guardian.admin import GuardedModelAdmin
 
 from models import (
     Institute,
@@ -23,7 +19,6 @@ from models import (
     StrategicObjective,
     ProjectLeader,
     ProjectDetail,
-    FocusArea,
     ProjectFunding,
     PHDStudent,
     NewCourseDetail,
@@ -132,7 +127,7 @@ class PHDStudentInline(admin.TabularInline):
 
 class NewCourseDetailInline(admin.TabularInline):
     model = NewCourseDetail
-    # formset = NewCourseDetailFormSet
+    formset = NewCourseDetailFormSet
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('new course')

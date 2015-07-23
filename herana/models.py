@@ -217,17 +217,19 @@ class ProjectDetail(models.Model):
                                  verbose_name=CAPTURE_LABELS['adv_group'])
     adv_group_rep = models.ManyToManyField('AdvisoryGroupRep', blank=True,
                                            verbose_name=CAPTURE_LABELS['adv_group_rep'])
-    adv_group_freq = models.PositiveIntegerField(choices=ADV_GROUP_FREQ, null=True,
+    adv_group_freq = models.PositiveIntegerField(choices=ADV_GROUP_FREQ, null=True, default=None, blank=True,
                                                  verbose_name=CAPTURE_LABELS['adv_group_freq'])
-    team_members = models.ManyToManyField(ResearchTeamMember,
+    team_members = models.ManyToManyField(ResearchTeamMember, blank=True,
                                           verbose_name=CAPTURE_LABELS['team_members'])
+    team_members_text = models.TextField(null=True, blank=True,
+                                        verbose_name=CAPTURE_LABELS['team_members_text'])
     new_initiative = models.CharField(choices=YESNO, max_length=1, null=True,
                                       verbose_name=CAPTURE_LABELS['new_initiative'])
     new_initiative_text = models.TextField(null=True, blank=True,
                                            verbose_name=CAPTURE_LABELS['new_initiative_text'])
-    new_initiative_party = models.PositiveIntegerField(choices=INITIATIVE_PARTIES, null=True,
+    new_initiative_party = models.PositiveIntegerField(choices=INITIATIVE_PARTIES, null=True, blank=True,
                                                        verbose_name=CAPTURE_LABELS['new_initiative_party'])
-    new_initiative_party_text = models.TextField(null=True,
+    new_initiative_party_text = models.TextField(null=True, blank=True,
                                                  verbose_name=CAPTURE_LABELS['new_initiative_party_text'])
     research = models.PositiveIntegerField(choices=RESEARCH_CLASSIFICATION, null=True,
                                            verbose_name=CAPTURE_LABELS['research'])
@@ -249,7 +251,8 @@ class ProjectDetail(models.Model):
     student_types = models.ManyToManyField('StudentType', blank=True,
                                            verbose_name=CAPTURE_LABELS['student_types'])
     student_nature = models.ManyToManyField('StudentParticipationNature',
-                                            verbose_name=CAPTURE_LABELS['student_nature'])
+                                            verbose_name=CAPTURE_LABELS['student_nature'],
+                                            blank=True)
     student_nature_text = models.CharField(max_length=128, null=True, blank=True,
                                            verbose_name=CAPTURE_LABELS['student_nature_text'])
     course_requirement = models.CharField(choices=YESNO, max_length=1, null=True,

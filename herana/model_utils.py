@@ -28,6 +28,7 @@ NUMBER_AUTHORS = (
 )
 
 ADV_GROUP_FREQ = (
+    (None, _("N/A")),
     (1, _('Monthly')),
     (2, _('Quarterly')),
     (3, _('Annually')),
@@ -41,11 +42,11 @@ INITIATIVE_PARTIES = (
 )
 
 RESEARCH_CLASSIFICATION = (
-    (1, _('The project conducted original research')),
-    (2, _('The project collected new data and conducted original research to complete the project')),
-    (3, _('The project collected new data and applied existing knowledge to the data collected to complete the project')),
-    (4, _('No new data was required and existing knowledge was applied to complete the project')),
-    (5, _('Not applicable'))
+    (1, _('1. The project conducted original research')),
+    (2, _('2. The project collected new data and conducted original research to complete the project')),
+    (3, _('3. The project collected new data and applied existing knowledge to the data collected to complete the project')),
+    (4, _('4. No new data was required and existing knowledge was applied to complete the project')),
+    (5, _('5. Not applicable'))
 )
 
 PROJECT_STATUS = (
@@ -70,9 +71,9 @@ CAPTURE_LABELS = {
     'end_date': _(
         'End date'),
     'faculty': (
-        'P3.0: In which faculty/school is the project located?'),
+        'P3.0: In which faculty / school is the project located?'),
     'multi_faculty': _(
-        'P3.1: Does the project span multiple faculties/schools?'),
+        'P3.1: Does the project span multiple faculties / schools?'),
     'description': _(
         'P4.0: Please provide a short description of the project.'),
     'focus_area': _(
@@ -90,7 +91,7 @@ CAPTURE_LABELS = {
     'initiation': _(
         'A2.1: Which one of the following statements best describes how the project was initiated?'),
     'authors': _(
-        'A2.2: How many authors were involved in the writing of the project proposal/plan?'),
+        'A2.2: How many authors were involved in the writing of the project proposal / plan?'),
     'amendments_permitted': _(
         'A2.3: To the best of your knowledge, are deviations or amendments to the request for proposal permitted by the funder?'),
     'public_domain': _(
@@ -105,14 +106,16 @@ CAPTURE_LABELS = {
         'A2.7: How often does the advisory group meet?'),
     'team_members': _(
         'A3.1: Are any of the following members of the research team?'),
+    'team_members_text': _(
+        "If other was selected, please specify."),
     'new_initiative': _(
-        'A3.2: Will any of the findings/results/outcomes of the project be used to implement or develop new products/services/interventions/policies?'),
+        'A3.2: Will any of the findings / results / outcomes of the project be used to implement or develop new products / services / interventions / policies?'),
     'new_initiative_text': _(
         'If yes, please describe'),
     'new_initiative_party': _(
-        'Who will implement or develop these new products/services/interventions/policies?'),
+        'Who will implement or develop these new products / services / interventions / policies?'),
     'new_initiative_party_text': _(
-        'Please provide the name of the third party or describe how the product / service / intervention / policy will be developed and/or implemented'),
+        'Please provide the name of the third party or describe how the product / service / intervention / policy will be developed and / or implemented'),
     'funding': _(
         'A4.1: Please list sources of project funding, the number of years for which funding has been secured, and the amount of funding (in US$)'),
     'research': _(
@@ -130,7 +133,7 @@ CAPTURE_LABELS = {
     'curriculum_changes_text': _(
         'If yes, please describe the types of changes made to the curriculum as a result of the project'),
     'new_courses': _(
-        'C3.2: Have any new courses/modules/programmes been introduced as a result of this project?'),
+        'C3.2: Have any new courses / modules / programmes been introduced as a result of this project?'),
     'new_course_detail': _(
         'If yes, please describe'),
     'students_involved': _(
@@ -142,7 +145,7 @@ CAPTURE_LABELS = {
     'student_nature_text': _(
         'If other was selected, please describe.'),
     'course_requirement': _(
-        'C3.4: Is participation in the project a requirement for the completion of an existing course/degree offered by the university?'),
+        'C3.4: Is participation in the project a requirement for the completion of an existing course / degree offered by the university?'),
     'course_req_detail': _(
         'If yes, please describe'),
     'external_collaboration': _(

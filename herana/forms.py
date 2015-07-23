@@ -1,6 +1,6 @@
 from django import forms
 
-from models import ProjectDetail, ProjectFunding, PHDStudent
+from models import ProjectDetail
 
 class ProjectDetailForm(forms.ModelForm):
     class Meta:
@@ -23,7 +23,7 @@ class ProjectDetailForm(forms.ModelForm):
             self.add_error('end_date', msg)
 
         if cleaned_data.get('end_date') and cleaned_data.get('start_date'):
-            if cleaned_data.get('end_date') > cleaned_data.get('start_date'):
+            if cleaned_data.get('end_date') < cleaned_data.get('start_date'):
                 msg = "The project end date cannot be before the project start date."
                 self.add_error('end_date', msg)
 
@@ -41,6 +41,14 @@ class ProjectDetailForm(forms.ModelForm):
         if cleaned_data.get('public_domain') == 'Y' and cleaned_data.get('public_domain_url') == '':
             msg = "If yes was selected above, please provide the URL."
             self.add_error('public_domain_url', msg)
+
+        if cleaned_data.get('adv_group') == 'Y' and cleaned_data.get('adv_group_freq') is None:
+            msg = "Please indicate how often the advisory group meets."
+            self.add_error('adv_group_freq', msg)
+        import ipdb; ipdb.set_trace()
+        if cleaned_data.get('team_members')[0].code == 7 and cleaned_data.get('team_members_text') == '':
+            msg = "If other was selected above, please specify."
+            self.add_error('team_members_text', msg)
 
         if cleaned_data.get('new_initiative') == 'Y' and cleaned_data.get('new_initiative_text') == '':
             msg = "If yes was selected above, please describe."
@@ -65,6 +73,10 @@ class ProjectDetailForm(forms.ModelForm):
         if cleaned_data.get('students_involved') == 'Y' and not cleaned_data.get('student_types'):
             msg = "Please indicate the types of students involved."
             self.add_error('student_types', msg)
+
+        if cleaned_data.get('students_involved') == 'Y' and not cleaned_data.get('student_nature'):
+            msg = "Please indicate the nature of the student involvement."
+            self.add_error('student_nature', msg)
 
         if cleaned_data.get('student_nature'):
             for item in cleaned_data.get('student_nature'):
