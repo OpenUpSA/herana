@@ -126,8 +126,6 @@ CAPTURE_LABELS = {
         'C.1.1.2: Is a student\'s PhD research linked to this project?'),
     'phd_research_name': _(
         'If yes, please provide their names'),
-    'outputs': _(
-        'C2: Please list the completed publications and other outputs for this project'),
     'curriculum_changes': _(
         'C3.1: Has the project lead to any contributions or changes to the curriculum?'),
     'curriculum_changes_text': _(
