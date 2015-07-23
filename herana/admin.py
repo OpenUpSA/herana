@@ -21,6 +21,7 @@ from models import (
     ProjectDetail,
     ProjectFunding,
     PHDStudent,
+    ProjectOutput,
     NewCourseDetail,
     CourseReqDetail,
     Collaborators,
@@ -123,6 +124,14 @@ class PHDStudentInline(admin.TabularInline):
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('student')
     verbose_name_plural = _('If yes, please provide their names.')
+
+
+class ProjectOutputInline(admin.TabularInline):
+    model = ProjectOutput
+    extra = 1
+    inline_classes = ('grp-collapse grp-open',)
+    verbose_name = _('project output')
+    verbose_name_plural = _('Please add the completed publications and other outputs for this project.')
 
 
 class NewCourseDetailInline(admin.TabularInline):
@@ -323,7 +332,6 @@ class ProjectDetailAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'record_status',)
     list_filter = (ReportingPeriodFilter, 'record_status')
     form = ProjectDetailForm
-    # save_as = True
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
@@ -331,6 +339,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
     inlines = [
         ProjectFundingInline,
         PHDStudentInline,
+        ProjectOutputInline,
         NewCourseDetailInline,
         CourseReqDetailInline,
         CollaboratorsInline,

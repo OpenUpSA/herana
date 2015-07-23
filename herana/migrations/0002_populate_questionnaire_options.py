@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations
 
 def populate_questionnaire_options(apps, schema_editor):
     FocusArea = apps.get_model('herana', "FocusArea")
     AdvisoryGroupRep = apps.get_model('herana', "AdvisoryGroupRep")
     ResearchTeamMember = apps.get_model('herana', "ResearchTeamMember")
-    ProjectOutputs = apps.get_model('herana', "ProjectOutputs")
+    ProjectOutputType = apps.get_model('herana', "ProjectOutputType")
     StudentType = apps.get_model('herana', "StudentType")
     StudentParticipationNature = apps.get_model('herana', "StudentParticipationNature")
 
@@ -15,7 +15,7 @@ def populate_questionnaire_options(apps, schema_editor):
         (FocusArea, FOCUS_AREAS),
         (AdvisoryGroupRep, ADVISORY_GROUP_REP),
         (ResearchTeamMember, RESEARCH_TEAM_MEMEBRS),
-        (ProjectOutputs, PROJECT_OUTPUTS),
+        (ProjectOutputType, PROJECT_OUTPUT_TYPES),
         (StudentType, STUDENT_TYPES),
         (StudentParticipationNature, STUDENT_PARTICIPATION_NATURE)
     ]
@@ -29,7 +29,7 @@ def backwards(apps, schema_editor):
     FocusArea = apps.get_model('herana', "FocusArea")
     AdvisoryGroupRep = apps.get_model('herana', "AdvisoryGroupRep")
     ResearchTeamMember = apps.get_model('herana', "ResearchTeamMember")
-    ProjectOutputs = apps.get_model('herana', "ProjectOutputs")
+    ProjectOutputTypes = apps.get_model('herana', "ProjectOutputTypes")
     StudentType = apps.get_model('herana', "StudentType")
     StudentParticipationNature = apps.get_model('herana', "StudentParticipationNature")
 
@@ -38,7 +38,7 @@ def backwards(apps, schema_editor):
         FocusArea,
         AdvisoryGroupRep,
         ResearchTeamMember,
-        ProjectOutputs,
+        ProjectOutputTypes,
         StudentType,
         StudentParticipationNature
     ]
@@ -87,7 +87,7 @@ RESEARCH_TEAM_MEMEBRS = [
     (7, 'Other (Please specify)')
 ]
 
-PROJECT_OUTPUTS = [
+PROJECT_OUTPUT_TYPES = [
     (1, 'Journal article'),
     (2, 'Conference proceedings'),
     (3, 'Chapter in a book'),

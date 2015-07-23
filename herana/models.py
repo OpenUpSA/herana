@@ -42,6 +42,7 @@ class Faculty(models.Model):
 
     class Meta:
         verbose_name_plural = _("Faculties")
+        ordering = ['name']
 
 
 class ReportingPeriod(models.Model):
@@ -108,14 +109,6 @@ class ResearchTeamMember(models.Model):
         return self.choice
 
 
-class ProjectOutputs(models.Model):
-    code = models.PositiveIntegerField(unique=True)
-    choice = models.CharField(max_length=128)
-
-    def __unicode__(self):
-        return self.choice
-
-
 class StudentType(models.Model):
     code = models.PositiveIntegerField(unique=True)
     choice = models.CharField(max_length=32)
@@ -125,6 +118,14 @@ class StudentType(models.Model):
 
 
 class StudentParticipationNature(models.Model):
+    code = models.PositiveIntegerField(unique=True)
+    choice = models.CharField(max_length=128)
+
+    def __unicode__(self):
+        return self.choice
+
+
+class ProjectOutputType(models.Model):
     code = models.PositiveIntegerField(unique=True)
     choice = models.CharField(max_length=128)
 
@@ -147,6 +148,14 @@ class ProjectFunding(models.Model):
 class PHDStudent(models.Model):
     name = models.CharField(max_length=128)
     project = models.ForeignKey('ProjectDetail')
+
+
+class ProjectOutput(models.Model):
+    project = models.ForeignKey('ProjectDetail')
+    type = models.ForeignKey('ProjectOutputType')
+    url = models.URLField(null=True, blank=True)
+    doi = models.CharField(max_length=128, null=True, blank=True)
+    attachment = models.FileField(upload_to='projects/attachments/output/', null=True, blank=True)
 
 
 class NewCourseDetail(models.Model):
@@ -238,8 +247,6 @@ class ProjectDetail(models.Model):
                                      help_text=CAPTURE_HELP['research_text'])
     phd_research = models.CharField(choices=YESNO, max_length=1, null=True,
                                     verbose_name=CAPTURE_LABELS['phd_research'])
-    outputs = models.ManyToManyField('ProjectOutputs',
-                                     verbose_name=CAPTURE_LABELS['outputs'])
     curriculum_changes = models.CharField(choices=YESNO, max_length=1, null=True,
                                           verbose_name=CAPTURE_LABELS['curriculum_changes'])
     curriculum_changes_text = models.TextField(null=True, blank=True,
@@ -373,7 +380,8 @@ def assign_institute_admin_to_group(sender, **kwargs):
 
 @receiver(post_delete, sender=InstituteAdmin)
 def remove_institute_admin_from_group(sender, **kwargs):
-    g = Group.objects.get(name='InstituteAdmin')
+    import ipdb; ipdb.set_trace()
+    g = Group.objects.get(name='InstituteAdmins')
     kwargs['instance'].user.groups.remove(g)
 
 
@@ -392,6 +400,7 @@ def assign_project_leader_to_group(sender, **kwargs):
                 'add_newcoursedetail', 'delete_newcoursedetail', 'change_newcoursedetail',
                 'add_coursereqdetail', 'delete_coursereqdetail', 'change_coursereqdetail',
                 'add_collaborators', 'delete_collaborators', 'change_collaborators',
+                'add_projectoutput', 'delete_projectoutput', 'change_projectoutput'
             ]
             perms = Permission.objects.filter(codename__in=admin_permissions)
             for perm in perms:
