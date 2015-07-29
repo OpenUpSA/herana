@@ -126,11 +126,11 @@ class PHDStudentInline(admin.TabularInline):
     verbose_name_plural = _('If yes, please provide their names.')
 
 
-class ProjectOutputInline(admin.TabularInline):
+class ProjectOutputInline(admin.StackedInline):
     model = ProjectOutput
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
-    verbose_name = _('project output')
+    verbose_name = _('Project output')
     verbose_name_plural = _('Please add the completed publications and other outputs for this project.')
 
 
