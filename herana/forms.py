@@ -46,9 +46,11 @@ class ProjectDetailForm(forms.ModelForm):
             msg = "Please indicate how often the advisory group meets."
             self.add_error('adv_group_freq', msg)
 
-        if cleaned_data.get('team_members')[0].code == 7 and cleaned_data.get('team_members_text') == '':
-            msg = "If other was selected above, please specify."
-            self.add_error('team_members_text', msg)
+        if cleaned_data.get('team_members'):
+            for choice in cleaned_data.get('team_members'):
+                if choice.code == 7 and cleaned_data.get('team_members_text') == '':
+                    msg = "If other was selected above, please specify."
+                    self.add_error('team_members_text', msg)
 
         if cleaned_data.get('new_initiative') == 'Y' and cleaned_data.get('new_initiative_text') == '':
             msg = "If yes was selected above, please describe."
