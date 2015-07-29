@@ -45,7 +45,7 @@ class ProjectDetailForm(forms.ModelForm):
         if cleaned_data.get('adv_group') == 'Y' and cleaned_data.get('adv_group_freq') is None:
             msg = "Please indicate how often the advisory group meets."
             self.add_error('adv_group_freq', msg)
-        import ipdb; ipdb.set_trace()
+
         if cleaned_data.get('team_members')[0].code == 7 and cleaned_data.get('team_members_text') == '':
             msg = "If other was selected above, please specify."
             self.add_error('team_members_text', msg)

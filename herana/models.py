@@ -381,7 +381,6 @@ def assign_institute_admin_to_group(sender, **kwargs):
 
 @receiver(post_delete, sender=InstituteAdmin)
 def remove_institute_admin_from_group(sender, **kwargs):
-    import ipdb; ipdb.set_trace()
     g = Group.objects.get(name='InstituteAdmins')
     kwargs['instance'].user.groups.remove(g)
 
