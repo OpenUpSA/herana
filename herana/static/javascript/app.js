@@ -10,5 +10,7 @@
   });
 })(django.jQuery);
 
-
+(function($){
+  $.datepicker._defaults.changeYear = true;
+})(grp.jQuery);
 
