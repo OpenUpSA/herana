@@ -84,7 +84,7 @@ RESEARCH_TEAM_MEMEBRS = [
     (4, 'Researchers representing the community'),
     (5, 'Independent researchers/consultants'),
     (6, 'Researchers representing the research project’s funders'),
-    (7, 'Other (Please specify)')
+    (7, 'Other academics (Please specify)')
 ]
 
 PROJECT_OUTPUT_TYPES = [

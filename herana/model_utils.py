@@ -95,7 +95,7 @@ CAPTURE_LABELS = {
     'amendments_permitted': _(
         'A2.3: To the best of your knowledge, are deviations or amendments to the request for proposal permitted by the funder?'),
     'public_domain': _(
-        'A2.4: Will the written up findings or data or other outputs of the project be available electronically in the public domain?'),
+        'A2.4: Are the project proposal, written up findings of the project available electronically in the public domain?'),
     'public_domain_url': _(
         'URL'),
     'adv_group': _(
@@ -109,13 +109,13 @@ CAPTURE_LABELS = {
     'team_members_text': _(
         "If other was selected, please specify."),
     'new_initiative': _(
-        'A3.2: Will any of the findings / results / outcomes of the project be used to implement or develop new products / services / interventions / policies?'),
+        'A3.2: Have any of the findings / results / outcomes of the project been used to implement or develop new products / services / interventions / policies?'),
     'new_initiative_text': _(
         'If yes, please describe'),
     'new_initiative_party': _(
-        'Who will implement or develop these new products / services / interventions / policies?'),
+        'Who implemented or developed these new products / services / interventions / policies?'),
     'new_initiative_party_text': _(
-        'Please provide the name of the third party or describe how the product / service / intervention / policy will be developed and / or implemented'),
+        'Please provide the name of the third party or describe how the product / service / intervention / policy was developed and / or implemented'),
     'funding': _(
         'A4.1: Please list sources of project funding, the number of years for which funding has been secured, and the amount of funding (in US$)'),
     'research': _(
