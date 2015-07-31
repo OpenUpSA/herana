@@ -109,6 +109,12 @@ class CollaboratorsFormSet(ProjectDetailFormSet):
 # Inlines
 # ------------------------------------------------------------------------------
 
+class ProjectLeaderUserInline(admin.StackedInline):
+    model = CustomUser
+    extra = 0
+    inline_classes = ('grp-collapse grp-open',)
+
+
 class ProjectFundingInline(admin.TabularInline):
     model = ProjectFunding
     extra = 1
@@ -232,6 +238,15 @@ class CustomUserAdmin(UserAdmin):
 # ------------------------------------------------------------------------------
 # ModelAdmins
 # ------------------------------------------------------------------------------
+
+class ProjectLeaderAdmin(admin.ModelAdmin):
+    # inlines = [ProjectLeaderUserInline]
+
+    def get_queryset(self, request):
+        if request.user.is_superuser:
+            return super(ProjectLeaderAdmin, self).get_queryset(request)
+        return self.model.objects.filter(institute=get_user_institute(request.user))
+
 
 class InstituteModelAdmin(admin.ModelAdmin):
     inlines = [StrategicObjectiveInline]
@@ -416,6 +431,9 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         reporting_period = institute.reporting_period.get(is_active=True)
         if not change:
             obj.reporting_period = reporting_period
+            # RECORD_STATUS:
+            #     1: Draft
+            #     2: Final
             if request.POST.get('_draft'):
                 obj.record_status = 1
             else:
@@ -442,7 +460,7 @@ admin.site.register(Institute, InstituteModelAdmin)
 admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(ReportingPeriod, ReportingPeriodAdmin)
 # admin.site.register(InstituteAdmin)
-admin.site.register(ProjectLeader)
+admin.site.register(ProjectLeader, ProjectLeaderAdmin)
 admin.site.register(ProjectDetail, ProjectDetailAdmin)
 
 # admin.site.register(User, InstituteAdminUserAdmin)
