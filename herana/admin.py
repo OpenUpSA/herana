@@ -416,7 +416,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         reporting_period = institute.reporting_period.get(is_active=True)
         if not change:
             obj.reporting_period = reporting_period
-            if request.POST['_draft']:
+            if request.POST.get('_draft'):
                 obj.record_status = 1
             else:
                 obj.record_status = 2
