@@ -56,7 +56,7 @@ class ProjectDetailForm(forms.ModelForm):
             msg = "If yes was selected above, please describe."
             self.add_error('new_initiative_text', msg)
 
-        if cleaned_data.get('new_initiative_party') == 1 and cleaned_data('new_initiative_party_text') == '':
+        if cleaned_data.get('new_initiative_party') == 1 and cleaned_data.get('new_initiative_party_text') == '':
             msg = "Please provide the name of the third party."
             self.add_error('new_initiative_party_text', msg)
 
