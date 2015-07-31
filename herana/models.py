@@ -270,7 +270,7 @@ class ProjectDetail(models.Model):
     record_status = models.PositiveIntegerField(choices=RECORD_STATUS)
     reporting_period = models.ForeignKey('ReportingPeriod')
     rejected = models.BooleanField(default=False)
-    rejected_detail = models.TextField(null=True)
+    rejected_detail = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
         return '%s - %s' % (self.name, self.reporting_period.name)
@@ -347,6 +347,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         Sends an email to this User.
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+    def is_institute_admin(self):
+        try:
+            g = Group.objects.get(name='InstituteAdmins')
+        except ObjectDoesNotExist:
+            return False
+        if g in self.groups.all():
+            return True
+        return False
 
     objects = CustomUserManager()
 
