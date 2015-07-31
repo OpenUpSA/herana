@@ -276,8 +276,8 @@ class ProjectDetail(models.Model):
         return '%s - %s' % (self.name, self.reporting_period.name)
 
     class Meta:
-        verbose_name='Project detail'
-        verbose_name_plural='Project details'
+        verbose_name='Engagement project'
+        verbose_name_plural='Engagement projects'
         permissions = (
             ('view_projectdetail', 'Can only view project details'),
             ('reject_projectdetail', 'Can reject the project which has been submitted')
