@@ -452,7 +452,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         obj.save()
 
     def get_form(self, request, obj=None, **kwargs):
-        if request.user.is_institute_admin():
+        if request.user.is_institute_admin() or request.user.is_superuser:
             self.form = ProjectDetailAdminForm
         return super(ProjectDetailAdmin, self).get_form(request, obj, **kwargs)
 
