@@ -28,7 +28,7 @@ from models import (
     CustomUser
 )
 
-from forms import ProjectDetailForm
+from forms import ProjectDetailForm, ProjectDetailAdminForm
 
 # ------------------------------------------------------------------------------
 # General utility functions
@@ -108,6 +108,12 @@ class CollaboratorsFormSet(ProjectDetailFormSet):
 # ------------------------------------------------------------------------------
 # Inlines
 # ------------------------------------------------------------------------------
+
+class ProjectLeaderUserInline(admin.StackedInline):
+    model = CustomUser
+    extra = 0
+    inline_classes = ('grp-collapse grp-open',)
+
 
 class ProjectFundingInline(admin.TabularInline):
     model = ProjectFunding
@@ -233,6 +239,15 @@ class CustomUserAdmin(UserAdmin):
 # ModelAdmins
 # ------------------------------------------------------------------------------
 
+class ProjectLeaderAdmin(admin.ModelAdmin):
+    # inlines = [ProjectLeaderUserInline]
+
+    def get_queryset(self, request):
+        if request.user.is_superuser:
+            return super(ProjectLeaderAdmin, self).get_queryset(request)
+        return self.model.objects.filter(institute=get_user_institute(request.user))
+
+
 class InstituteModelAdmin(admin.ModelAdmin):
     inlines = [StrategicObjectiveInline]
 
@@ -329,7 +344,7 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
 
 class ProjectDetailAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'record_status',)
+    list_display = ('__unicode__', 'record_status', 'rejected')
     list_filter = (ReportingPeriodFilter, 'record_status')
     form = ProjectDetailForm
     formfield_overrides = {
@@ -405,23 +420,41 @@ class ProjectDetailAdmin(admin.ModelAdmin):
             readonly_fields = []
             for field in self.form.base_fields.keys():
                 if field not in self.form.Meta.exclude:
-                    readonly_fields.append(field)
+                    if field not in self.form.Meta.admin_editable:
+                        readonly_fields.append(field)
             return readonly_fields
         return self.readonly_fields
 
     def save_model(self, request, obj, form, change):
-        # This assumes that only one reporting period can be active at a time
-        # for a given Institute.
+        """
+        This assumes that only one reporting period can be active at a time
+        for a given Institute.
+        RECORD_STATUS:
+            1: Draft
+            2: Final
+        """
         institute = get_user_institute(request.user)
         reporting_period = institute.reporting_period.get(is_active=True)
         if not change:
+            # New project being saved
             obj.reporting_period = reporting_period
             if request.POST.get('_draft'):
                 obj.record_status = 1
             else:
                 obj.record_status = 2
-        obj.proj_leader = request.user.project_leader
+            obj.proj_leader = request.user.project_leader
+        else:
+            # Update status to draft or complete
+            if request.POST.get('_draft') and obj.record_status == 2:
+                obj.record_status = 1
+            if not request.POST.get('_draft') and obj.record_status == 1:
+                obj.record_status = 2
         obj.save()
+
+    def get_form(self, request, obj=None, **kwargs):
+        if request.user.is_institute_admin() or request.user.is_superuser:
+            self.form = ProjectDetailAdminForm
+        return super(ProjectDetailAdmin, self).get_form(request, obj, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "faculty":
@@ -442,7 +475,7 @@ admin.site.register(Institute, InstituteModelAdmin)
 admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(ReportingPeriod, ReportingPeriodAdmin)
 # admin.site.register(InstituteAdmin)
-admin.site.register(ProjectLeader)
+admin.site.register(ProjectLeader, ProjectLeaderAdmin)
 admin.site.register(ProjectDetail, ProjectDetailAdmin)
 
 # admin.site.register(User, InstituteAdminUserAdmin)

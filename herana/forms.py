@@ -6,9 +6,10 @@ class ProjectDetailForm(forms.ModelForm):
     class Meta:
         model = ProjectDetail
         exclude = ('proj_leader', 'date_created', 'record_status', 'reporting_period', 'rejected', 'rejected_detail')
+        admin_ediatble = []
 
     def _clean_fields(self):
-        # If we are saving a draft, only the header field is required.
+        # If we are saving a draft, only the name field is required.
         if '_draft' in self.data:
             for name, field in self.fields.items():
                 if not name == 'name':
@@ -85,3 +86,10 @@ class ProjectDetailForm(forms.ModelForm):
                 if item.code == 6 and cleaned_data.get('student_nature_text') == '':
                     msg = "Please describe the nature of student participation."
                     self.add_error('student_nature_text', msg)
+
+
+class ProjectDetailAdminForm(forms.ModelForm):
+    class Meta:
+        model = ProjectDetail
+        exclude = ('proj_leader', 'date_created', 'record_status', 'reporting_period')
+        admin_editable = ['rejected', 'rejected_detail']
