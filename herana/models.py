@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import Group, Permission
 from django.utils.translation import ugettext_lazy as _
@@ -181,7 +182,6 @@ class ProjectDetail(models.Model):
     name = models.CharField(max_length=512,
                             verbose_name=CAPTURE_LABELS['name'])
     proj_leader = models.ForeignKey('ProjectLeader')
-    date_created = models.DateField(auto_now_add=True)
     is_leader = models.CharField(choices=YESNO, max_length=1, null=True,
                                  verbose_name=CAPTURE_LABELS['is_leader'])
     is_flagship = models.CharField(choices=YESNO, max_length=1, null=True,
@@ -269,8 +269,11 @@ class ProjectDetail(models.Model):
                                               verbose_name=CAPTURE_LABELS['external_collaboration'])
     record_status = models.PositiveIntegerField(choices=RECORD_STATUS)
     reporting_period = models.ForeignKey('ReportingPeriod')
-    rejected = models.BooleanField(default=False)
+    is_rejected = models.BooleanField(default=False)
     rejected_detail = models.TextField(null=True, blank=True)
+    is_flagged = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
+    created_at = models.DateField(auto_now_add=True)
 
     def __unicode__(self):
         return '%s - %s' % (self.name, self.reporting_period.name)

@@ -344,7 +344,7 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
 
 class ProjectDetailAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'record_status', 'rejected')
+    list_display = ('__unicode__', 'record_status')
     list_filter = (ReportingPeriodFilter, 'record_status')
     form = ProjectDetailForm
     formfield_overrides = {
@@ -407,6 +407,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = self.model.objects\
+                .filter(is_deleted=False)\
                 .filter(proj_leader__institute=get_user_institute(request.user))
         if user_has_perm(request, self.opts, 'view'):
             # Don't include draft records
