@@ -344,7 +344,7 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
 
 class ProjectDetailAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'record_status')
+    list_display = ('id', '__unicode__', 'record_status')
     list_filter = (ReportingPeriodFilter, 'record_status')
     form = ProjectDetailForm
     formfield_overrides = {
@@ -445,11 +445,19 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                 obj.record_status = 2
             obj.proj_leader = request.user.project_leader
         else:
-            # Update status to draft or complete
-            if request.POST.get('_draft') and obj.record_status == 2:
-                obj.record_status = 1
-            if not request.POST.get('_draft') and obj.record_status == 1:
-                obj.record_status = 2
+            if obj.record_status == 1:
+                if request.POST.get('_save'):
+                    obj.record_status = 2
+                if obj.reporting_period != reporting_period:
+                    obj.reporting_period = reporting_period
+
+            if obj.record_status == 2:
+                if request.POST.get('_draft'):
+                    obj.record_status = 1
+                if obj.reporting_period != reporting_period:
+                    # Save a copy of the instance
+                    obj.reporting_period = reporting_period
+                    obj.pk = None
         obj.save()
 
     def get_form(self, request, obj=None, **kwargs):
