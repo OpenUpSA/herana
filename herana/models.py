@@ -406,7 +406,7 @@ def assign_project_leader_to_group(sender, **kwargs):
             # Move this to migrations file
             g = Group.objects.create(name='ProjectLeaders')
             admin_permissions = [
-                'add_projectdetail', 'delete_projectdetail', 'change_projectdetail',
+                'add_projectdetail', 'change_projectdetail',
                 'add_projectfunding', 'delete_projectfunding', 'change_projectfunding',
                 'add_phdstudent', 'delete_phdstudent', 'change_phdstudent',
                 'add_newcoursedetail', 'delete_newcoursedetail', 'change_newcoursedetail',

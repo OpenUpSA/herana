@@ -445,13 +445,14 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                 obj.record_status = 2
             obj.proj_leader = request.user.project_leader
         else:
-            if obj.record_status == 1:
+            if request.POST.get('_delete'):
+                obj.is_deleted = True
+            elif obj.record_status == 1:
                 if request.POST.get('_save'):
                     obj.record_status = 2
                 if obj.reporting_period != reporting_period:
                     obj.reporting_period = reporting_period
-
-            if obj.record_status == 2:
+            elif obj.record_status == 2:
                 if request.POST.get('_draft'):
                     obj.record_status = 1
                 if obj.reporting_period != reporting_period:
