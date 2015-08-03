@@ -25,7 +25,8 @@ from models import (
     NewCourseDetail,
     CourseReqDetail,
     Collaborators,
-    CustomUser
+    CustomUser,
+    ResearchTeamMember
 )
 
 from forms import ProjectDetailForm, ProjectDetailAdminForm
@@ -405,6 +406,15 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                 return True
         return False
 
+    def get_list_display(self, request):
+        """
+        Only show is_flagged field to admin users
+        """
+        if request.user.is_institute_admin() or request.user.is_superuser:
+            list_display = self.list_display + ('is_flagged',)
+            return list_display
+        return self.list_display
+
     def get_queryset(self, request):
         qs = self.model.objects\
                 .filter(is_deleted=False)\
@@ -459,6 +469,11 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                     # Save a copy of the instance
                     obj.reporting_period = reporting_period
                     obj.pk = None
+        # Flag as suspect if other academics is the only chosen team member
+        # 7: Other academics
+        other_academics = ResearchTeamMember.objects.get(id=7)
+        if other_academics in form.cleaned_data.get('team_members') and len(form.cleaned_data.get('team_members')) == 1:
+            obj.is_flagged = True
         obj.save()
 
     def get_form(self, request, obj=None, **kwargs):
