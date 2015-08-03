@@ -47,7 +47,8 @@ INSTALLED_APPS = (
 
     'herana',
     'guardian',
-    'registration'
+    'registration',
+    'debug'
 )
 
 if DEBUG:
