@@ -25,7 +25,8 @@ from models import (
     NewCourseDetail,
     CourseReqDetail,
     Collaborators,
-    CustomUser
+    CustomUser,
+    ResearchTeamMember
 )
 
 from forms import ProjectDetailForm, ProjectDetailAdminForm
@@ -344,7 +345,7 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
 
 class ProjectDetailAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'record_status', 'rejected')
+    list_display = ('id', '__unicode__', 'record_status')
     list_filter = (ReportingPeriodFilter, 'record_status')
     form = ProjectDetailForm
     formfield_overrides = {
@@ -405,8 +406,18 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                 return True
         return False
 
+    def get_list_display(self, request):
+        """
+        Only show is_flagged field to admin users
+        """
+        if request.user.is_institute_admin() or request.user.is_superuser:
+            list_display = self.list_display + ('is_flagged',)
+            return list_display
+        return self.list_display
+
     def get_queryset(self, request):
         qs = self.model.objects\
+                .filter(is_deleted=False)\
                 .filter(proj_leader__institute=get_user_institute(request.user))
         if user_has_perm(request, self.opts, 'view'):
             # Don't include draft records
@@ -444,11 +455,25 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                 obj.record_status = 2
             obj.proj_leader = request.user.project_leader
         else:
-            # Update status to draft or complete
-            if request.POST.get('_draft') and obj.record_status == 2:
-                obj.record_status = 1
-            if not request.POST.get('_draft') and obj.record_status == 1:
-                obj.record_status = 2
+            if request.POST.get('_delete'):
+                obj.is_deleted = True
+            elif obj.record_status == 1:
+                if request.POST.get('_save'):
+                    obj.record_status = 2
+                if obj.reporting_period != reporting_period:
+                    obj.reporting_period = reporting_period
+            elif obj.record_status == 2:
+                if request.POST.get('_draft'):
+                    obj.record_status = 1
+                if obj.reporting_period != reporting_period:
+                    # Save a copy of the instance
+                    obj.reporting_period = reporting_period
+                    obj.pk = None
+        # Flag as suspect if other academics is the only chosen team member
+        # 7: Other academics
+        other_academics = ResearchTeamMember.objects.get(id=7)
+        if other_academics in form.cleaned_data.get('team_members') and len(form.cleaned_data.get('team_members')) == 1:
+            obj.is_flagged = True
         obj.save()
 
     def get_form(self, request, obj=None, **kwargs):

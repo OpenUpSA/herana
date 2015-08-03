@@ -5,21 +5,30 @@
 <!-- Submit-Row -->
 {% block submit_buttons_bottom %}
 <div class="submit-row">
-  <footer class="grp-module grp-submit-row grp-fixed-footer">
-      <header style="display:none"><h1>Submit Options</h1></header>
-      <ul>
-          {% if user.is_institute_admin %}
-          <li><input class="grp-button grp-default" type="submit" value="{% trans 'Save submission' %}" name="_save" /></li>
-          {# <li><input class="grp-button grp-error" type="submit" value="{% trans 'Reject submission' %}" name="_reject" /></li> #}
-          {% else %}
-          {% url opts|admin_urlname:'delete' original.pk|admin_urlquote as delete_url %}
-          <li class="grp-float-left"><a class="grp-button grp-delete-link" href="{% add_preserved_filters delete_url %}">{% trans "Delete" %}</a></li>
-          <li><input class="grp-button grp-default" type="submit" value="{% trans 'Submit as final' %}" name="_save" /></li>
-          {# <li><input class="grp-button" type="submit" value="{% trans 'Save as new' %}" name="_saveasnew" /></li> #}
-          <li><input class="grp-button" type="submit" value="{% trans 'Save as draft' %}" name="_draft" /></li>
-          {% endif %}
-      </ul>
-  </footer>
+    <footer class="grp-module grp-submit-row grp-fixed-footer">
+        <header style="display:none"><h1>Submit Options</h1></header>
+        <ul>
+        {% if user.is_institute_admin %}
+            <li><input class="grp-button grp-default" type="submit" value="{% trans 'Save submission' %}" name="_save" /></li>
+            {# <li><input class="grp-button grp-error" type="submit" value="{% trans 'Reject submission' %}" name="_reject" /></li> #}
+        {% else %}
+            {% url opts|admin_urlname:'delete' original.pk|admin_urlquote as delete_url %}
+            <li class="grp-float-left">
+                {# <a class="grp-button grp-delete-link" href="{% add_preserved_filters delete_url %}">{% trans "Delete" %}</a> #}
+                <input class="grp-button grp-default" type="submit" value="{% trans 'Delete' %}" name="_delete" />
+            </li>
+            <li><input class="grp-button grp-default" type="submit" value="{% trans 'Submit as final' %}" name="_save" /></li>
+
+            {# {% if original.record_status == 2 and original.reporting_period != original.proj_leader.institute.reporing_period.last %} #}
+            {# <li><input class="grp-button" type="submit" value="{% trans 'Save as new' %}" name="_saveasnew" /></li> #}
+            {# {% endif %} #}
+
+            {% if original.record_status != 2 %}
+            <li><input class="grp-button" type="submit" value="{% trans 'Save as draft' %}" name="_draft" /></li>
+            {% endif %}
+        {% endif %}
+        </ul>
+    </footer>
 </div>
 
 {% endblock %}

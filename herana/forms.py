@@ -5,7 +5,10 @@ from models import ProjectDetail
 class ProjectDetailForm(forms.ModelForm):
     class Meta:
         model = ProjectDetail
-        exclude = ('proj_leader', 'date_created', 'record_status', 'reporting_period', 'rejected', 'rejected_detail')
+        exclude = (
+            'proj_leader', 'record_status', 'reporting_period', 'is_rejected', 'rejected_detail',
+            'is_flagged', 'is_deleted', 'modified_at', 'created_at'
+        )
         admin_ediatble = []
 
     def _clean_fields(self):
@@ -91,5 +94,5 @@ class ProjectDetailForm(forms.ModelForm):
 class ProjectDetailAdminForm(forms.ModelForm):
     class Meta:
         model = ProjectDetail
-        exclude = ('proj_leader', 'date_created', 'record_status', 'reporting_period')
-        admin_editable = ['rejected', 'rejected_detail']
+        exclude = ('proj_leader', 'created_at', 'record_status', 'reporting_period', 'is_deleted')
+        admin_editable = ['is_rejected', 'rejected_detail', 'is_flagged']
