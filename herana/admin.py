@@ -331,12 +331,7 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         if not request.user.is_superuser:
-            if user_has_perm(request, self.opts, 'add'):
-                institute = request.user.institute_admin.institute
-                if self.model.objects\
-                                .filter(institute=institute)\
-                                .filter(is_active=True):
-                    return False
+            if user_has_perm(request, self.opts, 'change'):
                 return True
         return False
 
