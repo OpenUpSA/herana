@@ -153,7 +153,8 @@ class PHDStudent(models.Model):
 
 class ProjectOutput(models.Model):
     project = models.ForeignKey('ProjectDetail')
-    type = models.ForeignKey('ProjectOutputType')
+    type = models.ForeignKey('ProjectOutputType',
+                             verbose_name=PROJECT_OUTPUT_LABELS['type'])
     output_title = models.CharField(max_length=255, null=True, blank=True,
                                     verbose_name=PROJECT_OUTPUT_LABELS['output_title'])
     pub_title = models.CharField(max_length=255, null=True, blank=True,
