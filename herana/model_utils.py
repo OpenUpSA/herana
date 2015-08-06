@@ -59,6 +59,14 @@ RECORD_STATUS = (
     (2, 'Final'),
 )
 
+PROJECT_OUTPUT_LABELS = {
+    'output_title': 'Title of output (e.g. title of journal article, book chapter, presentation, performance, etc.)',
+    'pub_title': 'Title of journal, book, conference, blog, periodical, event, etc.',
+    'url': 'URL',
+    'doi': 'DOI',
+    'attachment': 'Attachment (Please provide an attachment of the output should a URL not be available. If the output is confidential, embargoed, etc., please provide a PDF of the cover page only)'
+}
+
 CAPTURE_LABELS = {
     'name': _(
         'P1.0: Please enter the name of the engagement project for which you wish to capture the details.'),
