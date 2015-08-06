@@ -121,7 +121,7 @@ class ProjectFundingInline(admin.TabularInline):
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('funding source')
-    verbose_name_plural = _('Please list sources of project funding, the number of years for which funding has been secured, and the amount of funding (in US$).')
+    verbose_name_plural = _('6.1: Please list sources of project funding, the number of years for which funding has been secured, and the amount of funding (in US$).')
 
 
 class PHDStudentInline(admin.TabularInline):
@@ -130,7 +130,7 @@ class PHDStudentInline(admin.TabularInline):
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('student')
-    verbose_name_plural = _('If yes, please provide their names.')
+    verbose_name_plural = _('7.2.1: If yes, please provide their names.')
 
 
 class ProjectOutputInline(admin.StackedInline):
@@ -138,7 +138,7 @@ class ProjectOutputInline(admin.StackedInline):
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('Project output')
-    verbose_name_plural = _('Please add the completed publications and other outputs for this project.')
+    verbose_name_plural = _('8.1: Please add the completed publications and other outputs for this project.')
 
 
 class NewCourseDetailInline(admin.TabularInline):
@@ -147,7 +147,7 @@ class NewCourseDetailInline(admin.TabularInline):
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('new course')
-    verbose_name_plural = _('If yes, please provide the new course details')
+    verbose_name_plural = _('9.2.1: If yes, please provide the new course details')
 
 
 class CourseReqDetailInline(admin.TabularInline):
@@ -156,7 +156,7 @@ class CourseReqDetailInline(admin.TabularInline):
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('required course')
-    verbose_name_plural = _('If yes, please provide the course details.')
+    verbose_name_plural = _('9.5.1: If yes, please provide the course details.')
 
 
 class CollaboratorsInline(admin.TabularInline):
@@ -165,7 +165,7 @@ class CollaboratorsInline(admin.TabularInline):
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('collaborator')
-    verbose_name_plural = _('If yes, please provide the collaborator details.')
+    verbose_name_plural = _('10.1.1: If yes, please provide the collaborator details.')
 
 
 class InstituteAdminInline(admin.TabularInline):
@@ -389,6 +389,46 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         'course_requirement': admin.HORIZONTAL,
         'external_collaboration': admin.HORIZONTAL
     }
+
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'is_leader', 'is_flagship'),
+            'description': ''
+        }),
+        (None, {
+            'fields': ('project_status', 'start_date', 'end_date', 'faculty', 'multi_faculty', 'description', 'focus_area',
+                'focus_area_text', 'classification'),
+            'description': ''
+        }),
+        (None, {
+            'fields': ('strategic_objectives', 'outcomes', 'beneficiaries'),
+            'description': ''
+        }),
+        (None, {
+            'fields': ('initiation', 'authors', 'amendments_permitted', 'public_domain', 'public_domain_url', 'adv_group',
+                'adv_group_rep', 'adv_group_freq'),
+            'description': ''
+        }),
+        (None, {
+            'fields': ('team_members', 'team_members_text', 'new_initiative', 'new_initiative_text',
+                'new_initiative_party', 'new_initiative_party_text'),
+            'description': ''
+        }),
+        (None, {
+            'fields': ('research', 'research_text', 'phd_research'),
+            'description': ''
+        }),
+        (None, {
+            'fields': ('curriculum_changes', 'curriculum_changes_text', 'new_courses', 'students_involved', 'student_types',
+                'student_nature', 'student_nature_text'),
+            'description': ''
+        }),
+        (None, {
+            'fields': ('course_requirement', 'external_collaboration'),
+            'description': ''
+        }),
+    )
+
 
     class Media:
         js = ('javascript/app.js',)

@@ -60,104 +60,99 @@ RECORD_STATUS = (
 )
 
 PROJECT_OUTPUT_LABELS = {
-    'output_title': 'Title of output (e.g. title of journal article, book chapter, presentation, performance, etc.)',
-    'pub_title': 'Title of journal, book, conference, blog, periodical, event, etc.',
-    'url': 'URL',
-    'doi': 'DOI',
-    'attachment': 'Attachment (Please provide an attachment of the output should a URL not be available. If the output is confidential, embargoed, etc., please provide a PDF of the cover page only)'
+    'type': _('8.1.1: Output type'),
+    'output_title': _('8.1.2: Title of output (e.g. title of journal article, book chapter, presentation, performance, etc.)'),
+    'pub_title': _('8.1.3: Title of journal, book, conference, blog, periodical, event, etc.'),
+    'url': _('8.1.4: URL'),
+    'doi': _('8.1.5: DOI'),
+    'attachment': _('8.1.6: Attachment (Please provide an attachment of the output should a URL not be available. If the output is confidential, embargoed, etc., please provide a PDF of the cover page only)')
 }
 
 CAPTURE_LABELS = {
     'name': _(
-        'P1.0: Please enter the name of the engagement project for which you wish to capture the details.'),
-    'is_leader': _('G1: Are you the designated leader of this engagement project?'),
-    'is_flagship': _('G2: Do you consider this to be your flagship engagement project?'),
+        '1.1: Please enter the name of the engagement project for which you wish to capture the details.'),
+    'is_leader': _('1.2: Are you the designated leader of this engagement project?'),
+    'is_flagship': _('1.3: Do you consider this to be your flagship engagement project?'),
     'project_status': _(
-        'P2.0: Project status'),
+        '2.1: Project status'),
     'start_date': _(
-        'Start date'),
+        '2.2.1: Start date'),
     'end_date': _(
-        'End date'),
+        '2.2.2: End date'),
     'faculty': (
-        'P3.0: In which faculty / school is the project located?'),
+        '2.3: In which faculty / school is the project located?'),
     'multi_faculty': _(
-        'P3.1: Does the project span multiple faculties / schools?'),
+        '2.3.1: Does the project span multiple faculties / schools?'),
     'description': _(
-        'P4.0: Please provide a short description of the project.'),
+        '2.4: Please provide a short description of the project.'),
     'focus_area': _(
-        'P5.0: In which of the following areas would you place your project?'),
+        '2.5: In which of the following areas would you place your project?'),
     'focus_area_text': _(
-        'If other was chosen above, please describe.'),
+        '2.5.1: If other was chosen above, please describe.'),
     'classification': _(
-        'P6.0: How would you classify this flagship engagement activity?'),
+        '2.6: How would you classify this flagship engagement activity?'),
     'strategic_objectives': _(
-        'A1.1: What are the 4 main strategic objectives of the project?'),
+        '3.1: What are the 4 main strategic objectives of the project?'),
     'outcomes': _(
-        'A1.2: What are the planned outcomes of the project?'),
+        '3.2: What are the planned outcomes of the project?'),
     'beneficiaries': _(
-        'A1.3: Who are the intended beneficiaries of the project?'),
+        '3.3: Who are the intended beneficiaries of the project?'),
     'initiation': _(
-        'A2.1: Which one of the following statements best describes how the project was initiated?'),
+        '4.1: Which one of the following statements best describes how the project was initiated?'),
     'authors': _(
-        'A2.2: How many authors were involved in the writing of the project proposal / plan?'),
+        '4.2: How many authors were involved in the writing of the project proposal / plan?'),
     'amendments_permitted': _(
-        'A2.3: To the best of your knowledge, are deviations or amendments to the request for proposal permitted by the funder?'),
+        '4.3: To the best of your knowledge, are deviations or amendments to the request for proposal permitted by the funder?'),
     'public_domain': _(
-        'A2.4: Are the project proposal, written up findings of the project available electronically in the public domain?'),
+        '4.4: Are the project proposal, written up findings of the project available electronically in the public domain?'),
     'public_domain_url': _(
-        'URL'),
+        '4.4.1: URL'),
     'adv_group': _(
-        'A2.6: Does the project have an advisory group?'),
+        '4.5: Does the project have an advisory group?'),
     'adv_group_rep': _(
-        'A2.6.1: If yes, are any of the following members of the advisory group?'),
+        '4.5.1: If yes, are any of the following members of the advisory group?'),
     'adv_group_freq': _(
-        'A2.7: How often does the advisory group meet?'),
+        '4.6: How often does the advisory group meet?'),
     'team_members': _(
-        'A3.1: Are any of the following members of the research team?'),
+        '5.1: Are any of the following members of the research team?'),
     'team_members_text': _(
-        "If other was selected, please specify."),
+        "5.1.1: If other was selected, please specify."),
     'new_initiative': _(
-        'A3.2: Have any of the findings / results / outcomes of the project been used to implement or develop new products / services / interventions / policies?'),
+        '5.2: Have any of the findings / results / outcomes of the project been used to implement or develop new products / services / interventions / policies?'),
     'new_initiative_text': _(
-        'If yes, please describe'),
+        '5.2.1: If yes, please describe'),
     'new_initiative_party': _(
-        'Who implemented or developed these new products / services / interventions / policies?'),
+        '5.2.2: Who implemented or developed these new products / services / interventions / policies?'),
     'new_initiative_party_text': _(
-        'Please provide the name of the third party or describe how the product / service / intervention / policy was developed and / or implemented'),
-    'funding': _(
-        'A4.1: Please list sources of project funding, the number of years for which funding has been secured, and the amount of funding (in US$)'),
+        '5.2.3: Please provide the name of the third party or describe how the product / service / intervention / policy was developed and / or implemented.'),
     'research': _(
-        'C1.1.1: In terms of the research done for the project (if applicable), which statement best describes the project'),
+        '7.1: In terms of the research done for the project (if applicable), which statement best describes the project.'),
     'research_text': _(
-        'Please describe'),
+        '7.1.1: Please describe.'),
     'phd_research': _(
-        'C.1.1.2: Is a student\'s PhD research linked to this project?'),
-    'phd_research_name': _(
-        'If yes, please provide their names'),
+        '7.2: Is a student\'s PhD research linked to this project?'),
     'curriculum_changes': _(
-        'C3.1: Has the project lead to any contributions or changes to the curriculum?'),
+        '9.1: Has the project lead to any contributions or changes to the curriculum?'),
     'curriculum_changes_text': _(
-        'If yes, please describe the types of changes made to the curriculum as a result of the project'),
+        '9.1.1: If yes, please describe the types of changes made to the curriculum as a result of the project.'),
     'new_courses': _(
-        'C3.2: Have any new courses / modules / programmes been introduced as a result of this project?'),
+        '9.2: Have any new courses / modules / programmes been introduced as a result of this project?'),
     'new_course_detail': _(
-        'If yes, please describe'),
+        '9.2.1: If yes, please describe.'),
     'students_involved': _(
-        'C3.3.1: Are students involved in the project?'),
+        '9.3: Are students involved in the project?'),
     'student_types': _(
-        'If yes, please indicate types of students participating'),
+        '9.3.1: If yes, please indicate types of students participating.'),
     'student_nature': _(
-        'C3.3.2: What is the nature of student participation in the project?'),
+        '9.4: What is the nature of student participation in the project?'),
     'student_nature_text': _(
-        'If other was selected, please describe.'),
+        '9.4.1: If other was selected, please describe.'),
     'course_requirement': _(
-        'C3.4: Is participation in the project a requirement for the completion of an existing course / degree offered by the university?'),
+        '9.5: Is participation in the project a requirement for the completion of an existing course / degree offered by the university?'),
     'course_req_detail': _(
-        'If yes, please describe'),
+        '9.5.1: If yes, please describe.'),
     'external_collaboration': _(
-        'C4.4: Did you collaborate with academics from other universities on the project?'),
-    'collaboration_detail': _(
-        'If yes, please describe'),
+        '10.1: Did you collaborate with academics from other universities on the project?'),
     'record_status': _(
         'Record status'),
     'reporting_period': _(
