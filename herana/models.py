@@ -154,7 +154,8 @@ class PHDStudent(models.Model):
 class ProjectOutput(models.Model):
     project = models.ForeignKey('ProjectDetail')
     type = models.ForeignKey('ProjectOutputType')
-    title = models.CharField(max_length=255, null=True, blank=True)
+    output_title = models.CharField(max_length=255, null=True, blank=True)
+    pub_title = models.CharField(max_length=255, null=True, blank=True)
     url = models.URLField(null=True, blank=True)
     doi = models.CharField(max_length=128, null=True, blank=True)
     attachment = models.FileField(upload_to='projects/attachments/output/', null=True, blank=True)
