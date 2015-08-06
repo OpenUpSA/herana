@@ -28,17 +28,18 @@ NUMBER_AUTHORS = (
 )
 
 ADV_GROUP_FREQ = (
-    (None, _("N/A")),
     (1, _('Monthly')),
     (2, _('Quarterly')),
     (3, _('Annually')),
-    (4, _('Ad hoc'))
+    (4, _('Ad hoc')),
+    (None, _("Not applicable"))
 )
 
 INITIATIVE_PARTIES = (
     (1, _('A third party has been contracted to develop the product / service / intervention / policy')),
     (2, _('The project team will develop the product / service / intervention / policy')),
     (3, _('Other')),
+    (None, _('Not applicable'))
 )
 
 RESEARCH_CLASSIFICATION = (

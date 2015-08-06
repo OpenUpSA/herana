@@ -244,7 +244,7 @@ class ProjectDetail(models.Model):
                                       verbose_name=CAPTURE_LABELS['new_initiative'])
     new_initiative_text = models.TextField(null=True, blank=True,
                                            verbose_name=CAPTURE_LABELS['new_initiative_text'])
-    new_initiative_party = models.PositiveIntegerField(choices=INITIATIVE_PARTIES, null=True, blank=True,
+    new_initiative_party = models.PositiveIntegerField(choices=INITIATIVE_PARTIES, default=None, null=True, blank=True,
                                                        verbose_name=CAPTURE_LABELS['new_initiative_party'])
     new_initiative_party_text = models.TextField(null=True, blank=True,
                                                  verbose_name=CAPTURE_LABELS['new_initiative_party_text'])
