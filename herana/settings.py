@@ -113,7 +113,17 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "herana.context_processors.google_analytics",
     )
 
-
+# file uploads
+if not DEBUG:
+    DEFAULT_FILE_STORAGE = 'herana.botopatch.S3Storage'
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = "herana-media"
+    AWS_S3_HOST = "s3-eu-west-1.amazonaws.com"
+    AWS_HEADERS = {
+        'Cache-Control': 'max-age=86400',
+    }
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/

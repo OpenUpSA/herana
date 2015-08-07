@@ -1,4 +1,6 @@
+import os
 from datetime import datetime
+
 from django.db import models
 from django.contrib.auth.models import Group, Permission
 from django.utils.translation import ugettext_lazy as _
@@ -15,12 +17,26 @@ from model_utils import *  # noqa
 
 
 # ------------------------------------------------------------------------------
+# General utilities
+# ------------------------------------------------------------------------------
+
+def image_filename(instance, filename):
+    """ Make S3 image filenames
+    """
+    return 'images/%s/%s' % (instance.id, os.path.basename(filename))
+
+def attachment_filename(instance, filename):
+    """ Make S3 attachment filenames relative to the engagement project,
+    this may be modified to ensure it's unique by the storage system. """
+    return 'attachments/%s/%s' % (instance.project.id, os.path.basename(filename))
+
+# ------------------------------------------------------------------------------
 # Models for administration of an institute
 # ------------------------------------------------------------------------------
 
 class Institute(models.Model):
     name = models.CharField(max_length=256)
-    logo = models.ImageField(blank=True, null=True)
+    logo = models.ImageField(upload_to=image_filename, blank=True, null=True)
 
     def __unicode__(self):
         return self.name
@@ -163,7 +179,7 @@ class ProjectOutput(models.Model):
                           verbose_name=PROJECT_OUTPUT_LABELS['url'])
     doi = models.CharField(max_length=128, null=True, blank=True,
                            verbose_name=PROJECT_OUTPUT_LABELS['doi'])
-    attachment = models.FileField(upload_to='projects/attachments/output/', null=True, blank=True,
+    attachment = models.FileField(upload_to=attachment_filename, null=True, blank=True,
                                   verbose_name=PROJECT_OUTPUT_LABELS['attachment'])
 
 
