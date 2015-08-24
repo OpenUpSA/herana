@@ -434,9 +434,6 @@ def assign_institute_admin_to_group(sender, **kwargs):
             g = Group.objects.create(name='InstituteAdmins')
             admin_permissions = [
                 'add_projectleader', 'delete_projectleader', 'change_projectleader',
-                'add_orglevel1', 'delete_orglevel1', 'change_orglevel1',
-                'add_orglevel2', 'delete_orglevel2', 'change_orglevel2',
-                'add_orglevel3', 'delete_orglevel3', 'change_orglevel3',
                 'add_reportingperiod', 'change_reportingperiod', 'delete_reportingperiod',
                 'change_projectdetail', 'view_projectdetail', 'reject_projectdetail'
             ]
