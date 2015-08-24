@@ -41,6 +41,9 @@ class Institute(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name']
+
 
 class StrategicObjective(models.Model):
     institute = models.ForeignKey('Institute')
@@ -50,7 +53,7 @@ class StrategicObjective(models.Model):
         return self.statement
 
 
-class Faculty(models.Model):
+class OrgLevel(models.Model):
     name = models.CharField(max_length=256)
     institute = models.ForeignKey('Institute')
 
@@ -58,8 +61,32 @@ class Faculty(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = _("Faculties")
+        verbose_name = _('Organisational level')
+        verbose_name_plural = _("Organisational Levels")
         ordering = ['name']
+
+
+class OrgLevel1(OrgLevel):
+
+    class Meta:
+        verbose_name = _('Organisational Level 1')
+        verbose_name_plural = _('Organisational Level 1')
+
+
+class OrgLevel2(OrgLevel):
+    parent = models.ForeignKey('OrgLevel1')
+
+    class Meta:
+        verbose_name = _('Organisational Level 2')
+        verbose_name_plural = _('Organisational Level 2')
+
+
+class OrgLevel3(OrgLevel):
+    parent = models.ForeignKey('OrgLevel2')
+
+    class Meta:
+        verbose_name = _('Organisational Level 3')
+        verbose_name_plural = _('Organisational Level 3')
 
 
 class ReportingPeriod(models.Model):
@@ -90,7 +117,9 @@ class InstituteAdmin(models.Model):
 class ProjectLeader(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='project_leader')
     institute = models.ForeignKey('Institute')
-    faculty = models.ForeignKey('Faculty')
+    org_level_1 = models.ForeignKey('OrgLevel1')
+    org_level_2 = models.ForeignKey('OrgLevel2', null=True, blank=True)
+    org_level_3 = models.ForeignKey('OrgLevel3', null=True, blank=True)
     staff_no = models.CharField(max_length=64)
     position = models.CharField(max_length=128)
 
@@ -205,6 +234,10 @@ class ProjectDetail(models.Model):
     name = models.CharField(max_length=512,
                             verbose_name=CAPTURE_LABELS['name'])
     proj_leader = models.ForeignKey('ProjectLeader')
+    institute = models.ForeignKey('Institute')
+    org_level_1 = models.ForeignKey('OrgLevel1')
+    org_level_2 = models.ForeignKey('OrgLevel2', null=True, blank=True)
+    org_level_3 = models.ForeignKey('OrgLevel3', null=True, blank=True)
     is_leader = models.CharField(choices=YESNO, max_length=1, null=True,
                                  verbose_name=CAPTURE_LABELS['is_leader'])
     is_flagship = models.CharField(choices=YESNO, max_length=1, null=True,
@@ -215,8 +248,6 @@ class ProjectDetail(models.Model):
                                   verbose_name=CAPTURE_LABELS['start_date'])
     end_date = models.DateField(null=True, blank=True,
                                 verbose_name=CAPTURE_LABELS['end_date'])
-    faculty = models.ForeignKey('Faculty', null=True,
-                                verbose_name=CAPTURE_LABELS['faculty'])
     multi_faculty = models.CharField(choices=YESNO, max_length=1, null=True,
                                      verbose_name=CAPTURE_LABELS['multi_faculty'])
     description = models.TextField(null=True,
@@ -403,7 +434,9 @@ def assign_institute_admin_to_group(sender, **kwargs):
             g = Group.objects.create(name='InstituteAdmins')
             admin_permissions = [
                 'add_projectleader', 'delete_projectleader', 'change_projectleader',
-                'add_faculty', 'delete_faculty', 'change_faculty',
+                'add_orglevel1', 'delete_orglevel1', 'change_orglevel1',
+                'add_orglevel2', 'delete_orglevel2', 'change_orglevel2',
+                'add_orglevel3', 'delete_orglevel3', 'change_orglevel3',
                 'add_reportingperiod', 'change_reportingperiod', 'delete_reportingperiod',
                 'change_projectdetail', 'view_projectdetail', 'reject_projectdetail'
             ]

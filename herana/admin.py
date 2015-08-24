@@ -13,7 +13,9 @@ from django.contrib.auth.forms import UserCreationForm
 
 from models import (
     Institute,
-    Faculty,
+    OrgLevel1,
+    OrgLevel2,
+    OrgLevel3,
     ReportingPeriod,
     InstituteAdmin,
     StrategicObjective,
@@ -543,7 +545,9 @@ class ProjectDetailAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Institute, InstituteModelAdmin)
-admin.site.register(Faculty, FacultyAdmin)
+admin.site.register(OrgLevel1)
+admin.site.register(OrgLevel2)
+admin.site.register(OrgLevel3)
 admin.site.register(ReportingPeriod, ReportingPeriodAdmin)
 # admin.site.register(InstituteAdmin)
 admin.site.register(ProjectLeader, ProjectLeaderAdmin)
