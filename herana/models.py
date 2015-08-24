@@ -248,8 +248,6 @@ class ProjectDetail(models.Model):
                                   verbose_name=CAPTURE_LABELS['start_date'])
     end_date = models.DateField(null=True, blank=True,
                                 verbose_name=CAPTURE_LABELS['end_date'])
-    multi_faculty = models.CharField(choices=YESNO, max_length=1, null=True,
-                                     verbose_name=CAPTURE_LABELS['multi_faculty'])
     description = models.TextField(null=True,
                                    verbose_name=CAPTURE_LABELS['description'])
     focus_area = models.ManyToManyField('FocusArea',
@@ -339,6 +337,8 @@ class ProjectDetail(models.Model):
             ('view_projectdetail', 'Can only view project details'),
             ('reject_projectdetail', 'Can reject the project which has been submitted')
         )
+
+
 
 # ------------------------------------------------------------------------------
 # Custom User

@@ -345,7 +345,6 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         'is_leader': admin.HORIZONTAL,
         'is_flagship': admin.HORIZONTAL,
         'project_status': admin.HORIZONTAL,
-        'multi_faculty': admin.HORIZONTAL,
         'classification': admin.VERTICAL,
         'initiation': admin.VERTICAL,
         'authors': admin.HORIZONTAL,
