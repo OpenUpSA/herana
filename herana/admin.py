@@ -112,12 +112,6 @@ class CollaboratorsFormSet(ProjectDetailFormSet):
 # Inlines
 # ------------------------------------------------------------------------------
 
-class ProjectLeaderUserInline(admin.StackedInline):
-    model = CustomUser
-    extra = 0
-    inline_classes = ('grp-collapse grp-open',)
-
-
 class ProjectFundingInline(admin.TabularInline):
     model = ProjectFunding
     extra = 1
@@ -174,6 +168,10 @@ class InstituteAdminInline(admin.TabularInline):
     model = InstituteAdmin
     can_delete = False
 
+
+class ProjectLeaderInline(admin.TabularInline):
+    model = ProjectLeader
+    can_delete = False
 
 class StrategicObjectiveInline(admin.TabularInline):
     model = StrategicObjective
@@ -243,12 +241,35 @@ class CustomUserAdmin(UserAdmin):
 # ------------------------------------------------------------------------------
 
 class ProjectLeaderAdmin(admin.ModelAdmin):
-    # inlines = [ProjectLeaderUserInline]
+    exclude = ['institute',]
 
     def get_queryset(self, request):
         if request.user.is_superuser:
             return super(ProjectLeaderAdmin, self).get_queryset(request)
         return self.model.objects.filter(institute=get_user_institute(request.user))
+
+    def get_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            self.exclude.remove('institute')
+        return super(ProjectLeaderAdmin, self).get_fields(request, obj)
+
+    def save_model(self, request, obj, form, change):
+        if not request.user.is_superuser:
+            obj.institute = get_user_institute(request.user)
+            obj.save()
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name in ["org_level_1", "org_level_2", "org_level_3"]:
+            if not request.user.is_superuser:
+                kwargs["queryset"] = db_field.related_model.objects.filter(
+                    institute=get_user_institute(request.user))
+        # if db_field.name == 'user':
+        #     if not request.user.is_superuser:
+        #         kwargs["queryset"] = CustomUser.objects.filter(
+        #             project_leader__institute=get_user_institute(request.user))
+
+        return super(ProjectLeaderAdmin, self).formfield_for_foreignkey(
+            db_field, request, **kwargs)
 
 
 class InstituteModelAdmin(admin.ModelAdmin):
@@ -256,70 +277,7 @@ class InstituteModelAdmin(admin.ModelAdmin):
 
 
 class OrgLevelAdmin(admin.ModelAdmin):
-    exclude = ['institute',]
-
-    def get_fields(self, request, obj=None):
-        if request.user.is_superuser:
-            self.exclude.remove('institute')
-        return super(OrgLevelAdmin, self).get_fields(request, obj)
-
-
-    def save_model(self, request, obj, form, change):
-        if not request.user.is_superuser:
-            obj.institute = request.user.institute_admin.institute
-            obj.save()
-
-    def get_queryset(self, request):
-        if request.user.is_superuser:
-            return super(OrgLevelAdmin, self).get_queryset(request)
-        return self.model.objects.filter(institute=get_user_institute(request.user))
-
-    def has_add_permission(self, request, obj=None):
-        if not request.user.is_superuser:
-            if obj:
-                if request.user.institute_admin.institute == obj.institute:
-                    return True
-                return False
-
-            opts = self.opts
-            codename = get_permission_codename('change', opts)
-            return request.user.has_perm("%s.%s" % (opts.app_label, codename))
-
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        if not request.user.is_superuser:
-            if obj:
-                if request.user.institute_admin.institute == obj.institute:
-                    return True
-                return False
-
-            opts = self.opts
-            codename = get_permission_codename('change', opts)
-            return request.user.has_perm("%s.%s" % (opts.app_label, codename))
-
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        if not request.user.is_superuser:
-            if obj:
-                if request.user.institute_admin.institute == obj.institute:
-                    return True
-                return False
-            # Should OrgLevels be deleted by InstituteAdmins?
-
-            opts = self.opts
-            codename = get_permission_codename('change', opts)
-            return request.user.has_perm("%s.%s" % (opts.app_label, codename))
-
-        return True
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "parent":
-            if not request.user.is_superuser:
-                kwargs["queryset"] = db_field.related_model.objects.filter(
-                    institute=get_user_institute(request.user))
-        return super(OrgLevelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+    pass
 
 
 class ReportingPeriodAdmin(admin.ModelAdmin):
@@ -412,7 +370,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
             'description': ''
         }),
         (None, {
-            'fields': ('project_status', 'start_date', 'end_date', 'faculty', 'multi_faculty', 'description', 'focus_area',
+            'fields': ('project_status', 'start_date', 'end_date', 'org_level_1', 'org_level_2', 'org_level_3', 'description', 'focus_area',
                 'focus_area_text', 'classification'),
             'description': ''
         }),
@@ -546,8 +504,8 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return super(ProjectDetailAdmin, self).get_form(request, obj, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "":
-            kwargs["queryset"] = Faculty.objects.filter(
+        if db_field.name in ["org_level_1", "org_level_2", "org_level_3"]:
+            kwargs["queryset"] = db_field.related_model.objects.filter(
                 institute=get_user_institute(request.user))
         return super(ProjectDetailAdmin, self).formfield_for_foreignkey(
             db_field, request, **kwargs)

@@ -58,7 +58,7 @@ class OrgLevel(models.Model):
     institute = models.ForeignKey('Institute')
 
     def __unicode__(self):
-        return self.name
+        return '%s - %s' % (self.institute.name, self.name)
 
     class Meta:
         verbose_name = _('Organisational level')
@@ -69,24 +69,24 @@ class OrgLevel(models.Model):
 class OrgLevel1(OrgLevel):
 
     class Meta:
-        verbose_name = _('Organisational Level 1 Node')
-        verbose_name_plural = _('Organisational Level 1 Nodes')
+        verbose_name = _('Level 1 Node')
+        verbose_name_plural = _('Level 1 Nodes')
 
 
 class OrgLevel2(OrgLevel):
     parent = models.ForeignKey('OrgLevel1')
 
     class Meta:
-        verbose_name = _('Organisational Level 2 Node')
-        verbose_name_plural = _('Organisational Level 2 Nodes')
+        verbose_name = _('Level 2 Node')
+        verbose_name_plural = _('Level 2 Nodes')
 
 
 class OrgLevel3(OrgLevel):
     parent = models.ForeignKey('OrgLevel2')
 
     class Meta:
-        verbose_name = _('Organisational Level 3 Node')
-        verbose_name_plural = _('Organisational Level 3 Nodes')
+        verbose_name = _('Level 3 Node')
+        verbose_name_plural = _('Level 3 Nodes')
 
 
 class ReportingPeriod(models.Model):
@@ -434,8 +434,9 @@ def assign_institute_admin_to_group(sender, **kwargs):
             g = Group.objects.create(name='InstituteAdmins')
             admin_permissions = [
                 'add_projectleader', 'delete_projectleader', 'change_projectleader',
+                'add_customuser', 'change_customuser', 'delete_customuser',
                 'add_reportingperiod', 'change_reportingperiod', 'delete_reportingperiod',
-                'change_projectdetail', 'view_projectdetail', 'reject_projectdetail'
+                'change_projectdetail', 'view_projectdetail', 'reject_projectdetail',
             ]
             perms = Permission.objects.filter(codename__in=admin_permissions)
             for perm in perms:
