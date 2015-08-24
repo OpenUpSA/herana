@@ -255,12 +255,25 @@ class InstituteModelAdmin(admin.ModelAdmin):
     inlines = [StrategicObjectiveInline]
 
 
-class FacultyAdmin(admin.ModelAdmin):
-    fields = ('name',)
+class OrgLevelAdmin(admin.ModelAdmin):
+    exclude = ['institute',]
+
+    def get_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            self.exclude.remove('institute')
+        return super(OrgLevelAdmin, self).get_fields(request, obj)
+
 
     def save_model(self, request, obj, form, change):
-        obj.institute = request.user.institute_admin.institute
-        obj.save()
+        if not request.user.is_superuser:
+            obj.institute = request.user.institute_admin.institute
+            obj.save()
+
+    def get_queryset(self, request):
+        if request.user.is_superuser:
+            return super(FacultyAdmin, self).get_queryset(request)
+        return self.model.objects.filter(institute=get_user_institute(request.user))
+
 
     def has_add_permission(self, request, obj=None):
         if not request.user.is_superuser:
@@ -294,18 +307,13 @@ class FacultyAdmin(admin.ModelAdmin):
                 if request.user.institute_admin.institute == obj.institute:
                     return True
                 return False
-            # Should faculties be deleted by InstituteAdmins?
+            # Should OrgLevels be deleted by InstituteAdmins?
 
             opts = self.opts
             codename = get_permission_codename('change', opts)
             return request.user.has_perm("%s.%s" % (opts.app_label, codename))
 
         return True
-
-    def get_queryset(self, request):
-        if request.user.is_superuser:
-            return super(FacultyAdmin, self).get_queryset(request)
-        return self.model.objects.filter(institute=get_user_institute(request.user))
 
 
 class ReportingPeriodAdmin(admin.ModelAdmin):
@@ -545,9 +553,9 @@ class ProjectDetailAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Institute, InstituteModelAdmin)
-admin.site.register(OrgLevel1)
-admin.site.register(OrgLevel2)
-admin.site.register(OrgLevel3)
+admin.site.register(OrgLevel1, OrgLevelAdmin)
+admin.site.register(OrgLevel2, OrgLevelAdmin)
+admin.site.register(OrgLevel3, OrgLevelAdmin)
 admin.site.register(ReportingPeriod, ReportingPeriodAdmin)
 # admin.site.register(InstituteAdmin)
 admin.site.register(ProjectLeader, ProjectLeaderAdmin)

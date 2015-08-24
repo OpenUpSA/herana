@@ -69,24 +69,24 @@ class OrgLevel(models.Model):
 class OrgLevel1(OrgLevel):
 
     class Meta:
-        verbose_name = _('Organisational Level 1')
-        verbose_name_plural = _('Organisational Level 1')
+        verbose_name = _('Organisational Level 1 Node')
+        verbose_name_plural = _('Organisational Level 1 Nodes')
 
 
 class OrgLevel2(OrgLevel):
     parent = models.ForeignKey('OrgLevel1')
 
     class Meta:
-        verbose_name = _('Organisational Level 2')
-        verbose_name_plural = _('Organisational Level 2')
+        verbose_name = _('Organisational Level 2 Node')
+        verbose_name_plural = _('Organisational Level 2 Nodes')
 
 
 class OrgLevel3(OrgLevel):
     parent = models.ForeignKey('OrgLevel2')
 
     class Meta:
-        verbose_name = _('Organisational Level 3')
-        verbose_name_plural = _('Organisational Level 3')
+        verbose_name = _('Organisational Level 3 Node')
+        verbose_name_plural = _('Organisational Level 3 Nodes')
 
 
 class ReportingPeriod(models.Model):
