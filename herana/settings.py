@@ -46,7 +46,6 @@ INSTALLED_APPS = (
     'django_extensions',
 
     'herana',
-    'guardian',
     'registration',
     'debug'
 )
