@@ -271,9 +271,8 @@ class OrgLevelAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         if request.user.is_superuser:
-            return super(FacultyAdmin, self).get_queryset(request)
+            return super(OrgLevelAdmin, self).get_queryset(request)
         return self.model.objects.filter(institute=get_user_institute(request.user))
-
 
     def has_add_permission(self, request, obj=None):
         if not request.user.is_superuser:
@@ -314,6 +313,13 @@ class OrgLevelAdmin(admin.ModelAdmin):
             return request.user.has_perm("%s.%s" % (opts.app_label, codename))
 
         return True
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "parent":
+            if not request.user.is_superuser:
+                kwargs["queryset"] = db_field.related_model.objects.filter(
+                    institute=get_user_institute(request.user))
+        return super(OrgLevelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class ReportingPeriodAdmin(admin.ModelAdmin):
