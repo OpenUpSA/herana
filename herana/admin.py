@@ -515,7 +515,9 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                 obj.record_status = 1
             else:
                 obj.record_status = 2
+            obj.institute = get_user_institute(request.user)
             obj.proj_leader = request.user.project_leader
+
         else:
             if request.POST.get('_delete'):
                 obj.is_deleted = True
@@ -544,7 +546,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return super(ProjectDetailAdmin, self).get_form(request, obj, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "faculty":
+        if db_field.name == "":
             kwargs["queryset"] = Faculty.objects.filter(
                 institute=get_user_institute(request.user))
         return super(ProjectDetailAdmin, self).formfield_for_foreignkey(
