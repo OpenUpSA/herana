@@ -38,8 +38,8 @@ class Institute(models.Model):
     name = models.CharField(max_length=256)
     logo = models.ImageField(upload_to=image_filename, blank=True, null=True)
     org_level_1_name = models.CharField(max_length=128)
-    org_level_2_name = models.CharField(max_length=128, null=True)
-    org_level_3_name = models.CharField(max_length=128, null=True)
+    org_level_2_name = models.CharField(max_length=128, null=True, blank=True)
+    org_level_3_name = models.CharField(max_length=128, null=True, blank=True)
 
     def __unicode__(self):
         return self.name
