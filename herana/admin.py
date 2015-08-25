@@ -460,8 +460,8 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         This assumes that only one reporting period can be active at a time
         for a given Institute.
         RECORD_STATUS:
-            1: Draft
-            2: Final
+            1: Draft -> _draft
+            2: Final -> _save
         """
         institute = get_user_institute(request.user)
         reporting_period = institute.reporting_period.get(is_active=True)
@@ -477,19 +477,23 @@ class ProjectDetailAdmin(admin.ModelAdmin):
 
         else:
             if request.POST.get('_delete'):
+                # mark object as deleted
                 obj.is_deleted = True
-            elif obj.record_status == 1:
-                if request.POST.get('_save'):
+
+            elif request.POST.get('_save'):
+                # if project is being submitted as final:
+                # - update reporting period if it's a draft being saved,
+                # - create a copy of the object if it's a final object being saved
+                if obj.record_status == 1:
                     obj.record_status = 2
-                if obj.reporting_period != reporting_period:
-                    obj.reporting_period = reporting_period
-            elif obj.record_status == 2:
-                if request.POST.get('_draft'):
-                    obj.record_status = 1
-                if obj.reporting_period != reporting_period:
-                    # Save a copy of the instance
-                    obj.reporting_period = reporting_period
-                    obj.pk = None
+                    if obj.reporting_period != reporting_period:
+                        obj.reporting_period = reporting_period
+                elif obj.record_status == 2:
+                    if obj.reporting_period != reporting_period:
+                        # Save a copy of the instance
+                        obj.reporting_period = reporting_period
+                        obj.pk = None
+
         # Flag as suspect if other academics is the only chosen team member
         # 7: Other academics
         other_academics = ResearchTeamMember.objects.get(id=7)
