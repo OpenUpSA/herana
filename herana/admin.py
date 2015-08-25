@@ -522,6 +522,17 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return super(ProjectDetailAdmin, self).formfield_for_manytomany(
             db_field, request, **kwargs)
 
+    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        form = context['adminform'].form
+        for level in ["org_level_1", "org_level_2", "org_level_3"]:
+            if add:
+                form.fields[level].label = getattr(get_user_institute(request.user), '%s_name' % level)
+            elif change:
+                form.fields[level].label = getattr(obj.institute, '%s_name' % level)
+
+        return super(ProjectDetailAdmin, self).render_change_form(
+            request, context, add=False, change=False, form_url='', obj=None)
+
 
 admin.site.register(Institute, InstituteModelAdmin)
 admin.site.register(OrgLevel1, OrgLevelAdmin)
