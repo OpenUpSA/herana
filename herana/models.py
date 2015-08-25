@@ -235,7 +235,7 @@ class ProjectDetail(models.Model):
                             verbose_name=CAPTURE_LABELS['name'])
     proj_leader = models.ForeignKey('ProjectLeader')
     institute = models.ForeignKey('Institute')
-    org_level_1 = models.ForeignKey('OrgLevel1')
+    org_level_1 = models.ForeignKey('OrgLevel1', null=True)
     org_level_2 = models.ForeignKey('OrgLevel2', null=True, blank=True)
     org_level_3 = models.ForeignKey('OrgLevel3', null=True, blank=True)
     is_leader = models.CharField(choices=YESNO, max_length=1, null=True,
