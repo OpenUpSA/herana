@@ -481,9 +481,11 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                 obj.is_deleted = True
 
             elif request.POST.get('_save'):
-                # if project is being submitted as final:
-                # - update reporting period if it's a draft being saved,
-                # - create a copy of the object if it's a final object being saved
+                # If project is being submitted as final: update record status
+                # If we're in a new reporting period:
+                # - update reporting period if it's a draft that's being saved,
+                # - create a copy of the object if it's a final object that's being saved
+
                 if obj.record_status == 1:
                     obj.record_status = 2
                     if obj.reporting_period != reporting_period:
