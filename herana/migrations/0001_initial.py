@@ -72,6 +72,9 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=256)),
                 ('logo', models.ImageField(null=True, upload_to=herana.models.image_filename, blank=True)),
+                ('org_level_1_name', models.CharField(max_length=128)),
+                ('org_level_2_name', models.CharField(max_length=128, null=True)),
+                ('org_level_3_name', models.CharField(max_length=128, null=True)),
             ],
             options={
                 'ordering': ['name'],
@@ -101,8 +104,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ['name'],
-                'verbose_name': 'Organisational level',
-                'verbose_name_plural': 'Organisational Levels',
+                'verbose_name': 'Org Level',
+                'verbose_name_plural': 'Org Levels',
             },
         ),
         migrations.CreateModel(
@@ -122,7 +125,6 @@ class Migration(migrations.Migration):
                 ('project_status', models.PositiveIntegerField(null=True, verbose_name='2.1: Project status', choices=[(1, 'Complete'), (2, 'Ongoing')])),
                 ('start_date', models.DateField(null=True, verbose_name='2.2.1: Start date')),
                 ('end_date', models.DateField(null=True, verbose_name='2.2.2: End date', blank=True)),
-                ('multi_faculty', models.CharField(max_length=1, null=True, verbose_name='2.3.1: Does the project span multiple faculties / schools?', choices=[(b'Y', 'Yes'), (b'N', 'No')])),
                 ('description', models.TextField(null=True, verbose_name='2.4: Please provide a short description of the project.')),
                 ('focus_area_text', models.CharField(max_length=256, null=True, verbose_name='2.5.1: If other was chosen above, please describe.', blank=True)),
                 ('classification', models.PositiveIntegerField(null=True, verbose_name='2.6: How would you classify this flagship engagement activity?', choices=[(1, 'Project'), (2, 'Programme'), (3, 'Service'), (4, 'Other')])),
@@ -257,8 +259,8 @@ class Migration(migrations.Migration):
                 ('orglevel_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='herana.OrgLevel')),
             ],
             options={
-                'verbose_name': 'Organisational Level 1',
-                'verbose_name_plural': 'Organisational Level 1',
+                'verbose_name': 'Org Level 1',
+                'verbose_name_plural': 'Org Level 1',
             },
             bases=('herana.orglevel',),
         ),
@@ -266,11 +268,11 @@ class Migration(migrations.Migration):
             name='OrgLevel2',
             fields=[
                 ('orglevel_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='herana.OrgLevel')),
-                ('parent', models.ForeignKey(to='herana.OrgLevel1')),
+                ('parent', models.ForeignKey(verbose_name=b'Org Level 1', to='herana.OrgLevel1')),
             ],
             options={
-                'verbose_name': 'Organisational Level 2',
-                'verbose_name_plural': 'Organisational Level 2',
+                'verbose_name': 'Org Level 2',
+                'verbose_name_plural': 'Org Level 2',
             },
             bases=('herana.orglevel',),
         ),
@@ -278,11 +280,11 @@ class Migration(migrations.Migration):
             name='OrgLevel3',
             fields=[
                 ('orglevel_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='herana.OrgLevel')),
-                ('parent', models.ForeignKey(to='herana.OrgLevel2')),
+                ('parent', models.ForeignKey(verbose_name=b'Org Level 2', to='herana.OrgLevel2')),
             ],
             options={
-                'verbose_name': 'Organisational Level 3',
-                'verbose_name_plural': 'Organisational Level 3',
+                'verbose_name': 'Org Level 3',
+                'verbose_name_plural': 'Org Level 3',
             },
             bases=('herana.orglevel',),
         ),
@@ -364,7 +366,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='projectdetail',
             name='org_level_1',
-            field=models.ForeignKey(to='herana.OrgLevel1'),
+            field=models.ForeignKey(to='herana.OrgLevel1', null=True),
         ),
         migrations.AddField(
             model_name='projectdetail',
