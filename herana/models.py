@@ -57,36 +57,41 @@ class OrgLevel(models.Model):
     name = models.CharField(max_length=256)
     institute = models.ForeignKey('Institute')
 
-    def __unicode__(self):
-        return '%s - %s' % (self.institute.name, self.name)
-
     class Meta:
-        verbose_name = _('Organisational level')
-        verbose_name_plural = _("Organisational Levels")
+        verbose_name = _('Org Level')
+        verbose_name_plural = _("Org Levels")
         ordering = ['name']
 
 
 class OrgLevel1(OrgLevel):
+    def __unicode__(self):
+        return '%s - %s' % (self.institute.name, self.name)
 
     class Meta:
-        verbose_name = _('Level 1 Node')
-        verbose_name_plural = _('Level 1 Nodes')
+        verbose_name = _('Org Level 1')
+        verbose_name_plural = _('Org Level 1')
 
 
 class OrgLevel2(OrgLevel):
-    parent = models.ForeignKey('OrgLevel1')
+    parent = models.ForeignKey('OrgLevel1', verbose_name='Org Level 1')
+
+    def __unicode__(self):
+        return '%s - %s - %s' % (self.institute.name, self.parent.name, self.name)
 
     class Meta:
-        verbose_name = _('Level 2 Node')
-        verbose_name_plural = _('Level 2 Nodes')
+        verbose_name = _('Org Level 2')
+        verbose_name_plural = _('Org Level 2')
 
 
 class OrgLevel3(OrgLevel):
-    parent = models.ForeignKey('OrgLevel2')
+    parent = models.ForeignKey('OrgLevel2', verbose_name='Org Level 2')
+
+    def __unicode__(self):
+        return '%s - %s - %s' % (self.institute.name, self.parent.name, self.name)
 
     class Meta:
-        verbose_name = _('Level 3 Node')
-        verbose_name_plural = _('Level 3 Nodes')
+        verbose_name = _('Org Level 3')
+        verbose_name_plural = _('Org Level 3')
 
 
 class ReportingPeriod(models.Model):
