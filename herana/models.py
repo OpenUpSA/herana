@@ -37,9 +37,15 @@ def attachment_filename(instance, filename):
 class Institute(models.Model):
     name = models.CharField(max_length=256)
     logo = models.ImageField(upload_to=image_filename, blank=True, null=True)
+    org_level_1_name = models.CharField(max_length=128)
+    org_level_2_name = models.CharField(max_length=128, null=True)
+    org_level_3_name = models.CharField(max_length=128, null=True)
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
 
 
 class StrategicObjective(models.Model):
@@ -50,16 +56,45 @@ class StrategicObjective(models.Model):
         return self.statement
 
 
-class Faculty(models.Model):
+class OrgLevel(models.Model):
     name = models.CharField(max_length=256)
     institute = models.ForeignKey('Institute')
 
+    class Meta:
+        verbose_name = _('Org Level')
+        verbose_name_plural = _("Org Levels")
+        ordering = ['name']
+
+
+class OrgLevel1(OrgLevel):
     def __unicode__(self):
-        return self.name
+        return '%s - %s' % (self.institute.name, self.name)
 
     class Meta:
-        verbose_name_plural = _("Faculties")
-        ordering = ['name']
+        verbose_name = _('Org Level 1')
+        verbose_name_plural = _('Org Level 1')
+
+
+class OrgLevel2(OrgLevel):
+    parent = models.ForeignKey('OrgLevel1', verbose_name='Org Level 1')
+
+    def __unicode__(self):
+        return '%s - %s - %s' % (self.institute.name, self.parent.name, self.name)
+
+    class Meta:
+        verbose_name = _('Org Level 2')
+        verbose_name_plural = _('Org Level 2')
+
+
+class OrgLevel3(OrgLevel):
+    parent = models.ForeignKey('OrgLevel2', verbose_name='Org Level 2')
+
+    def __unicode__(self):
+        return '%s - %s - %s' % (self.institute.name, self.parent.name, self.name)
+
+    class Meta:
+        verbose_name = _('Org Level 3')
+        verbose_name_plural = _('Org Level 3')
 
 
 class ReportingPeriod(models.Model):
@@ -90,7 +125,9 @@ class InstituteAdmin(models.Model):
 class ProjectLeader(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='project_leader')
     institute = models.ForeignKey('Institute')
-    faculty = models.ForeignKey('Faculty')
+    org_level_1 = models.ForeignKey('OrgLevel1')
+    org_level_2 = models.ForeignKey('OrgLevel2', null=True, blank=True)
+    org_level_3 = models.ForeignKey('OrgLevel3', null=True, blank=True)
     staff_no = models.CharField(max_length=64)
     position = models.CharField(max_length=128)
 
@@ -205,6 +242,10 @@ class ProjectDetail(models.Model):
     name = models.CharField(max_length=512,
                             verbose_name=CAPTURE_LABELS['name'])
     proj_leader = models.ForeignKey('ProjectLeader')
+    institute = models.ForeignKey('Institute')
+    org_level_1 = models.ForeignKey('OrgLevel1', null=True)
+    org_level_2 = models.ForeignKey('OrgLevel2', null=True, blank=True)
+    org_level_3 = models.ForeignKey('OrgLevel3', null=True, blank=True)
     is_leader = models.CharField(choices=YESNO, max_length=1, null=True,
                                  verbose_name=CAPTURE_LABELS['is_leader'])
     is_flagship = models.CharField(choices=YESNO, max_length=1, null=True,
@@ -215,10 +256,6 @@ class ProjectDetail(models.Model):
                                   verbose_name=CAPTURE_LABELS['start_date'])
     end_date = models.DateField(null=True, blank=True,
                                 verbose_name=CAPTURE_LABELS['end_date'])
-    faculty = models.ForeignKey('Faculty', null=True,
-                                verbose_name=CAPTURE_LABELS['faculty'])
-    multi_faculty = models.CharField(choices=YESNO, max_length=1, null=True,
-                                     verbose_name=CAPTURE_LABELS['multi_faculty'])
     description = models.TextField(null=True,
                                    verbose_name=CAPTURE_LABELS['description'])
     focus_area = models.ManyToManyField('FocusArea',
@@ -308,6 +345,8 @@ class ProjectDetail(models.Model):
             ('view_projectdetail', 'Can only view project details'),
             ('reject_projectdetail', 'Can reject the project which has been submitted')
         )
+
+
 
 # ------------------------------------------------------------------------------
 # Custom User
@@ -403,9 +442,9 @@ def assign_institute_admin_to_group(sender, **kwargs):
             g = Group.objects.create(name='InstituteAdmins')
             admin_permissions = [
                 'add_projectleader', 'delete_projectleader', 'change_projectleader',
-                'add_faculty', 'delete_faculty', 'change_faculty',
+                'add_customuser', 'change_customuser', 'delete_customuser',
                 'add_reportingperiod', 'change_reportingperiod', 'delete_reportingperiod',
-                'change_projectdetail', 'view_projectdetail', 'reject_projectdetail'
+                'change_projectdetail', 'view_projectdetail', 'reject_projectdetail',
             ]
             perms = Permission.objects.filter(codename__in=admin_permissions)
             for perm in perms:

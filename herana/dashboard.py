@@ -31,7 +31,9 @@ class CustomIndexDashboard(Dashboard):
             collapsible=False,
             models=(
                 'herana.models.Institute',
-                'herana.models.Faculty',
+                'herana.models.OrgLevel1',
+                'herana.models.OrgLevel2',
+                'herana.models.OrgLevel3',
                 'herana.models.ReportingPeriod'
                 ),
         ))

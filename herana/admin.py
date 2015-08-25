@@ -13,7 +13,9 @@ from django.contrib.auth.forms import UserCreationForm
 
 from models import (
     Institute,
-    Faculty,
+    OrgLevel1,
+    OrgLevel2,
+    OrgLevel3,
     ReportingPeriod,
     InstituteAdmin,
     StrategicObjective,
@@ -110,12 +112,6 @@ class CollaboratorsFormSet(ProjectDetailFormSet):
 # Inlines
 # ------------------------------------------------------------------------------
 
-class ProjectLeaderUserInline(admin.StackedInline):
-    model = CustomUser
-    extra = 0
-    inline_classes = ('grp-collapse grp-open',)
-
-
 class ProjectFundingInline(admin.TabularInline):
     model = ProjectFunding
     extra = 1
@@ -172,6 +168,10 @@ class InstituteAdminInline(admin.TabularInline):
     model = InstituteAdmin
     can_delete = False
 
+
+class ProjectLeaderInline(admin.TabularInline):
+    model = ProjectLeader
+    can_delete = False
 
 class StrategicObjectiveInline(admin.TabularInline):
     model = StrategicObjective
@@ -241,69 +241,43 @@ class CustomUserAdmin(UserAdmin):
 # ------------------------------------------------------------------------------
 
 class ProjectLeaderAdmin(admin.ModelAdmin):
-    # inlines = [ProjectLeaderUserInline]
+    exclude = ['institute',]
 
     def get_queryset(self, request):
         if request.user.is_superuser:
             return super(ProjectLeaderAdmin, self).get_queryset(request)
         return self.model.objects.filter(institute=get_user_institute(request.user))
 
+    def get_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            self.exclude.remove('institute')
+        return super(ProjectLeaderAdmin, self).get_fields(request, obj)
+
+    def save_model(self, request, obj, form, change):
+        if not request.user.is_superuser:
+            obj.institute = get_user_institute(request.user)
+            obj.save()
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name in ["org_level_1", "org_level_2", "org_level_3"]:
+            if not request.user.is_superuser:
+                kwargs["queryset"] = db_field.related_model.objects.filter(
+                    institute=get_user_institute(request.user))
+        # if db_field.name == 'user':
+        #     if not request.user.is_superuser:
+        #         kwargs["queryset"] = CustomUser.objects.filter(
+        #             project_leader__institute=get_user_institute(request.user))
+
+        return super(ProjectLeaderAdmin, self).formfield_for_foreignkey(
+            db_field, request, **kwargs)
+
 
 class InstituteModelAdmin(admin.ModelAdmin):
     inlines = [StrategicObjectiveInline]
 
 
-class FacultyAdmin(admin.ModelAdmin):
-    fields = ('name',)
-
-    def save_model(self, request, obj, form, change):
-        obj.institute = request.user.institute_admin.institute
-        obj.save()
-
-    def has_add_permission(self, request, obj=None):
-        if not request.user.is_superuser:
-            if obj:
-                if request.user.institute_admin.institute == obj.institute:
-                    return True
-                return False
-
-            opts = self.opts
-            codename = get_permission_codename('change', opts)
-            return request.user.has_perm("%s.%s" % (opts.app_label, codename))
-
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        if not request.user.is_superuser:
-            if obj:
-                if request.user.institute_admin.institute == obj.institute:
-                    return True
-                return False
-
-            opts = self.opts
-            codename = get_permission_codename('change', opts)
-            return request.user.has_perm("%s.%s" % (opts.app_label, codename))
-
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        if not request.user.is_superuser:
-            if obj:
-                if request.user.institute_admin.institute == obj.institute:
-                    return True
-                return False
-            # Should faculties be deleted by InstituteAdmins?
-
-            opts = self.opts
-            codename = get_permission_codename('change', opts)
-            return request.user.has_perm("%s.%s" % (opts.app_label, codename))
-
-        return True
-
-    def get_queryset(self, request):
-        if request.user.is_superuser:
-            return super(FacultyAdmin, self).get_queryset(request)
-        return self.model.objects.filter(institute=get_user_institute(request.user))
+class OrgLevelAdmin(admin.ModelAdmin):
+    pass
 
 
 class ReportingPeriodAdmin(admin.ModelAdmin):
@@ -371,7 +345,6 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         'is_leader': admin.HORIZONTAL,
         'is_flagship': admin.HORIZONTAL,
         'project_status': admin.HORIZONTAL,
-        'multi_faculty': admin.HORIZONTAL,
         'classification': admin.VERTICAL,
         'initiation': admin.VERTICAL,
         'authors': admin.HORIZONTAL,
@@ -396,7 +369,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
             'description': ''
         }),
         (None, {
-            'fields': ('project_status', 'start_date', 'end_date', 'faculty', 'multi_faculty', 'description', 'focus_area',
+            'fields': ('project_status', 'start_date', 'end_date', 'org_level_1', 'org_level_2', 'org_level_3', 'description', 'focus_area',
                 'focus_area_text', 'classification'),
             'description': ''
         }),
@@ -487,8 +460,8 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         This assumes that only one reporting period can be active at a time
         for a given Institute.
         RECORD_STATUS:
-            1: Draft
-            2: Final
+            1: Draft -> _draft
+            2: Final -> _save
         """
         institute = get_user_institute(request.user)
         reporting_period = institute.reporting_period.get(is_active=True)
@@ -499,22 +472,30 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                 obj.record_status = 1
             else:
                 obj.record_status = 2
+            obj.institute = get_user_institute(request.user)
             obj.proj_leader = request.user.project_leader
+
         else:
             if request.POST.get('_delete'):
+                # mark object as deleted
                 obj.is_deleted = True
-            elif obj.record_status == 1:
-                if request.POST.get('_save'):
+
+            elif request.POST.get('_save'):
+                # If project is being submitted as final: update record status
+                # If we're in a new reporting period:
+                # - update reporting period if it's a draft that's being saved,
+                # - create a copy of the object if it's a final object that's being saved
+
+                if obj.record_status == 1:
                     obj.record_status = 2
-                if obj.reporting_period != reporting_period:
-                    obj.reporting_period = reporting_period
-            elif obj.record_status == 2:
-                if request.POST.get('_draft'):
-                    obj.record_status = 1
-                if obj.reporting_period != reporting_period:
-                    # Save a copy of the instance
-                    obj.reporting_period = reporting_period
-                    obj.pk = None
+                    if obj.reporting_period != reporting_period:
+                        obj.reporting_period = reporting_period
+                elif obj.record_status == 2:
+                    if obj.reporting_period != reporting_period:
+                        # Save a copy of the instance
+                        obj.reporting_period = reporting_period
+                        obj.pk = None
+
         # Flag as suspect if other academics is the only chosen team member
         # 7: Other academics
         other_academics = ResearchTeamMember.objects.get(id=7)
@@ -528,8 +509,8 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return super(ProjectDetailAdmin, self).get_form(request, obj, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "faculty":
-            kwargs["queryset"] = Faculty.objects.filter(
+        if db_field.name in ["org_level_1", "org_level_2", "org_level_3"]:
+            kwargs["queryset"] = db_field.related_model.objects.filter(
                 institute=get_user_institute(request.user))
         return super(ProjectDetailAdmin, self).formfield_for_foreignkey(
             db_field, request, **kwargs)
@@ -541,9 +522,22 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return super(ProjectDetailAdmin, self).formfield_for_manytomany(
             db_field, request, **kwargs)
 
+    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        form = context['adminform'].form
+        for level in ["org_level_1", "org_level_2", "org_level_3"]:
+            if add:
+                form.fields[level].label = getattr(get_user_institute(request.user), '%s_name' % level)
+            elif change:
+                form.fields[level].label = getattr(obj.institute, '%s_name' % level)
+
+        return super(ProjectDetailAdmin, self).render_change_form(
+            request, context, add=False, change=False, form_url='', obj=None)
+
 
 admin.site.register(Institute, InstituteModelAdmin)
-admin.site.register(Faculty, FacultyAdmin)
+admin.site.register(OrgLevel1, OrgLevelAdmin)
+admin.site.register(OrgLevel2, OrgLevelAdmin)
+admin.site.register(OrgLevel3, OrgLevelAdmin)
 admin.site.register(ReportingPeriod, ReportingPeriodAdmin)
 # admin.site.register(InstituteAdmin)
 admin.site.register(ProjectLeader, ProjectLeaderAdmin)

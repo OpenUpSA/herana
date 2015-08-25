@@ -6,7 +6,7 @@ class ProjectDetailForm(forms.ModelForm):
     class Meta:
         model = ProjectDetail
         exclude = (
-            'proj_leader', 'record_status', 'reporting_period', 'is_rejected', 'rejected_detail',
+            'institute', 'proj_leader', 'record_status', 'reporting_period', 'is_rejected', 'rejected_detail',
             'is_flagged', 'is_deleted', 'modified_at', 'created_at'
         )
         admin_ediatble = []
