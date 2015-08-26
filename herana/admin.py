@@ -172,9 +172,24 @@ class InstituteAdminInline(admin.TabularInline):
     can_delete = False
 
 
-class ProjectLeaderInline(admin.TabularInline):
+class ProjectLeaderInline(admin.StackedInline):
     model = ProjectLeader
     can_delete = False
+    inline_classes = ('grp-collapse grp-open',)
+    verbose_name = _('Project Leader')
+    extra = 1
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if not request.user.is_superuser:
+            if db_field.name == 'instititute':
+                kwargs["queryset"] = Institute.objects.filter(
+                    id=get_user_institute(request.user).id)
+            if db_field.name in ORG_LEVEL_FIELDS:
+                    kwargs["queryset"] = db_field.related_model.objects.filter(
+                        institute=get_user_institute(request.user))
+        return super(ProjectLeaderInline, self).formfield_for_foreignkey(
+            db_field, request, **kwargs)
+
 
 class StrategicObjectiveInline(admin.TabularInline):
     model = StrategicObjective
@@ -215,7 +230,7 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class CustomUserAdmin(UserAdmin):
-    inlines = [InstituteAdminInline]
+    inlines = [InstituteAdminInline, ProjectLeaderInline]
     add_form = CustomUserCreationForm
 
     list_display = ('email', 'first_name', 'last_name', 'is_staff')
@@ -231,49 +246,32 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2'),
+            'fields': ('first_name', 'last_name', 'email', 'password1', 'password2'),
         }),
     )
 
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
 
+    def get_queryset(self, request):
+        if not request.user.is_superuser:
+            return self.model.objects.filter(
+                project_leader__institute=get_user_institute(request.user))
+        else:
+            return super(CustomUserAdmin, self).get_queryset(request)
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super(CustomUserAdmin, self).get_fieldsets(request, obj=obj)
+        if obj and not request.user.is_superuser:
+            fieldsets = (
+                (None, {'fields': ('email', 'password')}),
+                (_('Personal info'), {'fields': ('first_name', 'last_name')})
+            )
+        return fieldsets
 
 # ------------------------------------------------------------------------------
 # ModelAdmins
 # ------------------------------------------------------------------------------
-
-class ProjectLeaderAdmin(admin.ModelAdmin):
-    exclude = ['institute',]
-
-    def get_queryset(self, request):
-        if request.user.is_superuser:
-            return super(ProjectLeaderAdmin, self).get_queryset(request)
-        return self.model.objects.filter(institute=get_user_institute(request.user))
-
-    def get_fields(self, request, obj=None):
-        if request.user.is_superuser:
-            self.exclude.remove('institute')
-        return super(ProjectLeaderAdmin, self).get_fields(request, obj)
-
-    def save_model(self, request, obj, form, change):
-        if not request.user.is_superuser:
-            obj.institute = get_user_institute(request.user)
-            obj.save()
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name in ORG_LEVEL_FIELDS:
-            if not request.user.is_superuser:
-                kwargs["queryset"] = db_field.related_model.objects.filter(
-                    institute=get_user_institute(request.user))
-        # if db_field.name == 'user':
-        #     if not request.user.is_superuser:
-        #         kwargs["queryset"] = CustomUser.objects.filter(
-        #             project_leader__institute=get_user_institute(request.user))
-
-        return super(ProjectLeaderAdmin, self).formfield_for_foreignkey(
-            db_field, request, **kwargs)
-
 
 class InstituteModelAdmin(admin.ModelAdmin):
     inlines = [StrategicObjectiveInline]
@@ -373,7 +371,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         }),
         (None, {
             'fields': ('org_level_1',),
-            'description': ''
+            'description': '1.4 Please indicate where the project is located.'
         }),
         (None, {
             'fields': ('project_status', 'start_date', 'end_date', 'description', 'focus_area',
@@ -566,7 +564,6 @@ admin.site.register(OrgLevel2, OrgLevelAdmin)
 admin.site.register(OrgLevel3, OrgLevelAdmin)
 admin.site.register(ReportingPeriod, ReportingPeriodAdmin)
 # admin.site.register(InstituteAdmin)
-admin.site.register(ProjectLeader, ProjectLeaderAdmin)
 admin.site.register(ProjectDetail, ProjectDetailAdmin)
 
 # admin.site.register(User, InstituteAdminUserAdmin)
