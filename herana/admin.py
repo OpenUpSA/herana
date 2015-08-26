@@ -373,7 +373,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         }),
         (None, {
             'fields': ('org_level_1',),
-            'description': ''
+            'description': '1.4 Please indicate where the project is located.'
         }),
         (None, {
             'fields': ('project_status', 'start_date', 'end_date', 'description', 'focus_area',
