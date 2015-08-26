@@ -184,6 +184,9 @@ class ProjectLeaderInline(admin.StackedInline):
             if db_field.name == 'instititute':
                 kwargs["queryset"] = Institute.objects.filter(
                     id=get_user_institute(request.user).id)
+            if db_field.name in ORG_LEVEL_FIELDS:
+                    kwargs["queryset"] = db_field.related_model.objects.filter(
+                        institute=get_user_institute(request.user))
         return super(ProjectLeaderInline, self).formfield_for_foreignkey(
             db_field, request, **kwargs)
 
@@ -269,36 +272,6 @@ class CustomUserAdmin(UserAdmin):
 # ------------------------------------------------------------------------------
 # ModelAdmins
 # ------------------------------------------------------------------------------
-
-class ProjectLeaderAdmin(admin.ModelAdmin):
-    exclude = ['institute',]
-
-    def get_queryset(self, request):
-        if request.user.is_superuser:
-            return super(ProjectLeaderAdmin, self).get_queryset(request)
-        return self.model.objects.filter(institute=get_user_institute(request.user))
-
-    def get_fields(self, request, obj=None):
-        if request.user.is_superuser:
-            self.exclude.remove('institute')
-        return super(ProjectLeaderAdmin, self).get_fields(request, obj)
-
-    def save_model(self, request, obj, form, change):
-        if not request.user.is_superuser:
-            obj.institute = get_user_institute(request.user)
-            obj.save()
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if not request.user.is_superuser:
-            if db_field.name in ORG_LEVEL_FIELDS:
-                kwargs["queryset"] = db_field.related_model.objects.filter(
-                    institute=get_user_institute(request.user))
-            if db_field.name == 'user':
-                kwargs["queryset"] = CustomUser.objects.filter(
-                    project_leader__institute=get_user_institute(request.user))
-        return super(ProjectLeaderAdmin, self).formfield_for_foreignkey(
-            db_field, request, **kwargs)
-
 
 class InstituteModelAdmin(admin.ModelAdmin):
     inlines = [StrategicObjectiveInline]
@@ -591,7 +564,6 @@ admin.site.register(OrgLevel2, OrgLevelAdmin)
 admin.site.register(OrgLevel3, OrgLevelAdmin)
 admin.site.register(ReportingPeriod, ReportingPeriodAdmin)
 # admin.site.register(InstituteAdmin)
-admin.site.register(ProjectLeader, ProjectLeaderAdmin)
 admin.site.register(ProjectDetail, ProjectDetailAdmin)
 
 # admin.site.register(User, InstituteAdminUserAdmin)
