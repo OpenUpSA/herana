@@ -345,8 +345,9 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
 
 class ProjectDetailAdmin(admin.ModelAdmin):
-    list_display = ('id', '__unicode__', 'record_status')
-    list_filter = ('record_status',)
+    list_display = ('__unicode__', 'record_status')
+    list_display_links = ('__unicode__',)
+    list_filter = []
     form = ProjectDetailForm
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
