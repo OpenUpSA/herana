@@ -372,7 +372,11 @@ class ProjectDetailAdmin(admin.ModelAdmin):
             'description': ''
         }),
         (None, {
-            'fields': ('project_status', 'start_date', 'end_date', 'org_level_1', 'org_level_2', 'org_level_3', 'description', 'focus_area',
+            'fields': ('org_level_1',),
+            'description': ''
+        }),
+        (None, {
+            'fields': ('project_status', 'start_date', 'end_date', 'description', 'focus_area',
                 'focus_area_text', 'classification'),
             'description': ''
         }),
@@ -507,6 +511,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         obj.save()
 
     def get_form(self, request, obj=None, **kwargs):
+        # Global and institute admin have readonly views
         if request.user.is_institute_admin() or request.user.is_superuser:
             self.form = ProjectDetailAdminForm
         return super(ProjectDetailAdmin, self).get_form(request, obj, **kwargs)
@@ -525,17 +530,34 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return super(ProjectDetailAdmin, self).formfield_for_manytomany(
             db_field, request, **kwargs)
 
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super(ProjectDetailAdmin, self).get_fieldsets(request, obj=obj)
+        if not request.user.is_superuser:
+            institute = get_user_institute(request.user)
+            field_list = []
+            for field in ORG_LEVEL_FIELDS:
+                if getattr(institute, '%s_name' % field) != '':
+                    field_list.append(field)
+            fields = tuple(field_list)
+            fieldsets[1][1]['fields'] = fields
+        return fieldsets
+
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         form = context['adminform'].form
         if add:
-            institute = obj.institute
-        elif change:
             institute = get_user_institute(request.user)
-        for level in ORG_LEVEL_FIELDS:
-            form.fields[level].label = getattr(institute, '%s_name' % level)
+        elif change:
+            institute = obj.institute
+
+        for field in ORG_LEVEL_FIELDS:
+            level_name = getattr(institute, '%s_name' % field)
+            if level_name != '':
+                # If level_name is empty, formset doesn't have the fields included
+                # See get_fieldsets() above
+                form.fields[field].label = level_name
 
         return super(ProjectDetailAdmin, self).render_change_form(
-            request, context, add=False, change=False, form_url='', obj=None)
+            request, context, add=False, change=False, form_url='', obj=obj)
 
 
 admin.site.register(Institute, InstituteModelAdmin)
