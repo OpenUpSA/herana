@@ -238,6 +238,22 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
 
+    def get_queryset(self, request):
+        if not request.user.is_superuser:
+            return self.model.objects.filter(
+                project_leader__institute=get_user_institute(request.user))
+        else:
+            return super(CustomUserAdmin, self).get_queryset(request)
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super(CustomUserAdmin, self).get_fieldsets(request, obj=obj)
+        if not request.user.is_superuser:
+            fieldsets = (
+                (None, {'fields': ('email', 'password')}),
+                (_('Personal info'), {'fields': ('first_name', 'last_name')})
+            )
+        return fieldsets
+
 
 # ------------------------------------------------------------------------------
 # ModelAdmins
