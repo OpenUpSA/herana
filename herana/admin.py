@@ -172,9 +172,21 @@ class InstituteAdminInline(admin.TabularInline):
     can_delete = False
 
 
-class ProjectLeaderInline(admin.TabularInline):
+class ProjectLeaderInline(admin.StackedInline):
     model = ProjectLeader
     can_delete = False
+    inline_classes = ('grp-collapse grp-open',)
+    verbose_name = _('Project Leader')
+    extra = 1
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if not request.user.is_superuser:
+            if db_field.name == 'instititute':
+                kwargs["queryset"] = Institute.objects.filter(
+                    id=get_user_institute(request.user).id)
+        return super(ProjectLeaderInline, self).formfield_for_foreignkey(
+            db_field, request, **kwargs)
+
 
 class StrategicObjectiveInline(admin.TabularInline):
     model = StrategicObjective
@@ -215,7 +227,7 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class CustomUserAdmin(UserAdmin):
-    inlines = [InstituteAdminInline]
+    inlines = [InstituteAdminInline, ProjectLeaderInline]
     add_form = CustomUserCreationForm
 
     list_display = ('email', 'first_name', 'last_name', 'is_staff')
@@ -231,7 +243,7 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2'),
+            'fields': ('first_name', 'last_name', 'email', 'password1', 'password2'),
         }),
     )
 
@@ -247,13 +259,12 @@ class CustomUserAdmin(UserAdmin):
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super(CustomUserAdmin, self).get_fieldsets(request, obj=obj)
-        if not request.user.is_superuser:
+        if obj and not request.user.is_superuser:
             fieldsets = (
                 (None, {'fields': ('email', 'password')}),
                 (_('Personal info'), {'fields': ('first_name', 'last_name')})
             )
         return fieldsets
-
 
 # ------------------------------------------------------------------------------
 # ModelAdmins
@@ -278,15 +289,13 @@ class ProjectLeaderAdmin(admin.ModelAdmin):
             obj.save()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name in ORG_LEVEL_FIELDS:
-            if not request.user.is_superuser:
+        if not request.user.is_superuser:
+            if db_field.name in ORG_LEVEL_FIELDS:
                 kwargs["queryset"] = db_field.related_model.objects.filter(
                     institute=get_user_institute(request.user))
-        # if db_field.name == 'user':
-        #     if not request.user.is_superuser:
-        #         kwargs["queryset"] = CustomUser.objects.filter(
-        #             project_leader__institute=get_user_institute(request.user))
-
+            if db_field.name == 'user':
+                kwargs["queryset"] = CustomUser.objects.filter(
+                    project_leader__institute=get_user_institute(request.user))
         return super(ProjectLeaderAdmin, self).formfield_for_foreignkey(
             db_field, request, **kwargs)
 
