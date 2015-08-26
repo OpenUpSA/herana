@@ -181,7 +181,7 @@ class ProjectLeaderInline(admin.StackedInline):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if not request.user.is_superuser:
-            if db_field.name == 'instititute':
+            if db_field.name == 'institute':
                 kwargs["queryset"] = Institute.objects.filter(
                     id=get_user_institute(request.user).id)
             if db_field.name in ORG_LEVEL_FIELDS:
