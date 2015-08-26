@@ -33,6 +33,9 @@ from models import (
 
 from forms import ProjectDetailForm, ProjectDetailAdminForm
 
+
+ORG_LEVEL_FIELDS = ["org_level_1", "org_level_2", "org_level_3"]
+
 # ------------------------------------------------------------------------------
 # General utility functions
 # ------------------------------------------------------------------------------
@@ -259,7 +262,7 @@ class ProjectLeaderAdmin(admin.ModelAdmin):
             obj.save()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name in ["org_level_1", "org_level_2", "org_level_3"]:
+        if db_field.name in ORG_LEVEL_FIELDS:
             if not request.user.is_superuser:
                 kwargs["queryset"] = db_field.related_model.objects.filter(
                     institute=get_user_institute(request.user))
@@ -509,7 +512,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return super(ProjectDetailAdmin, self).get_form(request, obj, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name in ["org_level_1", "org_level_2", "org_level_3"]:
+        if db_field.name in ORG_LEVEL_FIELDS:
             kwargs["queryset"] = db_field.related_model.objects.filter(
                 institute=get_user_institute(request.user))
         return super(ProjectDetailAdmin, self).formfield_for_foreignkey(
@@ -524,11 +527,12 @@ class ProjectDetailAdmin(admin.ModelAdmin):
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         form = context['adminform'].form
-        for level in ["org_level_1", "org_level_2", "org_level_3"]:
-            if add:
-                form.fields[level].label = getattr(get_user_institute(request.user), '%s_name' % level)
-            elif change:
-                form.fields[level].label = getattr(obj.institute, '%s_name' % level)
+        if add:
+            institute = obj.institute
+        elif change:
+            institute = get_user_institute(request.user)
+        for level in ORG_LEVEL_FIELDS:
+            form.fields[level].label = getattr(institute, '%s_name' % level)
 
         return super(ProjectDetailAdmin, self).render_change_form(
             request, context, add=False, change=False, form_url='', obj=None)
