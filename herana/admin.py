@@ -542,17 +542,19 @@ class ProjectDetailAdmin(admin.ModelAdmin):
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         form = context['adminform'].form
-        if add:
-            institute = get_user_institute(request.user)
-        elif change:
-            institute = obj.institute
+        if form.fields:
+            # No fields on readonly view
+            if add:
+                institute = get_user_institute(request.user)
+            elif change:
+                institute = obj.institute
 
-        for field in ORG_LEVEL_FIELDS:
-            level_name = getattr(institute, '%s_name' % field)
-            if level_name != '':
-                # If level_name is empty, formset doesn't have the fields included
-                # See get_fieldsets() above
-                form.fields[field].label = level_name
+            for field in ORG_LEVEL_FIELDS:
+                level_name = getattr(institute, '%s_name' % field)
+                if level_name != '':
+                    # If level_name is empty, formset doesn't have the fields included
+                    # See get_fieldsets() above
+                    form.fields[field].label = level_name
 
         return super(ProjectDetailAdmin, self).render_change_form(
             request, context, add=False, change=False, form_url='', obj=obj)
