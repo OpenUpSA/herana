@@ -330,7 +330,7 @@ class ProjectDetail(models.Model):
     record_status = models.PositiveIntegerField(choices=RECORD_STATUS)
     reporting_period = models.ForeignKey('ReportingPeriod')
     is_rejected = models.BooleanField(default=False, verbose_name=CAPTURE_LABELS['is_rejected'])
-    rejected_detail = models.TextField(null=True, blank=True)
+    rejected_detail = models.TextField(null=True, blank=True, verbose_name=CAPTURE_LABELS['rejected_detail'])
     is_flagged = models.BooleanField(default=False, verbose_name=CAPTURE_LABELS['is_flagged'])
     is_deleted = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)

@@ -159,9 +159,11 @@ CAPTURE_LABELS = {
     'reporting_period': _(
         'Period in which the record was captured.'),
     'is_rejected': _(
-        'Rejected'),
+        'Reject this submission'),
+    'rejected_detail': _(
+        'Reason for rejecting this submission.'),
     'is_flagged': _(
-        'Suspect'),
+        'Flag submission as suspect'),
 }
 
 CAPTURE_HELP = {
