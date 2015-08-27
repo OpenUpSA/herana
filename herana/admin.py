@@ -2,6 +2,7 @@ from datetime import date
 
 from django import forms
 from django.contrib import admin
+from django.contrib.admin.options import InlineModelAdmin
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from django.forms import CheckboxSelectMultiple
@@ -40,7 +41,7 @@ ORG_LEVEL_FIELDS = ["org_level_1", "org_level_2", "org_level_3"]
 # General utility classes and functions
 # ------------------------------------------------------------------------------
 
-class ReadOnlyMixin(object):
+class ReadOnlyMixin(InlineModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if user_has_perm(request, self.opts, 'view'):
             result = list(set(
@@ -49,6 +50,7 @@ class ReadOnlyMixin(object):
             ))
             result.remove('id')
             return result
+        return super(ReadOnlyMixin, self).get_readonly_fields(request, obj=obj)
 
     def has_add_permission(self, request):
         if user_has_perm(request, self.opts, 'view'):
@@ -227,8 +229,10 @@ class ReportingPeriodFilter(admin.SimpleListFilter):
     parameter_name = 'reporting_period'
 
     def lookups(self, request, model_admin):
-        reporting_periods = list(ReportingPeriod.objects.filter(
-            institute=get_user_institute(request.user)))
+        reporting_periods = []
+        if not request.user.is_superuser:
+            reporting_periods = list(ReportingPeriod.objects.filter(
+                institute=get_user_institute(request.user)))
 
         return [(rp.id, rp.name) for rp in reporting_periods]
 
@@ -488,12 +492,13 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                     if field not in self.form.Meta.admin_editable:
                         readonly_fields.append(field)
             return readonly_fields
+        return super(ProjectDetailAdmin, self).get_readonly_fields(request, obj=obj)
 
     def get_form(self, request, obj=None, **kwargs):
         # Global and institute admin have readonly views
         if request.user.is_institute_admin() or request.user.is_superuser:
             self.form = ProjectDetailAdminForm
-        return super(ProjectDetailAdmin, self).get_form(request, obj, **kwargs)
+        return super(ProjectDetailAdmin, self).get_form(request, obj=obj, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name in ORG_LEVEL_FIELDS:
