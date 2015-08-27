@@ -87,7 +87,16 @@ def invert_flagged(obj):
     # Green: Not Flagged
         return not obj.is_flagged
 invert_flagged.boolean = True
-invert_flagged.short_description = 'Flagged'
+invert_flagged.short_description = 'Good / Flagged'
+
+
+def invert_deleted(obj):
+    # Inverts the icon, so it makes more sense when viewing i.e.
+    # Red:   Flagged
+    # Green: Not Flagged
+        return not obj.is_deleted
+invert_deleted.boolean = True
+invert_deleted.short_description = 'Active / Deleted'
 
 # ------------------------------------------------------------------------------
 # Formsets
@@ -470,7 +479,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         Only show is_flagged field to admin users
         """
         if request.user.is_institute_admin() or request.user.is_superuser:
-            list_display = self.list_display + (invert_flagged,)
+            list_display = self.list_display + (invert_flagged, invert_deleted)
             return list_display
         return self.list_display
 
@@ -564,7 +573,11 @@ class ProjectDetailAdmin(admin.ModelAdmin):
             1: Draft -> _draft
             2: Final -> _save
         """
-        institute = get_user_institute(request.user)
+        if request.user.is_superuser:
+            institute = obj.institute
+        else:
+            institute = get_user_institute(request.user)
+
         reporting_period = institute.reporting_period.get(is_active=True)
         if not change:
             # New project being saved
@@ -600,8 +613,9 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         # Flag as suspect if other academics is the only chosen team member
         # 7: Other academics
         other_academics = ResearchTeamMember.objects.get(id=7)
-        if other_academics in form.cleaned_data.get('team_members') and len(form.cleaned_data.get('team_members')) == 1:
-            obj.is_flagged = True
+        if form.cleaned_data.get('team_members'):
+            if other_academics in form.cleaned_data.get('team_members') and len(form.cleaned_data.get('team_members')) == 1:
+                obj.is_flagged = True
         obj.save()
 
 
