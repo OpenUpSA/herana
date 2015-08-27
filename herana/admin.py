@@ -81,6 +81,14 @@ def get_user_institute(user):
     except ObjectDoesNotExist:
         return user.institute_admin.institute
 
+def invert_flagged(obj):
+    # Inverts the icon, so it makes more sense when viewing i.e.
+    # Red:   Flagged
+    # Green: Not Flagged
+        return not obj.is_flagged
+invert_flagged.boolean = True
+invert_flagged.short_description = 'Flagged'
+
 # ------------------------------------------------------------------------------
 # Formsets
 # ------------------------------------------------------------------------------
@@ -462,7 +470,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         Only show is_flagged field to admin users
         """
         if request.user.is_institute_admin() or request.user.is_superuser:
-            list_display = self.list_display + ('is_flagged',)
+            list_display = self.list_display + (invert_flagged,)
             return list_display
         return self.list_display
 
