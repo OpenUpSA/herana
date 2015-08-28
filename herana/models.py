@@ -51,6 +51,7 @@ class Institute(models.Model):
 class StrategicObjective(models.Model):
     institute = models.ForeignKey('Institute')
     statement = models.CharField(max_length=512)
+    is_true = models.BooleanField(default=False, verbose_name='Statement is true')
 
     def __unicode__(self):
         return self.statement
