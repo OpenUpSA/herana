@@ -237,6 +237,25 @@ class StrategicObjectiveInline(admin.TabularInline):
     verbose_name_plural = _('Strategic Objectives')
 
 
+class OrgLevelInline(admin.TabularInline):
+    inline_classes = ('grp-collapse grp-open',)
+    extra = 2
+
+class OrgLevel1Inline(OrgLevelInline):
+    model = OrgLevel1
+    verbose_name = _('Org Level 1')
+    verbose_name_plural = _('Org Level 1')
+
+class OrgLevel2Inline(OrgLevelInline):
+    model = OrgLevel2
+    verbose_name = _('Org Level 2')
+    verbose_name_plural = _('Org Level 2')
+
+class OrgLevel3Inline(OrgLevelInline):
+    model = OrgLevel3
+    verbose_name = _('Org Level 3')
+    verbose_name_plural = _('Org Level 3')
+
 # ------------------------------------------------------------------------------
 # Filters
 # ------------------------------------------------------------------------------
@@ -314,11 +333,15 @@ class CustomUserAdmin(UserAdmin):
 # ------------------------------------------------------------------------------
 
 class InstituteModelAdmin(admin.ModelAdmin):
-    inlines = [StrategicObjectiveInline]
+    inlines = [
+        StrategicObjectiveInline,
+        OrgLevel1Inline,
+        OrgLevel2Inline,
+        OrgLevel3Inline]
 
 
 class OrgLevelAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ('institute',)
 
 
 class ReportingPeriodAdmin(admin.ModelAdmin):
