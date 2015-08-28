@@ -246,15 +246,28 @@ class OrgLevel1Inline(OrgLevelInline):
     verbose_name = _('Org Level 1')
     verbose_name_plural = _('Org Level 1')
 
+
 class OrgLevel2Inline(OrgLevelInline):
     model = OrgLevel2
     verbose_name = _('Org Level 2')
     verbose_name_plural = _('Org Level 2')
 
+    raw_id_fields = ('parent',)
+    autocomplete_lookup_fields = {
+        'fk': ['parent'],
+        'm2m': [],
+    }
+
 class OrgLevel3Inline(OrgLevelInline):
     model = OrgLevel3
     verbose_name = _('Org Level 3')
     verbose_name_plural = _('Org Level 3')
+
+    raw_id_fields = ('parent',)
+    autocomplete_lookup_fields = {
+        'fk': ['parent'],
+        'm2m': [],
+    }
 
 # ------------------------------------------------------------------------------
 # Filters

@@ -65,6 +65,13 @@ class OrgLevel(models.Model):
         verbose_name_plural = _("Org Levels")
         ordering = ['name']
 
+    def __unicode__(self):
+        return u"%s" % self.name
+
+    @staticmethod
+    def autocomplete_search_fields():
+        return ("id__iexact", "name__icontains", "institute__name__icontains")
+
 
 class OrgLevel1(OrgLevel):
     def __unicode__(self):
