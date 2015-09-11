@@ -53,12 +53,16 @@ class ReadOnlyMixin(InlineModelAdmin):
         return super(ReadOnlyMixin, self).get_readonly_fields(request, obj=obj)
 
     def has_add_permission(self, request):
+        # Global admin and institute admin have view permissions assigned
         if user_has_perm(request, self.opts, 'view'):
             return False
+        return True
 
     def has_delete_permission(self, request, obj=None):
+        # Global admin and institute admin have view permissions assigned
         if user_has_perm(request, self.opts, 'view'):
             return False
+        return True
 
 
 def user_has_perm(request, opts, perm_type):
@@ -548,7 +552,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return super(ProjectDetailAdmin, self).get_readonly_fields(request, obj=obj)
 
     def get_form(self, request, obj=None, **kwargs):
-        # Global and institute admin have readonly views
+        # Global and institute admin have readonly views and are able to reject or flag a project
         if request.user.is_institute_admin() or request.user.is_superuser:
             self.form = ProjectDetailAdminForm
         return super(ProjectDetailAdmin, self).get_form(request, obj=obj, **kwargs)
