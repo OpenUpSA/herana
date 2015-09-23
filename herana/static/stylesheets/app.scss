@@ -22,6 +22,17 @@
 #site-footer {
   margin-top: 20px;
   padding: 40px 0px;
+  background: #333;
+  color: white;
+  a:hover {
+    color: white;
+  }
 
-  background-color: #ccc;
+  .code4sa-logo {
+    display: block;
+    margin-bottom: 10px;
+    background-color: white;
+    padding: 5px;
+    height: 70px;
+  }
 }
