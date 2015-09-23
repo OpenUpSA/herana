@@ -1,5 +1,6 @@
 import os
 
+from django.core.mail import send_mail
 from django.db import models
 from django.contrib.auth.models import Group, Permission
 from django.utils.translation import ugettext_lazy as _
@@ -500,3 +501,44 @@ def remove_user_from_project_leaders(sender, **kwargs):
 def set_user_as_staff(sender, instance, **kwargs):
     if not instance.is_staff:
         instance.is_staff = True
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def send_welcome_email(sender, instance, created, **kwargs):
+    """ Send a welcome email to a new user.
+    """
+    if created:
+        # we need the password, use the stack to get the request (ugly!)
+        import inspect
+        request = None
+
+        for frame_record in inspect.stack():
+            if frame_record[3] == 'get_response':
+                request = frame_record[0].f_locals['request']
+                break
+
+        if request:
+            password1 = request.POST.get('password1')
+            password2 = request.POST.get('password2')
+
+            if instance.email and password1 and password2 and password1 == password2:
+                message = """
+Hello {email},
+
+A new account has been created for you on Herana.
+
+You can login at http://{domain}/ using these details:
+
+    Email: {email}
+    Password: {password}
+
+Kind regards,
+The Herana team
+"""
+                message = message.format(
+                    password=password1,
+                    email=instance.email,
+                    domain=settings.DOMAIN,
+                )
+
+                instance.email_user("Welcome to Herana", message)

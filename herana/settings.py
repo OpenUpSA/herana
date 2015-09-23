@@ -202,3 +202,5 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'webapps@code4sa.org'
 EMAIL_HOST_PASSWORD = os.environ.get('DJANGO_EMAIL_HOST_PASSWORD')
 EMAIL_SUBJECT_PREFIX = '[Herana] '
+
+DOMAIN = "herana.code4sa.org"
