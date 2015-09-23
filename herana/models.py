@@ -1,6 +1,6 @@
 import os
-from datetime import datetime
 
+from django.core.mail import send_mail
 from django.db import models
 from django.contrib.auth.models import Group, Permission
 from django.utils.translation import ugettext_lazy as _
@@ -25,6 +25,7 @@ def image_filename(instance, filename):
     """
     return 'images/%s/%s' % (instance.id, os.path.basename(filename))
 
+
 def attachment_filename(instance, filename):
     """ Make S3 attachment filenames relative to the engagement project,
     this may be modified to ensure it's unique by the storage system. """
@@ -33,6 +34,7 @@ def attachment_filename(instance, filename):
 # ------------------------------------------------------------------------------
 # Models for administration of an institute
 # ------------------------------------------------------------------------------
+
 
 class Institute(models.Model):
     name = models.CharField(max_length=256)
@@ -300,7 +302,7 @@ class ProjectDetail(models.Model):
     team_members = models.ManyToManyField(ResearchTeamMember, blank=True,
                                           verbose_name=CAPTURE_LABELS['team_members'])
     team_members_text = models.TextField(null=True, blank=True,
-                                        verbose_name=CAPTURE_LABELS['team_members_text'])
+                                         verbose_name=CAPTURE_LABELS['team_members_text'])
     new_initiative = models.CharField(choices=YESNO, max_length=1, null=True,
                                       verbose_name=CAPTURE_LABELS['new_initiative'])
     new_initiative_text = models.TextField(null=True, blank=True,
@@ -347,13 +349,12 @@ class ProjectDetail(models.Model):
         return '%s - %s' % (self.name, self.reporting_period.name)
 
     class Meta:
-        verbose_name='Engagement project'
-        verbose_name_plural='Engagement projects'
+        verbose_name = 'Engagement project'
+        verbose_name_plural = 'Engagement projects'
         permissions = (
             ('view_projectdetail', 'Can only view project details'),
             ('reject_projectdetail', 'Can reject the project which has been submitted')
         )
-
 
 
 # ------------------------------------------------------------------------------
@@ -393,13 +394,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
     is_staff = models.BooleanField(_('staff status'), default=False,
-        help_text=_('Designates whether the user can log into this admin '
-                    'site.'))
+                                   help_text=_('Designates whether the user can log into this admin '
+                                               'site.'))
     is_active = models.BooleanField(_('active'), default=True,
-        help_text=_('Designates whether this user should be treated as '
-                    'active. Unselect this instead of deleting accounts.'))
+                                    help_text=_('Designates whether this user should be treated as '
+                                                'active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -501,3 +501,44 @@ def remove_user_from_project_leaders(sender, **kwargs):
 def set_user_as_staff(sender, instance, **kwargs):
     if not instance.is_staff:
         instance.is_staff = True
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def send_welcome_email(sender, instance, created, **kwargs):
+    """ Send a welcome email to a new user.
+    """
+    if created:
+        # we need the password, use the stack to get the request (ugly!)
+        import inspect
+        request = None
+
+        for frame_record in inspect.stack():
+            if frame_record[3] == 'get_response':
+                request = frame_record[0].f_locals['request']
+                break
+
+        if request:
+            password1 = request.POST.get('password1')
+            password2 = request.POST.get('password2')
+
+            if instance.email and password1 and password2 and password1 == password2:
+                message = """
+Hello {email},
+
+A new account has been created for you on Herana.
+
+You can login at http://{domain}/ using these details:
+
+    Email: {email}
+    Password: {password}
+
+Kind regards,
+The Herana team
+"""
+                message = message.format(
+                    password=password1,
+                    email=instance.email,
+                    domain=settings.DOMAIN,
+                )
+
+                instance.email_user("Welcome to Herana", message)
