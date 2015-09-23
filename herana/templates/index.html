@@ -1,10 +1,45 @@
 {% extends "layout.html" %}
 
 {% block title %}Page Title{% endblock %}
+{% block body-class %}grp-login{% endblock %}
 {% block page-content %}
 
 <div class="container">
-<h1>Hi!</h1>
+  <div class="row">
+    <div class="col-sm-9">
+
+    </div>
+
+    <div class="col-sm-3">
+      {% if user.is_anonymous %}
+      <form action="/admin/login/?next=/admin/" method="post">
+        {% csrf_token %}
+        <fieldset class="grp-module grp-module-login">
+          <h1>
+            <span class="grp-current-page">Login</span>
+          </h1>
+          <div class="grp-module">
+            <div class="grp-row">
+              <label for="id_username" class="required">Email</label>
+              <input type="text" name="username" id="id_username">
+            </div>
+            <div class="grp-row grp-connected">
+              <label for="id_password" class="required">Password</label>
+              <input type="password" name="password" id="id_password">
+              <input type="hidden" name="next" value="/admin/">
+            </div>
+          </div>
+        </fieldset>
+        <div class="grp-module grp-submit-row">
+          <ul>
+            <li><input type="submit" class="grp-button grp-default" value="Log in"></li>
+          </ul>
+        </div>
+      </form>
+      {% endif %}
+
+    </div>
+  </div>
 </div>
 
 {% endblock %}

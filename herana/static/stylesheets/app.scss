@@ -10,6 +10,13 @@
 
 #main-content {
   min-height: 500px;
+
+  .grp-module-login {
+    input[type=text],
+    input[type=password] {
+      width: 100%;
+    }
+  }
 }
 
 #site-footer {

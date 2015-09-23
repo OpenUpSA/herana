@@ -1,4 +1,5 @@
 {% load assets %}
+{% load admin_static %}
 
 <!DOCTYPE html>
 <html>
@@ -12,6 +13,7 @@
     {% assets "css" %}
         <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
     {% endassets %}
+      <link href="{% static "grappelli/stylesheets/screen.css" %}" rel="stylesheet" type="text/css" media="all" />
     {% endblock %}
 
     {% block head-meta %}{% endblock %}
