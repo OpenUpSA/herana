@@ -195,3 +195,10 @@ GRAPPELLI_ADMIN_TITLE = 'Herana'
 # Custom User Model
 AUTH_USER_MODEL = 'herana.CustomUser'
 
+SUPPORT_EMAIL = 'francois@compressdsl.com'
+DEFAULT_FROM_EMAIL = os.environ.get('DJANGO_DEFAULT_FROM_EMAIL', SUPPORT_EMAIL)
+EMAIL_HOST = 'smtp.mandrillapp.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'webapps@code4sa.org'
+EMAIL_HOST_PASSWORD = os.environ.get('DJANGO_EMAIL_HOST_PASSWORD')
+EMAIL_SUBJECT_PREFIX = '[Herana] '
