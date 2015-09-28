@@ -1,17 +1,19 @@
 {% load assets %}
+{% load admin_static %}
 
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{% block title %}{% endblock %} - Code4SA</title>
+    <title>{% block title %}{% endblock %} - Herana</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A web application by Code for South Africa">
+    <meta name="description" content="Herana">
     <meta name="csrf-token" content="{{ csrf_token }}">
 
     {% block head-css %}
     {% assets "css" %}
         <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
     {% endassets %}
+      <link href="{% static "grappelli/stylesheets/screen.css" %}" rel="stylesheet" type="text/css" media="all" />
     {% endblock %}
 
     {% block head-meta %}{% endblock %}

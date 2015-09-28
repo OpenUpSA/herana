@@ -13,5 +13,6 @@ register('css', Bundle(
 register('js', Bundle(
     # list JS files here
     'bower_components/jquery/dist/jquery.min.js',
+    'bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js',
     'javascript/app.js',
     output='js/app.%(version)s.js'))
