@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% load static %}
 
 {% block title %}Welcome{% endblock %}
 {% block body-class %}grp-login{% endblock %}
@@ -6,7 +7,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-sm-8">
+    <div class="col-sm-9">
       <article class="freetext">
         <h1>University-Community Engagement Assessment Instrument</h1>
 
@@ -14,47 +15,63 @@
         Welcome to CHET’s HERANA University-Community Engagement Assessment Instrument.
         </p>
 
-        <h2> What does the instrument do?</h2>
+        <div class="row">
+          <div class="col-sm-7">
+            <h2> What does the instrument do?</h2>
 
-        <p>
-        The instrument operationalises the slippery concept of university engagement (also referred to as ‘service leanring’, ‘outreach’ and ‘responsiveness’, among others. It does so by reconceptualising engagement as interconnectedness.
-        </p>
+            <p>
+            The instrument operationalises the slippery concept of university engagement (also referred to as ‘service leanring’, ‘outreach’ and ‘responsiveness’, among others. It does so by reconceptualising engagement as interconnectedness.
+            </p>
 
-        <p>
-        Interconnectedness describes the relationship (in tension) of academics engaging with those outside of the university while simultaneously linking back to the university’s core functions. Interconnectedness is operationalised along two dimensions: (1) Articulation which describes the extent to which engagement activities link to the university’s strategic objectives and to external constituents and (2) the academic core which describes the extent to which engagement activities link to the university’s core functions of research and teaching and learning.
-        </p>
+            <p>
+            Interconnectedness describes the relationship (in tension) of academics engaging with those outside of the university while simultaneously linking back to the university’s core functions. Interconnectedness is operationalised along two dimensions: (1) Articulation which describes the extent to which engagement activities link to the university’s strategic objectives and to external constituents and (2) the academic core which describes the extent to which engagement activities link to the university’s core functions of research and teaching and learning.
+            </p>
 
-        <p>
-        The instrument captures data by means of an online questionnaire. From the questionnaire data, an interconnectedness score is calculated for each university-community engagement activity. The score denotes whether such activities can be described as interconnected – the activity effectively manages the tension between connecting to those outside of the university and with the core functions of the university – or whether such activities are disconnected – the activity is weakly connected to external communities or weakly connected to knowledge production and transfer.
-        </p>
+            <p>
+            The instrument captures data by means of an online questionnaire. From the questionnaire data, an interconnectedness score is calculated for each university-community engagement activity. The score denotes whether such activities can be described as interconnected – the activity effectively manages the tension between connecting to those outside of the university and with the core functions of the university – or whether such activities are disconnected – the activity is weakly connected to external communities or weakly connected to knowledge production and transfer.
+            </p>
 
-        <p>
-        The intereconnectedness scores are presented graphically as means for identifying patterns across a university, faculty or department.
-        </p>
+            <p>
+            The intereconnectedness scores are presented graphically as means for identifying patterns across a university, faculty or department.
+            </p>
+          </div>
 
-        <h2>What is the purpose of the instrument?</h2>
+          <div class="col-sm-5">
+            <a href="{% static 'img/connectedness2.png' %}"><img class="img-aside" src="{% static 'img/connectedness2.png' %}"></a>
+          </div>
+        </div>
 
-        <p>
-        The data and analysis provided the HERANA University-Community Engagement Assessment Instrument provides the evidence required for the drafting of institutional policy that promotes and supports engagement activities that are for the benefit of society, in alignment with the institution’s strategic objectives and, at the same time, will strengthen the universities’ central role as a producer of new knowledge.
-        </p>
+        <div class="row">
+          <div class="col-sm-7">
+            <h2>What is the purpose of the instrument?</h2>
 
-        <h2>Background</h2>
+            <p>
+            The data and analysis provided the HERANA University-Community Engagement Assessment Instrument provides the evidence required for the drafting of institutional policy that promotes and supports engagement activities that are for the benefit of society, in alignment with the institution’s strategic objectives and, at the same time, will strengthen the universities’ central role as a producer of new knowledge.
+            </p>
 
-        <p>
-        HERANA Phase 1 research on development-related projects at eight African universities went some way in countering the paucity of research on university engagement by beginning to paint a picture of how ‘development- related projects’ are articulated with constituencies both external and internal to the university, and how these projects either strengthened or weakened the core activities of teaching and research.
-        </p>
+            <h2>Background</h2>
 
-        <p>
-        In HERANA 2 the objective was to further elaborate and refine the Phase 1 methodology. This comprised an investigation of a large sample of projects at two African universities in order to test some of the hypotheses inherent in the methodology, and culminated in the development of an instrument that could be deployed by universities to assess their engagement activities in relation to the academic core.
-        </p>
+            <p>
+            HERANA Phase 1 research on development-related projects at eight African universities went some way in countering the paucity of research on university engagement by beginning to paint a picture of how ‘development- related projects’ are articulated with constituencies both external and internal to the university, and how these projects either strengthened or weakened the core activities of teaching and research.
+            </p>
 
-        <p>
-        In HERANA 3, currently underway, the focus is on institutionalising the collection of data on university-community engagement activities through the use of the HERANA engagement instrument so as to provide universities with a clearer picture of the extent to which engagement activities are strengthening research and teaching and learning.
-        </p>
+            <p>
+            In HERANA 2 the objective was to further elaborate and refine the Phase 1 methodology. This comprised an investigation of a large sample of projects at two African universities in order to test some of the hypotheses inherent in the methodology, and culminated in the development of an instrument that could be deployed by universities to assess their engagement activities in relation to the academic core.
+            </p>
+
+            <p>
+            In HERANA 3, currently underway, the focus is on institutionalising the collection of data on university-community engagement activities through the use of the HERANA engagement instrument so as to provide universities with a clearer picture of the extent to which engagement activities are strengthening research and teaching and learning.
+            </p>
+          </div>
+
+          <div class="col-sm-5">
+            <a href="{% static 'img/connectedness1.png' %}"><img class="img-aside" src="{% static 'img/connectedness1.png' %}"></a>
+          </div>
+        </div>
       </article>
     </div>
 
-    <div class="col-sm-3 col-sm-offset-1">
+    <div class="col-sm-3">
       {% if user.is_anonymous %}
         {% include "_login_form.html" %}
       {% endif %}
