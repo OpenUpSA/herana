@@ -16,6 +16,38 @@
     input[type=password] {
       width: 100%;
     }
+
+  }
+
+  .grp-submit-row {
+    margin-bottom: 20px;
+  }
+}
+
+.freetext {
+  h1 {
+    font-size: 26px;
+  }
+
+  h2 {
+    font-size: 21px;
+    color: #DA4622;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  h1, h2, h3, h4, h5 {
+    margin-bottom: 20px;
+  }
+
+  p {
+    margin-bottom: 20px;
+  }
+
+  section {
+    margin-bottom: 20px;
   }
 }
 
