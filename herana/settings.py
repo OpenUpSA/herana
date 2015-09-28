@@ -42,7 +42,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_assets',
+    'pipeline',
     'django_extensions',
 
     'herana',
@@ -110,7 +110,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
     "herana.context_processors.google_analytics",
-    )
+)
 
 # file uploads
 if not DEBUG:
@@ -138,20 +138,42 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
 STATICFILES_FINDERS = (
-   "django.contrib.staticfiles.finders.FileSystemFinder",
-   "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-   "django_assets.finders.AssetsFinder"
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "pipeline.finders.PipelineFinder",
 )
 
-import scss
-scss.config.LOAD_PATHS = [
-        os.path.join(BASE_DIR, 'herana', 'static'),
-        os.path.join(BASE_DIR, 'herana', 'static', 'bower_components'),
-        ]
+PYSCSS_LOAD_PATHS = [
+    os.path.join(BASE_DIR, 'herana', 'static'),
+    os.path.join(BASE_DIR, 'herana', 'static', 'bower_components'),
+]
 
-# Simplified static file serving.
-# https://warehouse.python.org/project/whitenoise/
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+PIPELINE_CSS = {
+    'css': {
+        'source_filenames': (
+            'bower_components/fontawesome/css/font-awesome.css',
+            'stylesheets/app.scss',
+        ),
+        'output_filename': 'app.css',
+    },
+}
+PIPELINE_JS = {
+    'js': {
+        'source_filenames': (
+            'bower_components/jquery/dist/jquery.min.js',
+            'javascript/app.js',
+        ),
+        'output_filename': 'app.js',
+    },
+}
+PIPELINE_CSS_COMPRESSOR = None
+PIPELINE_JS_COMPRESSOR = None
+
+PIPELINE_COMPILERS = (
+    'herana.pipeline.PyScssCompiler',
+)
+
+STATICFILES_STORAGE = 'herana.pipeline.GzipManifestPipelineStorage'
 
 # Logging
 LOGGING = {
@@ -175,9 +197,9 @@ LOGGING = {
     },
     'loggers': {
         # put any custom loggers here
-        #'your_package_name': {
+        # 'your_package_name': {
         #    'level': 'DEBUG' if DEBUG else 'INFO',
-        #},
+        # },
         'django': {
             'level': 'INFO',
         }
