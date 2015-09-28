@@ -1,4 +1,4 @@
-{% load assets %}
+{% load pipeline %}
 {% load admin_static %}
 
 <!DOCTYPE html>
@@ -10,9 +10,7 @@
     <meta name="csrf-token" content="{{ csrf_token }}">
 
     {% block head-css %}
-    {% assets "css" %}
-        <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
-    {% endassets %}
+    {% stylesheet "css" %}
       <link href="{% static "grappelli/stylesheets/screen.css" %}" rel="stylesheet" type="text/css" media="all" />
     {% endblock %}
 
@@ -25,9 +23,7 @@
     {% endblock content %}
 
     {% block js %}
-    {% assets "js" %}
-        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-    {% endassets %}
+    {% javascript "js" %}
 
     {% if GOOGLE_ANALYTICS_ID %}
     <script>
