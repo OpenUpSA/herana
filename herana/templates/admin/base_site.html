@@ -1,5 +1,13 @@
-{% extends "admin/base_site.html" %}
+{% extends "admin/base.html" %}
+{% load i18n grp_tags %}
 {% load static %}
+
+{% block title %}{{ title }} | {% get_site_title %}{% endblock %}
+
+<!-- CUSTOM STYLES -->
+{% block extrastyle %}
+    <link href="{% static "stylesheets/grappelli/custom_admin.css" %}" rel="stylesheet" type="text/css" media="screen" />
+{% endblock %}
 
 {% block branding %}
     {# Use the div#grp-branding for branding elements, e.g. a logo #}
@@ -20,3 +28,4 @@
     </div>
 {% endblock %}
 
+{% block nav-global %}{% endblock %}
