@@ -4,6 +4,8 @@ from django.contrib import admin
 from django.views.generic.base import RedirectView
 
 
+admin.site.index_template = 'admin/custom_index.html'
+
 urlpatterns = patterns('',
     url(r'^$', 'herana.views.home', name='home'),
     url(r'^grappelli/', include('grappelli.urls')),
