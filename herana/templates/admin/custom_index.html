@@ -1,5 +1,6 @@
 {% extends "admin/custom_base_site.html" %}
 
+{% load admin_static %}
 <!-- LOADING -->
 {% load i18n grp_tags log grp_dashboard_tags %}
 
@@ -14,6 +15,11 @@
             });
         })(grp.jQuery);
     </script>
+{% endblock %}
+
+<!-- CUSTOM STYLES -->
+{% block extrastyle %}
+    <link href="{% static "stylesheets/grappelli/custom_admin.css" %}" rel="stylesheet" type="text/css" media="screen" />
 {% endblock %}
 
 <!-- COLTYPE/BODYCLASS-- >

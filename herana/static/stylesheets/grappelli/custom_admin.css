@@ -1,0 +1,29 @@
+header#grp-header #grp-navigation div#grp-branding {
+  float: none;
+  max-height: 130px;
+  height: 90px;
+  border-bottom: 3px solid #fff;
+  padding: 20px;
+  margin: 0 -20px;
+}
+
+#grp-content {
+  top: 150px;
+}
+
+.institute-branding {
+  float: left;
+}
+
+.institute-branding img {
+  height: 90px;
+}
+
+.herana-branding {
+  float: right;
+  padding-right: 50px;
+}
+
+.herana-branding img {
+  padding-left: 20px;
+}
