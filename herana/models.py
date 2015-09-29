@@ -49,6 +49,9 @@ class Institute(models.Model):
     class Meta:
         ordering = ['name']
 
+    def get_logo_path(self):
+        return self.logo.storage.url(self.logo.name)
+
 
 class StrategicObjective(models.Model):
     institute = models.ForeignKey('Institute')

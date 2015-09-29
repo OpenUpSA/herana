@@ -7,15 +7,15 @@
       <div class="institute-branding">
         {% if user.get_user_institute %}
           {% if user.get_user_institute.logo %}
-            <img src="{{ user.get_user_institute.logo.file }}">
+            <img src="{{ user.get_user_institute.get_logo_path }}">
           {% else %}
             <h1>{{ user.get_user_institute.name }}</h1>
           {% endif %}
         {% endif %}
         </div>
         <div class="herana-branding">
-          <img src="{% static 'img/chet-logo-admin.png' %}">
-          <img src="{% static 'img/herana-logo-admin.png' %}">
+          <span class="helper"></span><img src="{% static 'img/chet-logo-admin.png' %}">
+          <span class="helper"></span><img src="{% static 'img/herana-logo-admin.png' %}">
         </div>
     </div>
 {% endblock %}

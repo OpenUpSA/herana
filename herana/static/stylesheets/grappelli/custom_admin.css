@@ -5,6 +5,7 @@ header#grp-header #grp-navigation div#grp-branding {
   border-bottom: 3px solid #fff;
   padding: 20px;
   margin: 0 -20px;
+  text-align: center;
 }
 
 #grp-content {
@@ -22,10 +23,20 @@ header#grp-header #grp-navigation div#grp-branding {
 .herana-branding {
   float: right;
   padding-right: 50px;
+  height: 90px;
+  text-align: center;
+}
+
+.helper {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
 }
 
 .herana-branding img {
-  padding-left: 20px;
+  padding-left: 30px;
+  max-height: 90px;
+  vertical-align: middle;
 }
 
 .user-instructions {
@@ -37,6 +48,10 @@ header#grp-header #grp-navigation div#grp-branding {
   color: #e34520;
   text-transform: uppercase;
   margin-top: 10px;
+}
+
+.user-instructions h4 {
+  margin-bottom: 10px;
 }
 
 .user-instructions ul {
