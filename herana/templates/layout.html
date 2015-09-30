@@ -16,8 +16,8 @@
         <ul class="nav navbar-nav">
           {% if user.is_project_leader %}
           <li class="active"><a href="/admin/">Submit project details</a></li>
-          {% elif user.is_institute_admin %}
-          <li class="active"><a href="/admin/">Manage users and projects</a></li>
+          {% else %}
+          <li class="active"><a href="/admin/">Go to admin site</a></li>
           {% endif %}
         </ul>
 
