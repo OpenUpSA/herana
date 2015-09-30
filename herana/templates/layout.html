@@ -14,8 +14,10 @@
       </div>
       <div id="navbar" class="navbar-static-top">
         <ul class="nav navbar-nav">
-          {% if user.is_authenticated %}
+          {% if user.is_project_leader %}
           <li class="active"><a href="/admin/">Submit project details</a></li>
+          {% elif user.is_institute_admin %}
+          <li class="active"><a href="/admin/">Manage users and projects</a></li>
           {% endif %}
         </ul>
 
@@ -65,8 +67,12 @@
       </div>
 
       <div class="col-sm-3">
+        <p>
         <a href="http://code4sa.org"><img class="code4sa-logo" src="{% static 'bower_components/code4sa-styles/images/code4sa_logo.png' %}"></a>
+        </p>
+        <p>
         Built by <a href="http://code4sa.org">Code for South Africa</a>
+        </p>
       </div>
     </div>
 

@@ -39,6 +39,14 @@ header#grp-header #grp-navigation div#grp-branding {
   vertical-align: middle;
 }
 
+.herana-branding img.chet-logo {
+  height: 50px;
+}
+
+.herana-branding img.herana-logo {
+  height: 75px;
+}
+
 .user-instructions {
   width: 50%;
   padding: 30px 20px;
