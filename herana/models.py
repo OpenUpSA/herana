@@ -507,7 +507,12 @@ def assign_institute_admin_to_group(sender, **kwargs):
         try:
             g = Group.objects.get(name='InstituteAdmins')
         except ObjectDoesNotExist:
-            # It might be better creating this group in a migration
+            """
+            A user needs change and view permissions on a model
+            to be readonly in change view
+
+            It might be better creating this group in a migration
+            """
             g = Group.objects.create(name='InstituteAdmins')
             admin_permissions = [
                 'add_projectleader', 'delete_projectleader', 'change_projectleader',
@@ -540,7 +545,12 @@ def assign_project_leader_to_group(sender, **kwargs):
         try:
             g = Group.objects.get(name='ProjectLeaders')
         except ObjectDoesNotExist:
-            # It might be better creating this group in a migration
+            """
+            A user needs change and view permissions on a model
+            to be readonly in change view
+
+            It might be better creating this group in a migration
+            """
             g = Group.objects.create(name='ProjectLeaders')
             admin_permissions = [
                 'add_projectdetail', 'change_projectdetail',
