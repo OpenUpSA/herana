@@ -55,6 +55,16 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
   .img-aside {
     width: 100%;
   }
+  margin-bottom: 20px;
+
+  ul {
+    list-style: inside;
+  }
+
+  p.report-overview {
+      font-size: 0.85em;
+      font-style: italic;
+    }
 }
 
 #site-footer {
