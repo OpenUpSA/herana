@@ -43,6 +43,10 @@ ORG_LEVEL_FIELDS = ["org_level_1", "org_level_2", "org_level_3"]
 
 class ReadOnlyMixin(InlineModelAdmin):
     def get_readonly_fields(self, request, obj=None):
+        """
+        If a user has a view only permission,
+        add all inline form fields to readonly_fields
+        """
         if user_has_perm(request, self.opts, 'view'):
             result = list(set(
                 [field.name for field in self.opts.local_fields] +
@@ -80,7 +84,8 @@ def invert_flagged(obj):
     # Inverts the icon, so it makes more sense when viewing i.e.
     # Red:   Flagged
     # Green: Not Flagged
-        return not obj.is_flagged
+    return not obj.is_flagged
+
 invert_flagged.boolean = True
 invert_flagged.short_description = 'Good / Flagged'
 
@@ -89,7 +94,8 @@ def invert_deleted(obj):
     # Inverts the icon, so it makes more sense when viewing i.e.
     # Red:   Flagged
     # Green: Not Flagged
-        return not obj.is_deleted
+    return not obj.is_deleted
+
 invert_deleted.boolean = True
 invert_deleted.short_description = 'Active / Deleted'
 
@@ -115,6 +121,11 @@ class ProjectDetailFormSet(forms.models.BaseInlineFormSet):
         if count < 1:
             raise forms.ValidationError(error_msg)
 
+
+"""
+The following clean methods ensure that further detail is provided
+where the project leader selected "Yes" for the related formset fields.
+"""
 
 class PHDStudentFormSet(ProjectDetailFormSet):
     def clean(self):
@@ -148,54 +159,55 @@ class CollaboratorsFormSet(ProjectDetailFormSet):
 # Inlines
 # ------------------------------------------------------------------------------
 
-class ProjectFundingInline(ReadOnlyMixin, admin.TabularInline):
-    model = ProjectFunding
+"""
+Two generic classes to be used for inlines within the ProjectDetail form.
+"""
+class ProjectTabularInline(admin.TabularInline):
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
+
+
+class ProjectStackedInline(admin.StackedInline):
+    extra = 1
+    inline_classes = ('grp-collapse grp-open',)
+
+
+class ProjectFundingInline(ReadOnlyMixin, ProjectTabularInline):
+    model = ProjectFunding
     verbose_name = _('funding source')
     verbose_name_plural = _('6.1: Please list sources of project funding, the number of years for which funding has been secured, and the amount of funding (in US$).')
 
 
-class PHDStudentInline(ReadOnlyMixin, admin.TabularInline):
+class PHDStudentInline(ReadOnlyMixin, ProjectTabularInline):
     model = PHDStudent
     formset = PHDStudentFormSet
-    extra = 1
-    inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('student')
     verbose_name_plural = _('7.2.1: If yes, please provide their names.')
 
 
-class ProjectOutputInline(ReadOnlyMixin, admin.StackedInline):
+class ProjectOutputInline(ReadOnlyMixin, ProjectStackedInline):
     model = ProjectOutput
-    extra = 1
-    inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('Project output')
     verbose_name_plural = _('8.1: Please add the completed publications and other outputs for this project.')
 
 
-class NewCourseDetailInline(ReadOnlyMixin, admin.TabularInline):
+class NewCourseDetailInline(ReadOnlyMixin, ProjectTabularInline):
     model = NewCourseDetail
     formset = NewCourseDetailFormSet
-    extra = 1
-    inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('new course')
     verbose_name_plural = _('9.2.1: If yes, please provide the new course details')
 
 
-class CourseReqDetailInline(ReadOnlyMixin, admin.TabularInline):
+class CourseReqDetailInline(ReadOnlyMixin, ProjectTabularInline):
     model = CourseReqDetail
     formset = CourseReqDetailFormSet
-    extra = 1
-    inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('required course')
     verbose_name_plural = _('9.5.1: If yes, please provide the course details.')
 
 
-class CollaboratorsInline(ReadOnlyMixin, admin.TabularInline):
+class CollaboratorsInline(ReadOnlyMixin, ProjectTabularInline):
     model = Collaborators
     formset = CollaboratorsFormSet
-    extra = 1
-    inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('collaborator')
     verbose_name_plural = _('10.1.1: If yes, please provide the collaborator details.')
 
@@ -498,11 +510,15 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return False
 
     def has_change_permission(self, request, obj=None):
-        if not request.user.is_superuser:
-            if user_has_perm(request, self.opts, 'change'):
-                return True
-            if user_has_perm(request, self.opts, 'view'):
-                return True
+        """
+        Always return true.
+        Displays fields as readonly for admin users
+        """
+        # if not request.user.is_superuser:
+        #     if user_has_perm(request, self.opts, 'change'):
+        #         return True
+        #     if user_has_perm(request, self.opts, 'view'):
+        #         return True
         return True
 
     def get_list_display(self, request):
@@ -515,6 +531,9 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return self.list_display
 
     def get_list_filter(self, request):
+        """
+        Enable filtering by Repoting period for institute users
+        """
         if not request.user.is_superuser:
             self.list_filter.append(ReportingPeriodFilter)
         return super(ProjectDetailAdmin, self).get_list_filter(request)

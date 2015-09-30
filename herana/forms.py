@@ -9,7 +9,7 @@ class ProjectDetailForm(forms.ModelForm):
             'institute', 'proj_leader', 'record_status', 'reporting_period', 'is_rejected', 'rejected_detail',
             'is_flagged', 'is_deleted', 'modified_at', 'created_at'
         )
-        admin_ediatble = []
+        admin_editable = []
 
     def _clean_fields(self):
         # If we are saving a draft, only the name field is required.
