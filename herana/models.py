@@ -211,10 +211,20 @@ class ProjectFunding(models.Model):
     renewable = models.CharField(choices=YESNO, max_length=1, null=True)
     project = models.ForeignKey('ProjectDetail')
 
+    class Meta:
+        permissions = (
+            ('view_projectfunding', 'Can only view project funding'),
+        )
+
 
 class PHDStudent(models.Model):
     name = models.CharField(max_length=128)
     project = models.ForeignKey('ProjectDetail')
+
+    class Meta:
+        permissions = (
+            ('view_phdstudent', 'Can only view PHD students'),
+        )
 
 
 class ProjectOutput(models.Model):
@@ -232,11 +242,21 @@ class ProjectOutput(models.Model):
     attachment = models.FileField(upload_to=attachment_filename, null=True, blank=True,
                                   verbose_name=PROJECT_OUTPUT_LABELS['attachment'])
 
+    class Meta:
+        permissions = (
+            ('view_projectoutput', 'Can only view project outputs'),
+        )
+
 
 class NewCourseDetail(models.Model):
     code = models.CharField(max_length=32)
     name = models.CharField(max_length=128)
     project = models.ForeignKey('ProjectDetail')
+
+    class Meta:
+        permissions = (
+            ('view_newcoursedetail', 'Can only view new course details'),
+        )
 
 
 class CourseReqDetail(models.Model):
@@ -244,11 +264,21 @@ class CourseReqDetail(models.Model):
     name = models.CharField(max_length=128)
     project = models.ForeignKey('ProjectDetail')
 
+    class Meta:
+        permissions = (
+            ('view_coursereqdetail', 'Can only view course requirement details'),
+        )
+
 
 class Collaborators(models.Model):
     name = models.CharField(max_length=128)
     university = models.CharField(max_length=128)
     project = models.ForeignKey('ProjectDetail')
+
+    class Meta:
+        permissions = (
+            ('view_collaborators', 'Can only view collaborators'),
+        )
 
 
 class ProjectDetail(models.Model):
@@ -473,13 +503,19 @@ def assign_institute_admin_to_group(sender, **kwargs):
         try:
             g = Group.objects.get(name='InstituteAdmins')
         except ObjectDoesNotExist:
-            # Move this to migrations file
+            # It might be better creating this group in a migration
             g = Group.objects.create(name='InstituteAdmins')
             admin_permissions = [
                 'add_projectleader', 'delete_projectleader', 'change_projectleader',
                 'add_customuser', 'change_customuser', 'delete_customuser',
                 'add_reportingperiod', 'change_reportingperiod', 'delete_reportingperiod',
                 'change_projectdetail', 'view_projectdetail', 'reject_projectdetail',
+                'change_projectfunding', 'view_projectfunding',
+                'change_phdstudent', 'view_phdstudent',
+                'change_newcoursedetail', 'view_newcoursedetail',
+                'change_coursereqdetail', 'view_coursereqdetail',
+                'change_collaborators', 'view_collaborators',
+                'change_projectoutput', 'view_projectoutput'
             ]
             perms = Permission.objects.filter(codename__in=admin_permissions)
             for perm in perms:
@@ -500,7 +536,7 @@ def assign_project_leader_to_group(sender, **kwargs):
         try:
             g = Group.objects.get(name='ProjectLeaders')
         except ObjectDoesNotExist:
-            # Move this to migrations file
+            # It might be better creating this group in a migration
             g = Group.objects.create(name='ProjectLeaders')
             admin_permissions = [
                 'add_projectdetail', 'change_projectdetail',
