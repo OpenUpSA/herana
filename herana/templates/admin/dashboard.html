@@ -1,0 +1,55 @@
+{% load i18n grp_dashboard_tags %}
+
+{{ dashboard.media }}
+
+
+<div class="g-d-c">
+    <div class="g-d-12 g-d-f" id="column_1">
+        {% for module in dashboard.children %}
+            {% if module.column == 1 %}
+                {% grp_render_dashboard_module module forloop.counter %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="g-d-6" id="column_2">
+        {% for module in dashboard.children %}
+            {% if module.column == 2 %}
+                {% grp_render_dashboard_module module forloop.counter %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="g-d-6 g-d-l" id="column_3">
+        {% for module in dashboard.children %}
+            {% if module.column == 3 %}
+                {% grp_render_dashboard_module module forloop.counter %}
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+{% block user_info %}
+    <div class="user-instructions">
+    {% if user.is_institute_admin %}
+        <h4>You are logged in as the institutional administrator for your university.</h4>
+        <p>On this page, you can create and manage reporting periods, add/edit users (project leaders), and to view completed questionnaires (engagement projects).</p>
+        <h3>ADD/EDIT USERS [User administration]</h3>
+        <p>Users are the project leaders who will be requested to complete the online questionnaires. You need to add new users in order for them to complete the online questionnaire. You will need to capture the user’s name, last name and email address. You will also need to create a password for the user. They can change their password when they log in for the first time. You will also need to provide additional information about the user such as their school, faculty, department, etc.; their staff number; and their position at the university. Completing this information makes it easier for the project leaders to complete their questionnaires.</p>
+        <h3>CREATE AND MANAGE REPORTING PERIODS [Institute administration]</h3>
+        <p>Before project leaders can complete the online questionnaire, you need to create a new reporting period. When you create a new reporting period, you will be asked to give the reporting period a name, and to indicate the date on which the reporting period begins. You can also provide a more detailed description for the reporting period. Once all questionnaires have been completed, you can close the reporting period. This will allow you create reports and visualisations from the data for that period.</p>
+        <h3>VIEW ENGAGEMENT PROJECTS [Project administration]</h3>
+        <p>Before project leaders can complete the online questionnaire, you need to create a new reporting period. When you create a new reporting period, you will be asked to give the reporting period a name, and to indicate the date on which the reporting period begins. You can also provide a more detailed description for the reporting period. Once all questionnaires have been completed, you can close the reporting period. This will allow you create reports and visualisations from the data for that period.</p>
+    {% elif user.is_project_leader %}
+        <h3>DEFINITION OF ENGAGEMENT</h3>
+        <p>For the purposes of this study, engagement is understood to mean formalised activities where academics and/or students engage with those external to the university for the purported mutual benefit of the community and the academic enterprise in order to develop society at large. Such engagement activities (which may be formally incorporated as projects, programmes, units or centres) should constitute the smallest unit of coordinated activity with formal links to a faculty and consisting of at least one full-time academic.</p>
+        <h3>USE OF THE WORD ‘PROJECT’</h3>
+        <p>For the purposes of the questionnaire the word “project” will be used to denote the smallest unit of activity. However, the terms “event”, “programme”, “unit”, etc. may be equally appropriate provided that they constitute the smallest unit of formalised and coordinated engagement activity.</p>
+        <h3>CONFIDENTIALITY</h3>
+        <ul>
+            <li>Selected academic staff members who have been identified as being a leader or manager of an engagement activity, will receive this questionnaire.</li>
+            <li>Participation is voluntary. You may choose not to answer questions and to discontinue participating at any point.</li>
+            <li>Your responses are anonymous and confidential, and will not be disclosed to any third parties.</li>
+            <li>By completing and returning this questionnaire you are agreeing to take part in the research and to the publication of the results with the understanding that anonymity will be preserved at all times.</li>
+        </ul>
+    {% endif %}
+    </div>
+{% endblock %}

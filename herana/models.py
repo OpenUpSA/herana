@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group, Permission
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
-from django.core import exceptions
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 
 from django.utils import timezone
@@ -48,6 +48,9 @@ class Institute(models.Model):
 
     class Meta:
         ordering = ['name']
+
+    def get_logo_path(self):
+        return self.logo.storage.url(self.logo.name)
 
 
 class StrategicObjective(models.Model):
@@ -430,6 +433,30 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             return True
         return False
 
+    def is_project_leader(self):
+        try:
+            g = Group.objects.get(name='ProjectLeaders')
+        except ObjectDoesNotExist:
+            return False
+        if g in self.groups.all():
+            return True
+        return False
+
+    def get_user_institute(self):
+        """
+        Return the institute to which the user belongs
+        Global admin has no institute assigned to it
+        """
+        try:
+            if self.institute_admin:
+                return self.institute_admin.institute
+        except ObjectDoesNotExist:
+            try:
+                if self.project_leader:
+                    return self.project_leader.institute
+            except ObjectDoesNotExist:
+                return None
+
     objects = CustomUserManager()
 
     class Meta:
@@ -445,7 +472,7 @@ def assign_institute_admin_to_group(sender, **kwargs):
     if kwargs['created']:
         try:
             g = Group.objects.get(name='InstituteAdmins')
-        except exceptions.ObjectDoesNotExist:
+        except ObjectDoesNotExist:
             # Move this to migrations file
             g = Group.objects.create(name='InstituteAdmins')
             admin_permissions = [
@@ -472,7 +499,7 @@ def assign_project_leader_to_group(sender, **kwargs):
     if kwargs['created']:
         try:
             g = Group.objects.get(name='ProjectLeaders')
-        except exceptions.ObjectDoesNotExist:
+        except ObjectDoesNotExist:
             # Move this to migrations file
             g = Group.objects.create(name='ProjectLeaders')
             admin_permissions = [

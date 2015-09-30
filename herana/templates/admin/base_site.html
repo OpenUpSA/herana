@@ -1,0 +1,31 @@
+{% extends "admin/base.html" %}
+{% load i18n grp_tags %}
+{% load static %}
+
+{% block title %}{{ title }} | {% get_site_title %}{% endblock %}
+
+<!-- CUSTOM STYLES -->
+{% block extrastyle %}
+    <link href="{% static "stylesheets/grappelli/custom_admin.css" %}" rel="stylesheet" type="text/css" media="screen" />
+{% endblock %}
+
+{% block branding %}
+    {# Use the div#grp-branding for branding elements, e.g. a logo #}
+    <div id="grp-branding">
+      <div class="institute-branding">
+        {% if user.get_user_institute %}
+          {% if user.get_user_institute.logo %}
+            <img src="{{ user.get_user_institute.get_logo_path }}">
+          {% else %}
+            <h1>{{ user.get_user_institute.name }}</h1>
+          {% endif %}
+        {% endif %}
+        </div>
+        <div class="herana-branding">
+          <span class="helper"></span><img src="{% static 'img/chet-logo-admin.png' %}">
+          <span class="helper"></span><img src="{% static 'img/herana-logo-admin.png' %}">
+        </div>
+    </div>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

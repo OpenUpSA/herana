@@ -1,0 +1,59 @@
+header#grp-header #grp-navigation div#grp-branding {
+  float: none;
+  max-height: 130px;
+  height: 90px;
+  border-bottom: 3px solid #fff;
+  padding: 20px;
+  margin: 0 -20px;
+  text-align: center;
+}
+
+#grp-content {
+  top: 150px;
+}
+
+.institute-branding {
+  float: left;
+}
+
+.institute-branding img {
+  height: 90px;
+}
+
+.herana-branding {
+  float: right;
+  padding-right: 50px;
+  height: 90px;
+  text-align: center;
+}
+
+.helper {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+.herana-branding img {
+  padding-left: 30px;
+  max-height: 90px;
+  vertical-align: middle;
+}
+
+.user-instructions {
+  width: 50%;
+  padding: 30px 20px;
+}
+
+.user-instructions h3 {
+  color: #e34520;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+.user-instructions h4 {
+  margin-bottom: 10px;
+}
+
+.user-instructions ul {
+  list-style: outside;
+}
