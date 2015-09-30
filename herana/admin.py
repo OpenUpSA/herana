@@ -75,15 +75,6 @@ def user_has_perm(request, opts, perm_type):
     codename = get_permission_codename(perm_type, opts)
     return request.user.has_perm("%s.%s" % (opts.app_label, codename))
 
-def get_user_institute(user):
-    """
-    Return the institute to which the user belongs
-    """
-    try:
-        if user.project_leader:
-            return user.project_leader.institute
-    except ObjectDoesNotExist:
-        return user.institute_admin.institute
 
 def invert_flagged(obj):
     # Inverts the icon, so it makes more sense when viewing i.e.
@@ -225,10 +216,10 @@ class ProjectLeaderInline(admin.StackedInline):
         if not request.user.is_superuser:
             if db_field.name == 'institute':
                 kwargs["queryset"] = Institute.objects.filter(
-                    id=get_user_institute(request.user).id)
+                    id=request.user.get_user_institute().id)
             if db_field.name in ORG_LEVEL_FIELDS:
                     kwargs["queryset"] = db_field.related_model.objects.filter(
-                        institute=get_user_institute(request.user))
+                        institute=request.user.get_user_institute())
         return super(ProjectLeaderInline, self).formfield_for_foreignkey(
             db_field, request, **kwargs)
 
@@ -285,7 +276,7 @@ class ReportingPeriodFilter(admin.SimpleListFilter):
         reporting_periods = []
         if not request.user.is_superuser:
             reporting_periods = list(ReportingPeriod.objects.filter(
-                institute=get_user_institute(request.user)))
+                institute=request.user.get_user_institute()))
 
         return [(rp.id, rp.name) for rp in reporting_periods]
 
@@ -332,7 +323,7 @@ class CustomUserAdmin(UserAdmin):
     def get_queryset(self, request):
         if not request.user.is_superuser:
             return self.model.objects.filter(
-                project_leader__institute=get_user_institute(request.user))
+                project_leader__institute=request.user.get_user_institute())
         else:
             return super(CustomUserAdmin, self).get_queryset(request)
 
@@ -532,7 +523,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         if not request.user.is_superuser:
             qs = self.model.objects\
                     .filter(is_deleted=False)\
-                    .filter(proj_leader__institute=get_user_institute(request.user))
+                    .filter(proj_leader__institute=request.user.get_user_institute())
             if user_has_perm(request, self.opts, 'view'):
                 # Don't include draft records
                 return qs.exclude(record_status=1)
@@ -560,21 +551,21 @@ class ProjectDetailAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name in ORG_LEVEL_FIELDS:
             kwargs["queryset"] = db_field.related_model.objects.filter(
-                institute=get_user_institute(request.user))
+                institute=request.user.get_user_institute())
         return super(ProjectDetailAdmin, self).formfield_for_foreignkey(
             db_field, request, **kwargs)
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == "strategic_objectives":
             kwargs["queryset"] = StrategicObjective.objects.filter(
-                institute=get_user_institute(request.user))
+                institute=request.user.get_user_institute())
         return super(ProjectDetailAdmin, self).formfield_for_manytomany(
             db_field, request, **kwargs)
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super(ProjectDetailAdmin, self).get_fieldsets(request, obj=obj)
         if not request.user.is_superuser:
-            institute = get_user_institute(request.user)
+            institute = request.user.get_user_institute()
             field_list = []
             for field in ORG_LEVEL_FIELDS:
                 if getattr(institute, '%s_name' % field) != '':
@@ -591,7 +582,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         form = context['adminform'].form
         if form.fields.get('org_level_1', False):
             if add:
-                institute = get_user_institute(request.user)
+                institute = request.user.get_user_institute()
             elif change:
                 institute = obj.institute
 
@@ -616,7 +607,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             institute = obj.institute
         else:
-            institute = get_user_institute(request.user)
+            institute = request.user.get_user_institute()
 
         reporting_period = institute.reporting_period.get(is_active=True)
         if not change:
@@ -626,7 +617,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                 obj.record_status = 1
             else:
                 obj.record_status = 2
-            obj.institute = get_user_institute(request.user)
+            obj.institute = request.user.get_user_institute()
             obj.proj_leader = request.user.project_leader
 
         else:
