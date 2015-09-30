@@ -43,6 +43,11 @@ ORG_LEVEL_FIELDS = ["org_level_1", "org_level_2", "org_level_3"]
 
 class ReadOnlyMixin(InlineModelAdmin):
     def get_readonly_fields(self, request, obj=None):
+        """
+        If a user has a view only permission,
+        add all the form and inline form fields
+        to readonly_fields
+        """
         if user_has_perm(request, self.opts, 'view'):
             result = list(set(
                 [field.name for field in self.opts.local_fields] +
@@ -155,6 +160,9 @@ class CollaboratorsFormSet(ProjectDetailFormSet):
 # Inlines
 # ------------------------------------------------------------------------------
 
+"""
+Two generic classes to be used for inlines within the ProjectDetail form.
+"""
 class ProjectTabularInline(admin.TabularInline):
     extra = 1
     inline_classes = ('grp-collapse grp-open',)
