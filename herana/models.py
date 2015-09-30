@@ -242,6 +242,10 @@ class ProjectOutput(models.Model):
     attachment = models.FileField(upload_to=attachment_filename, null=True, blank=True,
                                   verbose_name=PROJECT_OUTPUT_LABELS['attachment'])
 
+    def __unicode__(self):
+        # To clean up the admin interface
+        return ''
+
     class Meta:
         permissions = (
             ('view_projectoutput', 'Can only view project outputs'),

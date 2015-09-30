@@ -45,8 +45,7 @@ class ReadOnlyMixin(InlineModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         """
         If a user has a view only permission,
-        add all the form and inline form fields
-        to readonly_fields
+        add all inline form fields to readonly_fields
         """
         if user_has_perm(request, self.opts, 'view'):
             result = list(set(
@@ -511,11 +510,15 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return False
 
     def has_change_permission(self, request, obj=None):
-        if not request.user.is_superuser:
-            if user_has_perm(request, self.opts, 'change'):
-                return True
-            if user_has_perm(request, self.opts, 'view'):
-                return True
+        """
+        Always return true.
+        Displays fields as readonly for admin users
+        """
+        # if not request.user.is_superuser:
+        #     if user_has_perm(request, self.opts, 'change'):
+        #         return True
+        #     if user_has_perm(request, self.opts, 'view'):
+        #         return True
         return True
 
     def get_list_display(self, request):
@@ -528,6 +531,9 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return self.list_display
 
     def get_list_filter(self, request):
+        """
+        Enable filtering by Repoting period for institute users
+        """
         if not request.user.is_superuser:
             self.list_filter.append(ReportingPeriodFilter)
         return super(ProjectDetailAdmin, self).get_list_filter(request)
