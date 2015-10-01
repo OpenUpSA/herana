@@ -1,8 +1,8 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.auth import views as auth_views
 from django.contrib import admin
-from django.views.generic.base import RedirectView
 
+admin.site.index_title = 'Dashboard'
 
 urlpatterns = patterns('',
     url(r'^$', 'herana.views.home', name='home'),
