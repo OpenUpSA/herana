@@ -237,3 +237,5 @@ EMAIL_HOST_PASSWORD = os.environ.get('DJANGO_EMAIL_HOST_PASSWORD')
 EMAIL_SUBJECT_PREFIX = '[Herana] '
 
 DOMAIN = "herana.code4sa.org"
+
+GOOGLE_ANALYTICS_ID = os.environ.get('GOOGLE_ANALYTICS_ID')
