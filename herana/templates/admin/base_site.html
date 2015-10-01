@@ -9,6 +9,20 @@
     <link href="{% static "stylesheets/grappelli/custom_admin.css" %}" rel="stylesheet" type="text/css" media="screen" />
 {% endblock %}
 
+{% block extrahead %}
+  {% if GOOGLE_ANALYTICS_ID %}
+      <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', '{{ GOOGLE_ANALYTICS_ID }}', 'auto');
+        ga('send', 'pageview');
+      </script>
+  {% endif %}
+{% endblock %}
+
 {% block branding %}
     {# Use the div#grp-branding for branding elements, e.g. a logo #}
     <div id="grp-branding">
