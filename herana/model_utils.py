@@ -133,7 +133,7 @@ CAPTURE_LABELS = {
     'phd_research': _(
         '7.2: Is a student\'s PhD research linked to this project?'),
     'curriculum_changes': _(
-        '9.1: Has the project lead to any contributions or changes to the curriculum?'),
+        '9.1: Has the project led to any contributions or changes to the curriculum?'),
     'curriculum_changes_text': _(
         '9.1.1: If yes, please describe the types of changes made to the curriculum as a result of the project.'),
     'new_courses': _(
