@@ -7,7 +7,7 @@ var w = 500;
 var h = 500;
 var padding = 30;
 
-var svg = d3.select("body")
+var svg = d3.select("#main-content")
   .append("svg")
   .attr("width", w)
   .attr("height", h);
