@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load pipeline %}
+
+{% block title %}{% endblock %}
+
+{% block body-class %}grp-login{% endblock %}
+{% block page-content %}
+{% endblock %}
+
+{% block extra-js %}
+  <script src="{% static 'bower_components/d3/d3.min.js' %}"></script>
+  <script src="{% static 'javascript/graph.js' %}"></script>
+{% endblock %}

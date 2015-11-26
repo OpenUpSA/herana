@@ -91,3 +91,17 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
     margin-bottom: 10px;
   }
 }
+
+// Graph
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
