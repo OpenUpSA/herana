@@ -3,15 +3,12 @@
 {% load pipeline %}
 
 {% block title %}{% endblock %}
-{% block extra-head %}
-{% javascript "js" %}
-  <script src="{% static 'bower_components/d3/js/d3.min.js' %}"></script>
-{% endblock %}
 
 {% block body-class %}grp-login{% endblock %}
 {% block page-content %}
 {% endblock %}
 
 {% block extra-js %}
+  <script src="{% static 'bower_components/d3/d3.min.js' %}"></script>
   <script src="{% static 'javascript/graph.js' %}"></script>
 {% endblock %}
