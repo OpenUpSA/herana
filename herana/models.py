@@ -394,6 +394,124 @@ class ProjectDetail(models.Model):
         )
 
 
+    def calc_score(self):
+        """
+        Return scores of the academic core, and articulation indicators for the project.
+        Maximum for each is 9.0
+        x : academic core
+        y : articulation
+        """
+        x, y, i_score = (0.0, 0.0, 0.0)
+
+        # Articulation score
+
+        for obj in self.strategic_objectives.all():
+            if obj.is_true:
+                i_score += 0.25
+                if i_score == 1.0:
+                    break
+        y += i_score
+
+        if self.initiation in [4, 5, 6]:
+            y += 1.0
+
+        if self.authors == 2:
+            y += 0.5
+
+        if  self.amendments_permitted == 'Y':
+            y += 1.0
+
+        if self.adv_group == 'Y' and self.adv_group_freq in [1, 2, 3]:
+            y += 0.5
+
+        i_score = 0.0
+        external_advisory = [rep.code for rep in self.adv_group_rep.all()]
+        external_research = [res.code for res in self.team_members.all()]
+        for ext in set(external_advisory + external_research):
+            i_score += 0.25
+            if i_score == 1.0:
+                break
+        y += i_score
+
+        if self.new_initiative == 'Y' and self.new_initiative_text:
+            y += 0.25
+
+        if self.new_initiative_party:
+            if self.new_initiative_party == 1 and self.new_initiative_party_text:
+                y += 2
+            if self.new_initiative_party == 2:
+                y += 1
+            if self.new_initiative_party == 3 and self.new_initiative_party_text:
+                y += 1
+
+        i_score = 0.0
+        funding = ProjectFunding.objects.filter(project=self.id)
+        for f in funding:
+            i_score += 0.25
+            if i_score == 1.0:
+                break
+
+        for f in funding:
+            if f.years >= 3.0:
+                i_score += 0.5
+                break
+
+        for f in funding:
+            if f.renewable == 'Y':
+                i_score += 0.5
+                break
+        y += i_score
+
+        # Academic score
+
+        if self.research and self.research_text:
+            if self.research in [1, 2]:
+                x += 1.25
+            if self.research == 3:
+                x += 0.5
+
+        if self.public_domain == 'Y':
+            x += 0.25
+
+        if self.phd_research == 'Y':
+            if PHDStudent.objects.filter(project=self.id):
+                x += 0.5
+
+        i_score = 0.0
+        for output in ProjectOutput.objects.filter(project=self.id):
+            if output.url or output.doi or output.attachment:
+                i_score += 0.25
+                if i_score == 2.0:
+                    break
+        x += i_score
+
+        if self.curriculum_changes == 'Y' and self.curriculum_changes_text:
+            x += 1.0
+
+        if self.new_courses == 'Y' and NewCourseDetail.objects.filter(project=self.id):
+            x += 2.0
+
+        if self.students_involved == 'Y':
+            x += 0.5
+
+        i_score = 0.0
+        for i in self.student_nature.all():
+            i_score += 0.25
+            if i_scrore == 0.5:
+                break
+        x += i_score
+
+        if self.course_requirement == 'Y':
+            if CourseReqDetail.objects.filter(project=self.id):
+                x += 1
+
+        if self.external_collaboration == 'Y':
+            if Collaborators.objects.filter(project=self.id):
+                x += 1.0
+
+        return x, y
+
+
 # ------------------------------------------------------------------------------
 # Custom User
 # ------------------------------------------------------------------------------
