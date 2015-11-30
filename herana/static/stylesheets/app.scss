@@ -102,6 +102,14 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
   }
 }
 
+.grid {
+  stroke: #9D9D9D;
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke-dasharray: 3;
+  stroke-width: 1px;
+}
+
 .axis .z-axis {
   line{
     stroke-dasharray: 2,2;

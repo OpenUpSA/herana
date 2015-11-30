@@ -76,18 +76,6 @@ var zAxis = d3.svg.axis()
   .innerTickSize(0)
   .outerTickSize(0);
 
-// var numberOfTicks = 6;
-
-// var yAxisGrid = yAxis.ticks(numberOfTicks)
-//     .tickSize(w, 0)
-//     .tickFormat("")
-//     .orient("left");
-
-// var xAxisGrid = xAxis.ticks(numberOfTicks)
-//     .tickSize(-h, 0)
-//     .tickFormat("")
-//     .orient("bottom");
-
 // Attach the data
 svg.selectAll("circle")
   .data(dataset)
@@ -120,45 +108,26 @@ svg.append("g")
   .selectAll("text")
   .attr("transform", "rotate(45)");
 
-// svg.append("g")
-//     .classed('y', true)
-//     .classed('grid', true)
-//     .call(yAxisGrid);
-
-// svg.append("g")
-//     .classed('x', true)
-//     .classed('grid', true)
-//     .call(xAxisGrid);
 svg.selectAll("line.horizontalGrid").data(yScale.ticks(9)).enter()
     .append("line")
         .attr(
         {
-            "class":"horizontalGrid",
+            "class":"horizontalGrid grid",
             "x1" : padding,
             "x2" : w - padding,
             "y1" : function(d){ return yScale(d);},
             "y2" : function(d){ return yScale(d);},
-            "fill" : "none",
-            "shape-rendering" : "crispEdges",
-            "stroke" : "#9D9D9D",
-            "stroke-dasharray": 3,
-            "stroke-width" : "1px"
         });
 
 svg.selectAll("line.verticalGrid").data(xScale.ticks(9)).enter()
     .append("line")
         .attr(
         {
-            "class":"verticalGrid",
+            "class":"verticalGrid grid",
             "y1" : padding,
             "y2" : h - padding,
             "x1" : function(d){ return xScale(d);},
             "x2" : function(d){ return xScale(d);},
-            "fill" : "none",
-            "shape-rendering" : "crispEdges",
-            "stroke" : "#9D9D9D",
-            "stroke-dasharray": 3,
-            "stroke-width" : "1px"
         });
 
 var z_x = padding,
