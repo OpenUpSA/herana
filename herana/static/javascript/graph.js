@@ -21,6 +21,10 @@ function hypot_length(x, y) {
   return Math.sqrt((x * x) + (y * y))
 }
 
+function isosceles_side_length(h) {
+  return Math.sqrt((h * h) / 2)
+}
+
 // Where the graph will be attached
 var svg = d3.select("#main-content")
   .append("svg")
@@ -30,16 +34,15 @@ var svg = d3.select("#main-content")
 // Set the scales
 var xScale = d3.scale.linear()
   .domain([0, 9])
-  .range([padding, w - padding]);
+  .range([0, w]);
 
 var yScale = d3.scale.linear()
   .domain([0, 9])
-  .range([h - padding, padding]);
+  .range([h, 0]);
 
 var zScale = d3.scale.linear()
   .domain([0, 9])
-  // .range([padding, hypot_length(w-(2*padding), h-(2*padding))]);
-  .range([padding, hypot_length(xScale(9), yScale(0))]);
+  .range([0, isosceles_side_length(xScale(9))]);
 
 var unitScale = d3.scale.category20()
   .domain(units);
@@ -48,21 +51,21 @@ var unitScale = d3.scale.category20()
 var xAxis = d3.svg.axis()
   .scale(xScale)
   .orient("bottom")
-  .tickPadding(-3)
+  .tickPadding(-4)
   .innerTickSize(0)
   .outerTickSize(0);
 
 var yAxis = d3.svg.axis()
   .scale(yScale)
   .orient("left")
-  .tickPadding(-3)
+  .tickPadding(-4)
   .innerTickSize(0)
   .outerTickSize(0);
 
 var zAxis = d3.svg.axis()
   .scale(zScale)
   .orient("bottom")
-  .tickPadding(-3)
+  .tickPadding(-3.5)
   .innerTickSize(0)
   .outerTickSize(0);
 
@@ -89,7 +92,7 @@ svg.append("g")
   .attr("transform", "translate(0," + (h - yScale(4.5)) + ")")
   .call(xAxis)
   .selectAll("text")
-  .attr("transform", "rotate(90)");
+  .attr("transform", "rotate(45)");
 
 svg.append("g")
   .attr("class", "axis")
@@ -98,13 +101,15 @@ svg.append("g")
   .selectAll("text")
   .attr("transform", "rotate(45)");
 
+var z_x = w - xScale(9 * 0.75),
+    z_y = h - yScale(9 * 0.75);
+
 svg.append("g")
   .attr("class", "axis")
-  // .attr("transform", "translate(0," + (h - yScale(9)) + ") rotate(-45, " + w/2 + ", " + 0 + ")")
-  // .attr("transform", "translate(0, 500) rotate(-45)")
-  .attr("transform", "translate(0," + (h - xScale(0)) + ") rotate(-45 30 0)")
+  .attr("transform",
+        "translate(" + z_x + "," + z_y +") rotate(-45 0 0)")
   .call(zAxis)
   .selectAll("text")
-  .attr("transform", "rotate(0)");
+  .attr("transform", "rotate(90)");
 
 svg.attr("transform", "rotate(-45, " + w/2 + ", " + h/2 + ")")
