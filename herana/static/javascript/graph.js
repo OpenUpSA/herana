@@ -41,8 +41,8 @@ var yScale = d3.scale.linear()
   .range([h, 0]);
 
 var zScale = d3.scale.linear()
-  .domain([0, 9])
-  .range([0, isosceles_side_length(xScale(9))]);
+  .domain([0 - 9 * 0.25 , 9 * 1.25])
+  .range([0, 1.5 * isosceles_side_length(xScale(9))]);
 
 var unitScale = d3.scale.category20()
   .domain(units);
@@ -65,9 +65,10 @@ var yAxis = d3.svg.axis()
 var zAxis = d3.svg.axis()
   .scale(zScale)
   .orient("bottom")
-  .tickPadding(-3.5)
+  .tickPadding(-4)
   .innerTickSize(0)
-  .outerTickSize(0);
+  .outerTickSize(0)
+  .tickValues([1, 2, 3, 4, 5, 6 ,7, 8, 9]);
 
 // Attach the data
 svg.selectAll("circle")
@@ -101,8 +102,14 @@ svg.append("g")
   .selectAll("text")
   .attr("transform", "rotate(45)");
 
-var z_x = w - xScale(9 * 0.75),
-    z_y = h - yScale(9 * 0.75);
+// var z_x = w - xScale(9 * 0.75) + isosceles_side_length(xScale(9)) * 0.25,
+//     z_y = h - yScale(9 * 0.75) + isosceles_side_length(yScale(9)) * 0.25;
+
+// var z_x = w - xScale(9) - isosceles_side_length(xScale(9 * 0.33)),
+//     z_y = h - yScale(9) + isosceles_side_length(xScale(9 * 0.33));
+
+var z_x = w - xScale(9) + isosceles_side_length(isosceles_side_length(xScale(9 * 0.5))) - (isosceles_side_length(isosceles_side_length(xScale(9)) * 0.5) / 2),
+    z_y = h - yScale(9) - isosceles_side_length(isosceles_side_length(xScale(9 * 0.5))) + (isosceles_side_length(isosceles_side_length(xScale(9)) * 0.5) / 2);
 
 svg.append("g")
   .attr("class", "axis")
