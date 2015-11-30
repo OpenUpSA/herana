@@ -13,16 +13,23 @@ units = ["economics", "science", "law", "arts", "finance", "engineering", "psych
 levels = ["department", "school", "faculty"]
 
 // Set the size of the graph
-var w = 500;
-var h = 500;
-var padding = 30;
+var w = 700;
+var h = 700;
+var padding = 150;
 
-function hypot_length(x, y) {
-  return Math.sqrt((x * x) + (y * y))
+
+function iso_side(h) {
+  // Given the length of the hypotenuse,
+  // return the length of the equal sides
+  // of a Right Isosceles triangle.
+  return Math.sqrt((h * h) / 2)
 }
 
-function isosceles_side_length(h) {
-  return Math.sqrt((h * h) / 2)
+function hyp_length(x, y) {
+  // Given the length of two side,
+  // return the length of the hypotenuse
+  // of a Right triangle.
+  return Math.sqrt((x * x) + (y * y))
 }
 
 // Where the graph will be attached
@@ -34,15 +41,15 @@ var svg = d3.select("#main-content")
 // Set the scales
 var xScale = d3.scale.linear()
   .domain([0, 9])
-  .range([0, w]);
+  .range([padding, w-padding]);
 
 var yScale = d3.scale.linear()
   .domain([0, 9])
-  .range([h, 0]);
+  .range([h-padding, padding]);
 
 var zScale = d3.scale.linear()
-  .domain([0 - 9 * 0.25 , 9 * 1.25])
-  .range([0, 1.5 * isosceles_side_length(xScale(9))]);
+  .domain([0, 9])
+  .range([0, hyp_length(xScale(9) - padding, yScale(0) - padding)]);
 
 var unitScale = d3.scale.category20()
   .domain(units);
@@ -67,8 +74,19 @@ var zAxis = d3.svg.axis()
   .orient("bottom")
   .tickPadding(-4)
   .innerTickSize(0)
-  .outerTickSize(0)
-  .tickValues([1, 2, 3, 4, 5, 6 ,7, 8, 9]);
+  .outerTickSize(0);
+
+// var numberOfTicks = 6;
+
+// var yAxisGrid = yAxis.ticks(numberOfTicks)
+//     .tickSize(w, 0)
+//     .tickFormat("")
+//     .orient("left");
+
+// var xAxisGrid = xAxis.ticks(numberOfTicks)
+//     .tickSize(-h, 0)
+//     .tickFormat("")
+//     .orient("bottom");
 
 // Attach the data
 svg.selectAll("circle")
@@ -102,21 +120,56 @@ svg.append("g")
   .selectAll("text")
   .attr("transform", "rotate(45)");
 
-// var z_x = w - xScale(9 * 0.75) + isosceles_side_length(xScale(9)) * 0.25,
-//     z_y = h - yScale(9 * 0.75) + isosceles_side_length(yScale(9)) * 0.25;
+// svg.append("g")
+//     .classed('y', true)
+//     .classed('grid', true)
+//     .call(yAxisGrid);
 
-// var z_x = w - xScale(9) - isosceles_side_length(xScale(9 * 0.33)),
-//     z_y = h - yScale(9) + isosceles_side_length(xScale(9 * 0.33));
+// svg.append("g")
+//     .classed('x', true)
+//     .classed('grid', true)
+//     .call(xAxisGrid);
+svg.selectAll("line.horizontalGrid").data(yScale.ticks(9)).enter()
+    .append("line")
+        .attr(
+        {
+            "class":"horizontalGrid",
+            "x1" : padding,
+            "x2" : w - padding,
+            "y1" : function(d){ return yScale(d);},
+            "y2" : function(d){ return yScale(d);},
+            "fill" : "none",
+            "shape-rendering" : "crispEdges",
+            "stroke" : "#9D9D9D",
+            "stroke-dasharray": 3,
+            "stroke-width" : "1px"
+        });
 
-var z_x = w - xScale(9) + isosceles_side_length(isosceles_side_length(xScale(9 * 0.5))) - (isosceles_side_length(isosceles_side_length(xScale(9)) * 0.5) / 2),
-    z_y = h - yScale(9) - isosceles_side_length(isosceles_side_length(xScale(9 * 0.5))) + (isosceles_side_length(isosceles_side_length(xScale(9)) * 0.5) / 2);
+svg.selectAll("line.verticalGrid").data(xScale.ticks(9)).enter()
+    .append("line")
+        .attr(
+        {
+            "class":"verticalGrid",
+            "y1" : padding,
+            "y2" : h - padding,
+            "x1" : function(d){ return xScale(d);},
+            "x2" : function(d){ return xScale(d);},
+            "fill" : "none",
+            "shape-rendering" : "crispEdges",
+            "stroke" : "#9D9D9D",
+            "stroke-dasharray": 3,
+            "stroke-width" : "1px"
+        });
+
+var z_x = padding,
+    z_y = h - padding;
 
 svg.append("g")
-  .attr("class", "axis")
+  .attr("class", "axis z-axis")
   .attr("transform",
         "translate(" + z_x + "," + z_y +") rotate(-45 0 0)")
   .call(zAxis)
   .selectAll("text")
-  .attr("transform", "rotate(90)");
+  .attr("transform", "rotate(90)")
 
 svg.attr("transform", "rotate(-45, " + w/2 + ", " + h/2 + ")")
