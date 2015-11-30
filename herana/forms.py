@@ -1,6 +1,6 @@
 from django import forms
 
-from models import ProjectDetail
+from models import ProjectDetail, Institute
 
 class ProjectDetailForm(forms.ModelForm):
     class Meta:
@@ -96,3 +96,7 @@ class ProjectDetailAdminForm(forms.ModelForm):
         model = ProjectDetail
         exclude = ('proj_leader', 'created_at', 'record_status', 'reporting_period', 'is_deleted')
         admin_editable = ['is_rejected', 'rejected_detail', 'is_flagged']
+
+
+class SelectInstituteForm(forms.Form):
+    institute = forms.ModelChoiceField(queryset=Institute.objects.all())

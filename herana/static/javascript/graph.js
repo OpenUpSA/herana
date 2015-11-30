@@ -9,6 +9,8 @@ var dataset = [
   {"x": 3, "y": 3, "r": 4, "unit":"science", "level": "department", "status":"ongoing"},
 ]
 
+var results = RESULTS;
+
 units = ["economics", "science", "law", "arts", "finance", "engineering", "psychology"]
 levels = ["department", "school", "faculty"]
 
@@ -78,7 +80,7 @@ var zAxis = d3.svg.axis()
 
 // Attach the data
 svg.selectAll("circle")
-  .data(dataset)
+  .data(results)
   .enter()
   .append("circle")
   .attr("cx", function(d) {

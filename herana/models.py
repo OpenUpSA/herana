@@ -511,6 +511,20 @@ class ProjectDetail(models.Model):
 
         return x, y
 
+    def calc_duration(self):
+        from_date = self.start_date
+        to_date = self.end_date or self.created_at
+        duration = (to_date - from_date).days / 365.25
+        if duration < 2.0:
+            return 0
+        elif duration < 3.0:
+            return 1
+        elif duration < 4.0:
+            return 2
+        elif duration < 5.0:
+            return 3
+        else:
+            return 4
 
 # ------------------------------------------------------------------------------
 # Custom User
