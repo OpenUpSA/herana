@@ -6,11 +6,30 @@
 
 {% block body-class %}grp-login{% endblock %}
 {% block page-content %}
-  <form action="{% url 'results' %}" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Get results" />
-</form>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-6">
+      <form action="{% url 'results' %}" method="post">
+        {% csrf_token %}
+        {{ institute_form }}
+        <input name="get_institute" type="submit" value="Get results" />
+      </form>
+    </div>
+    {% if org_level_form %}
+    <div class="col-sm-6">
+      <form action="{% url 'results' %}" method="post">
+        {% csrf_token %}
+        {{ org_level_form }}
+        <input type="hidden" name="institute_id" value="{{ institute.id }}">
+        <input name="get_org_level" type="submit" value="Get results"/>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+  {% if results %}
+  <div id="graph"></div>
+  {% endif %}
+</div>
 {% endblock %}
 
 {% block extra-js %}
@@ -18,5 +37,7 @@
   var RESULTS = {{ results|safe }};
   </script>
   <script src="{% static 'bower_components/d3/d3.min.js' %}"></script>
+  {% if results %}
   <script src="{% static 'javascript/graph.js' %}"></script>
+  {% endif %}
 {% endblock %}

@@ -35,7 +35,7 @@ function hyp_length(x, y) {
 }
 
 // Where the graph will be attached
-var svg = d3.select("#main-content")
+var svg = d3.select("#graph")
   .append("svg")
   .attr("width", w)
   .attr("height", h);

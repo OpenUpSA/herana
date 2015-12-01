@@ -100,3 +100,16 @@ class ProjectDetailAdminForm(forms.ModelForm):
 
 class SelectInstituteForm(forms.Form):
     institute = forms.ModelChoiceField(queryset=Institute.objects.all())
+
+class SelectOrgLevelForm(forms.Form):
+    org_level = forms.ChoiceField(choices=[], label='Select the organisational level')
+
+    def __init__(self, *args, **kwargs):
+        import ipdb; ipdb.set_trace()
+        institute = None
+        if kwargs.get('institute'):
+            institute = kwargs.pop('institute')
+        super(SelectOrgLevelForm, self).__init__(*args, **kwargs)
+        if institute:
+            self.fields['org_level'].choices = institute.get_org_levels()
+

@@ -52,6 +52,19 @@ class Institute(models.Model):
     def get_logo_path(self):
         return self.logo.storage.url(self.logo.name)
 
+    def get_org_levels(self):
+        """
+        Return is list of (level_no, level_name) tuples
+        for the institute to be used as choices in a form.
+        Levels 2 and 3 are optional.
+        """
+        levels = [(1, self.org_level_1_name)]
+        if self.org_level_2_name:
+            levels.append((2, self.org_level_2_name))
+        if self.org_level_3_name:
+            levels.append((3, self.org_level_3_name))
+        return levels
+
 
 class StrategicObjective(models.Model):
     institute = models.ForeignKey('Institute')
@@ -497,7 +510,7 @@ class ProjectDetail(models.Model):
         i_score = 0.0
         for i in self.student_nature.all():
             i_score += 0.25
-            if i_scrore == 0.5:
+            if i_score == 0.5:
                 break
         x += i_score
 

@@ -1,18 +1,44 @@
 import json
 
 from django.shortcuts import render
-from models import Institute, ProjectDetail
-from forms import SelectInstituteForm
+from django.views.generic import View
+from models import ProjectDetail
+from forms import SelectInstituteForm, SelectOrgLevelForm
 
 def home(request):
     return render(request, 'index.html')
 
-def results(request):
-    results = []
-    if request.method == 'POST':
-        form = SelectInstituteForm(request.POST)
+
+class ResultsView(View):
+    template_name = 'results.html'
+
+    def get(self, request, *args, **kwargs):
+        institute_form = SelectInstituteForm()
+
+        context = {
+          "institute_form": institute_form,
+        }
+
+        return render(
+            request,
+            self.template_name,
+            context=context)
+
+
+    def post(self, request, *args, **kwargs):
+        institute = None
+        org_level_form = None
+        results = []
+
+        if 'get_institute' in request.POST:
+            form = SelectInstituteForm(request.POST)
+        elif 'get_org_level' in request.POST:
+            form = SelectOrgLevelForm(request.POST)
+        import ipdb; ipdb.set_trace()
         if form.is_valid():
-            institute = form.cleaned_data['institute']
+            institute = institute_form.cleaned_data['institute']
+            org_level_form = SelectOrgLevelForm(institute=institute)
+
             # Get all projects for the institute which are:
             # Final, not rejected, and not marked as deleted
             projects = ProjectDetail.objects.filter(
@@ -20,6 +46,7 @@ def results(request):
                 record_status=2,
                 is_rejected=False,
                 is_deleted=False)
+
             results = []
             for project in projects:
                 x, y = project.calc_score()
@@ -29,15 +56,17 @@ def results(request):
                     'y': y,
                     'r': duration
                 })
-    else:
-        form = SelectInstituteForm()
 
-    context = {
-      "form": form,
-      "results": json.dumps(results)
-    }
+            results = json.dumps(results)
 
-    return render(
-      request,
-      'results.html',
-      context=context)
+        context = {
+            "institute": institute,
+            "institute_form": institute_form,
+            "org_level_form": org_level_form,
+            "results": results
+        }
+
+        return render(
+            request,
+            self.template_name,
+            context=context)
