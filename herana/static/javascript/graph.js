@@ -4,17 +4,24 @@
 // ];
 
 var dataset = [
-  {"x": 5, "y": 7, "r": 0, "unit":"economics", "level": "department", "status":"ongoing"},
-  {"x": 3, "y": 6, "r": 1, "unit":"law", "level": "department", "status":"complete"},
-  {"x": 6, "y": 1, "r": 2, "unit":"science", "level": "department", "status":"ongoing"},
-  {"x": 7, "y": 3, "r": 3, "unit":"science", "level": "department", "status":"ongoing"},
-  {"x": 2, "y": 5, "r": 4, "unit":"science", "level": "department", "status":"ongoing"},
+  {"x": 5, "y": 7, "r": 0, "unit_id":"1", "level": "1", "status":"ongoing"},
+  {"x": 3, "y": 6, "r": 1, "unit_id":"3", "level": "1", "status":"complete"},
+  {"x": 6, "y": 1, "r": 2, "unit_id":"3", "level": "1", "status":"ongoing"},
+  {"x": 7, "y": 3, "r": 3, "unit_id":"4", "level": "1", "status":"ongoing"},
+  {"x": 2, "y": 5, "r": 4, "unit_id":"5", "level": "1", "status":"ongoing"},
 ]
 
 var results = RESULTS;
 
-units = ["economics", "science", "law", "arts", "finance", "engineering", "psychology"]
-levels = ["department", "school", "faculty"]
+function get_units(results) {
+  var units = new Set();
+  for (var i = 0; i < results.length; i++) {
+    units.add(results[i].unit_id);
+  }
+  return units;
+}
+
+var units = get_units(results);
 
 // Set the size of the graph
 var w = 700;
@@ -59,7 +66,7 @@ var rScale = d3.scale.linear()
   .domain([0, 4])
   .range([10, 30])
 
-var unitScale = d3.scale.category20()
+var colorScale = d3.scale.category20()
   .domain(units);
 
 // Create the axes
@@ -86,7 +93,7 @@ var zAxis = d3.svg.axis()
 
 // Attach the data
 svg.selectAll("circle")
-  .data(dataset)
+  .data(results)
   .enter()
   .append("circle")
   .attr("cx", function(d) {
@@ -99,7 +106,7 @@ svg.selectAll("circle")
       return rScale(d.r);
    })
    .attr("fill", function(d){
-      return unitScale(d.unit);
+      return colorScale(d.unit_id);
    });
 
 svg.append("g")

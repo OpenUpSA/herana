@@ -36,6 +36,7 @@ class ResultsView(View):
             form = SelectOrgLevelForm(request.POST)
 
         if institute_form.is_valid():
+            level = 1
             institute = institute_form.cleaned_data['institute']
             org_level_form = SelectOrgLevelForm(institute=institute)
 
@@ -51,10 +52,12 @@ class ResultsView(View):
             for project in projects:
                 x, y = project.calc_score()
                 duration = project.calc_duration()
+                unit_id = project.__getattribute__('org_level_%s' % level).id
                 results.append({
                     'x': x,
                     'y': y,
-                    'r': duration
+                    'r': duration,
+                    'unit_id': unit_id,
                 })
 
             results = json.dumps(results)
