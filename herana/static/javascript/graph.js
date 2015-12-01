@@ -4,9 +4,11 @@
 // ];
 
 var dataset = [
-  {"x": 5, "y": 7, "r": 3, "unit":"economics", "level": "department", "status":"ongoing"},
-  {"x": 3, "y": 6, "r": 3, "unit":"law", "level": "department", "status":"complete"},
-  {"x": 3, "y": 3, "r": 4, "unit":"science", "level": "department", "status":"ongoing"},
+  {"x": 5, "y": 7, "r": 0, "unit":"economics", "level": "department", "status":"ongoing"},
+  {"x": 3, "y": 6, "r": 1, "unit":"law", "level": "department", "status":"complete"},
+  {"x": 6, "y": 1, "r": 2, "unit":"science", "level": "department", "status":"ongoing"},
+  {"x": 7, "y": 3, "r": 3, "unit":"science", "level": "department", "status":"ongoing"},
+  {"x": 2, "y": 5, "r": 4, "unit":"science", "level": "department", "status":"ongoing"},
 ]
 
 var results = RESULTS;
@@ -53,6 +55,10 @@ var zScale = d3.scale.linear()
   .domain([0, 9])
   .range([0, hyp_length(xScale(9) - padding, yScale(0) - padding)]);
 
+var rScale = d3.scale.linear()
+  .domain([0, 4])
+  .range([10, 30])
+
 var unitScale = d3.scale.category20()
   .domain(units);
 
@@ -80,7 +86,7 @@ var zAxis = d3.svg.axis()
 
 // Attach the data
 svg.selectAll("circle")
-  .data(results)
+  .data(dataset)
   .enter()
   .append("circle")
   .attr("cx", function(d) {
@@ -90,7 +96,7 @@ svg.selectAll("circle")
       return yScale(d.y);
    })
    .attr("r", function(d) {
-      return d.r;
+      return rScale(d.r);
    })
    .attr("fill", function(d){
       return unitScale(d.unit);

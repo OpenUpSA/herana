@@ -31,11 +31,11 @@ class ResultsView(View):
         results = []
 
         if 'get_institute' in request.POST:
-            form = SelectInstituteForm(request.POST)
+            institute_form = SelectInstituteForm(request.POST)
         elif 'get_org_level' in request.POST:
             form = SelectOrgLevelForm(request.POST)
-        import ipdb; ipdb.set_trace()
-        if form.is_valid():
+
+        if institute_form.is_valid():
             institute = institute_form.cleaned_data['institute']
             org_level_form = SelectOrgLevelForm(institute=institute)
 

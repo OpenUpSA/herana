@@ -105,7 +105,6 @@ class SelectOrgLevelForm(forms.Form):
     org_level = forms.ChoiceField(choices=[], label='Select the organisational level')
 
     def __init__(self, *args, **kwargs):
-        import ipdb; ipdb.set_trace()
         institute = None
         if kwargs.get('institute'):
             institute = kwargs.pop('institute')
