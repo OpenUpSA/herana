@@ -86,12 +86,12 @@ var zAxis = d3.svg.axis()
 
 
 // Attach the data
-var circle = svg.selectAll("circle").data(results);
+var point = svg.selectAll("circle").data(results);
 
-circle.exit()
+point.exit()
   .transition().attr("r", 0).remove();
 
-circle.enter()
+point.enter()
   .append("circle")
   .attr("cx", function(d) {
       return xScale(d.x);
@@ -108,22 +108,29 @@ circle.enter()
       return colorScale(d.unit_id);
    });
 
-// svg.data(results.filter(
-//     function(d, i) {
-//       return d.status == '1';
-//     }))
-//   .enter()
-//   .append("circle")
-//   .attr("cx", function(d) {
-//       return xScale(d.x);
-//    })
-//    .attr("cy", function(d) {
-//       return yScale(d.y);
-//    })
-//    .attr("r", function(d) {
-//       return discScale(d.r);
-//    })
-//    .attr("fill", "#fff");
+var ongoing = svg.selectAll('circle.ongoing')
+  .data(results.filter(
+    function(d, i) {
+      return d.status == '1';
+    }));
+
+ongoing.exit().transition().attr("r", 0).remove();
+
+ongoing.enter()
+  .append("circle")
+  .attr("cx", function(d) {
+      return xScale(d.x);
+   })
+   .attr("cy", function(d) {
+      return yScale(d.y);
+   })
+   .attr("r", function(d) {
+      return discScale(d.r);
+   })
+   .attr("fill", "#fff")
+   .attr("class", "ongoing");
+
+
 
 svg.append("g")
   .attr("class", "axis")
