@@ -43,6 +43,15 @@ class Institute(models.Model):
     org_level_2_name = models.CharField(max_length=128, null=True, blank=True)
     org_level_3_name = models.CharField(max_length=128, null=True, blank=True)
 
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'org_level_1_name': self.org_level_1_name,
+            'org_level_2_name': self.org_level_2_name,
+            'org_level_3_name': self.org_level_3_name,
+        }
+
     def __unicode__(self):
         return self.name
 
@@ -86,6 +95,11 @@ class OrgLevel(models.Model):
 
     def __unicode__(self):
         return u"%s" % self.name
+
+    def as_dict(self):
+        return {
+            'name': self.name,
+        }
 
     @staticmethod
     def autocomplete_search_fields():
@@ -397,6 +411,18 @@ class ProjectDetail(models.Model):
 
     def __unicode__(self):
         return '%s - %s' % (self.name, self.reporting_period.name)
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'institute': self.institute.as_dict(),
+            'score': self.calc_score(),
+            'duration': self.calc_duration(),
+            'org_level_1': self.org_level_1.as_dict() if self.org_level_1 else None,
+            'org_level_2': self.org_level_2.as_dict() if self.org_level_2 else None,
+            'org_level_3': self.org_level_3.as_dict() if self.org_level_3 else None,
+        }
 
     class Meta:
         verbose_name = 'Engagement project'
