@@ -2,7 +2,7 @@ var Graph = function() {
   var self = this;
 
   // Test data
-  var data = [
+  var test_data = [
     {"x": 5, "y": 7, "r": 0, "unit_id":"1", "level": "1", "status":"1"},
     {"x": 3, "y": 6, "r": 1, "unit_id":"3", "level": "1", "status":"2"},
     {"x": 6, "y": 1, "r": 2, "unit_id":"3", "level": "1", "status":"2"},
@@ -13,24 +13,37 @@ var Graph = function() {
     {"x": 3, "y": 1, "r": 1, "unit_id":"3", "level": "2", "status":"2"},
   ]
 
-  self.w = 700,
-  self.h = 700,
-  self.padding = 150;
-
-  self.results = data;
-
-  self.svg = d3.select("#graph")
-  .append("svg")
-  .attr("width", self.w)
-  .attr("height", self.h);
-
   self.init = function() {
-    self.units = getUnits();
+    self.results = DATA.results;
+    self.institutes = DATA.institutes;
+
+    self.w = 700;
+    self.h = 700;
+    self.padding = 150;
+
+    self.svg = d3.select("#graph")
+      .append("svg")
+      .attr("width", self.w)
+      .attr("height", self.h);
+
+    self.units = self.getUnits();
+
+    self.populateFilters()
     self.createScales();
     self.createAxes();
     self.drawAxes();
-    self.rotateAxes()
+
     self.attachData()
+
+    // $('input[name=instiution]').on('change', self.institutionChanged);
+  }
+
+  self.getUnits = function () {
+    var units = new Set();
+    for (var i = 0; i < self.results.length; i++) {
+      units.add(self.results[i].unit_id);
+    }
+    return units;
   }
 
   self.hyp_length = function(x, y) {
@@ -40,12 +53,14 @@ var Graph = function() {
     return Math.sqrt((x * x) + (y * y))
   }
 
-  var getUnits = function () {
-    var units = new Set();
-    for (var i = 0; i < self.results.length; i++) {
-      units.add(self.results[i].unit_id);
-    }
-    return units;
+  self.populateFilters = function() {
+    $('.select-institute').append('<option value=1>My option</option>');
+    $.each(self.institutes, function(i, institute) {
+      $('.select-institute').append($('<option>', {
+        value: institute.id,
+        text: institute.name
+      }));
+    });
   }
 
   self.createScales = function() {
@@ -59,7 +74,7 @@ var Graph = function() {
 
     self.yScale = d3.scale.linear()
     .domain([0, 9])
-    .range([h-self.padding, padding]);
+    .range([h-padding, padding]);
 
     self.zScale = d3.scale.linear()
     .domain([0, 9])
@@ -151,9 +166,7 @@ var Graph = function() {
       .call(self.zAxis)
       .selectAll("text")
       .attr("transform", "rotate(90)");
-  }
 
-  self.rotateAxes = function () {
     self.svg.attr("transform", "rotate(-45, " + self.w/2 + ", " + self.h/2 + ")");
   }
 
