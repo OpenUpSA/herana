@@ -2,7 +2,7 @@ import json
 
 from django.shortcuts import render
 from django.views.generic import View
-from models import ProjectDetail
+from models import Institute, ProjectDetail
 from forms import SelectInstituteForm, SelectOrgLevelForm
 
 def home(request):
@@ -13,13 +13,17 @@ class ResultsView(View):
     template_name = 'results.html'
 
     def get(self, request, *args, **kwargs):
+        institutes = Institute.objects.all()
         projects = ProjectDetail.objects.filter(
             record_status=2,
             is_rejected=False,
             is_deleted=False)
 
-        data = json.dumps([p.as_dict() for p in projects])
-        import ipdb; ipdb.set_trace()
+        data = {}
+
+        data['institutes'] = json.dumps([i.as_dict() for i in institutes])
+        data['results'] = json.dumps([p.as_dict() for p in projects])
+
         context = {
           "data": data,
         }
