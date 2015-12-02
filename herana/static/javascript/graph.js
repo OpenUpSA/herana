@@ -1,17 +1,12 @@
-// var dataset = [
-//   [5, 7, 3], [3, 6, 3], [3, 3, 4], [6, 9, 5], [1, 2, 6],
-//   [4, 1, 5], [4, 4, 4], [2, 7, 3], [8, 1, 3], [2, 8, 4]
-// ];
-
 var dataset = [
-  {"x": 5, "y": 7, "r": 0, "unit_id":"1", "level": "1", "status":"ongoing"},
-  {"x": 3, "y": 6, "r": 1, "unit_id":"3", "level": "1", "status":"complete"},
-  {"x": 6, "y": 1, "r": 2, "unit_id":"3", "level": "1", "status":"ongoing"},
-  {"x": 7, "y": 3, "r": 3, "unit_id":"4", "level": "1", "status":"ongoing"},
-  {"x": 2, "y": 5, "r": 4, "unit_id":"5", "level": "1", "status":"ongoing"},
+  {"x": 5, "y": 7, "r": 0, "unit_id":"1", "level": "1", "status":"1"},
+  {"x": 3, "y": 6, "r": 1, "unit_id":"3", "level": "1", "status":"2"},
+  {"x": 6, "y": 1, "r": 2, "unit_id":"3", "level": "1", "status":"2"},
+  {"x": 7, "y": 3, "r": 3, "unit_id":"4", "level": "1", "status":"2"},
+  {"x": 2, "y": 5, "r": 4, "unit_id":"5", "level": "1", "status":"1"},
 ]
 
-var results = RESULTS;
+var results = dataset;
 
 function get_units(results) {
   var units = new Set();
@@ -28,13 +23,6 @@ var w = 700;
 var h = 700;
 var padding = 150;
 
-
-function iso_side(h) {
-  // Given the length of the hypotenuse,
-  // return the length of the equal sides
-  // of a Right Isosceles triangle.
-  return Math.sqrt((h * h) / 2)
-}
 
 function hyp_length(x, y) {
   // Given the length of two side,
@@ -69,6 +57,11 @@ var rScale = d3.scale.linear()
 var colorScale = d3.scale.category20()
   .domain(units);
 
+var discScale = d3.scale.linear()
+  .domain([0, 4])
+  .range([5, 15])
+
+
 // Create the axes
 var xAxis = d3.svg.axis()
   .scale(xScale)
@@ -91,10 +84,14 @@ var zAxis = d3.svg.axis()
   .innerTickSize(0)
   .outerTickSize(0);
 
+
 // Attach the data
-svg.selectAll("circle")
-  .data(results)
-  .enter()
+var circle = svg.selectAll("circle").data(results);
+
+circle.exit()
+  .transition().attr("r", 0).remove();
+
+circle.enter()
   .append("circle")
   .attr("cx", function(d) {
       return xScale(d.x);
@@ -102,12 +99,31 @@ svg.selectAll("circle")
    .attr("cy", function(d) {
       return yScale(d.y);
    })
+   .attr("r", 0)
+   .transition()
    .attr("r", function(d) {
       return rScale(d.r);
    })
    .attr("fill", function(d){
       return colorScale(d.unit_id);
    });
+
+// svg.data(results.filter(
+//     function(d, i) {
+//       return d.status == '1';
+//     }))
+//   .enter()
+//   .append("circle")
+//   .attr("cx", function(d) {
+//       return xScale(d.x);
+//    })
+//    .attr("cy", function(d) {
+//       return yScale(d.y);
+//    })
+//    .attr("r", function(d) {
+//       return discScale(d.r);
+//    })
+//    .attr("fill", "#fff");
 
 svg.append("g")
   .attr("class", "axis")
@@ -154,6 +170,6 @@ svg.append("g")
         "translate(" + z_x + "," + z_y +") rotate(-45 0 0)")
   .call(zAxis)
   .selectAll("text")
-  .attr("transform", "rotate(90)")
+  .attr("transform", "rotate(90)");
 
-svg.attr("transform", "rotate(-45, " + w/2 + ", " + h/2 + ")")
+svg.attr("transform", "rotate(-45, " + w/2 + ", " + h/2 + ")");
