@@ -13,10 +13,15 @@ class ResultsView(View):
     template_name = 'results.html'
 
     def get(self, request, *args, **kwargs):
-        institute_form = SelectInstituteForm()
+        projects = ProjectDetail.objects.filter(
+            record_status=2,
+            is_rejected=False,
+            is_deleted=False)
 
+        data = json.dumps([p.as_dict() for p in projects])
+        import ipdb; ipdb.set_trace()
         context = {
-          "institute_form": institute_form,
+          "data": data,
         }
 
         return render(
