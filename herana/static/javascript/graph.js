@@ -3,18 +3,23 @@ var Graph = function() {
 
   // Test data
   var test_data = [
-    {"x": 5, "y": 7, "r": 0, "unit_id":"1", "level": "1", "status":"1"},
-    {"x": 3, "y": 6, "r": 1, "unit_id":"3", "level": "1", "status":"2"},
-    {"x": 6, "y": 1, "r": 2, "unit_id":"3", "level": "1", "status":"2"},
-    {"x": 7, "y": 3, "r": 3, "unit_id":"4", "level": "1", "status":"2"},
-    {"x": 2, "y": 5, "r": 4, "unit_id":"5", "level": "1", "status":"1"},
-    {"x": 1, "y": 4, "r": 5, "unit_id":"1", "level": "2", "status":"1"},
-    {"x": 7, "y": 6, "r": 3, "unit_id":"2", "level": "2", "status":"2"},
-    {"x": 3, "y": 1, "r": 1, "unit_id":"3", "level": "2", "status":"2"},
+    {"x": 5, "y": 7, "r": 0, "unit_id":"1", "level": "1", "status":"1", "institute": {"id": "1"}},
+    {"x": 3, "y": 6, "r": 1, "unit_id":"3", "level": "1", "status":"2", "institute": {"id": "1"}},
+    {"x": 6, "y": 1, "r": 2, "unit_id":"3", "level": "1", "status":"2", "institute": {"id": "1"}},
+    {"x": 7, "y": 3, "r": 3, "unit_id":"4", "level": "1", "status":"2", "institute": {"id": "2"}},
+    {"x": 2, "y": 5, "r": 4, "unit_id":"5", "level": "1", "status":"1", "institute": {"id": "2"}},
+    {"x": 1, "y": 4, "r": 5, "unit_id":"1", "level": "2", "status":"1", "institute": {"id": "3"}},
+    {"x": 7, "y": 6, "r": 3, "unit_id":"2", "level": "2", "status":"2", "institute": {"id": "2"}},
+    {"x": 3, "y": 1, "r": 1, "unit_id":"3", "level": "2", "status":"2", "institute": {"id": "2"}},
   ]
 
   self.init = function() {
-    self.results = DATA.results;
+    // self.data = DATA;
+    // self.results = self.data.results;
+    // self.institutes = self.data.institutes;
+
+    self.data = test_data;
+    self.results = test_data;
     self.institutes = DATA.institutes;
 
     self.w = 700;
@@ -26,35 +31,22 @@ var Graph = function() {
       .attr("width", self.w)
       .attr("height", self.h);
 
-    self.units = self.getUnits();
-
     self.populateFilters()
     self.createScales();
     self.createAxes();
     self.drawAxes();
 
     self.attachData()
-
-    // $('input[name=instiution]').on('change', self.institutionChanged);
-  }
-
-  self.getUnits = function () {
-    var units = new Set();
-    for (var i = 0; i < self.results.length; i++) {
-      units.add(self.results[i].unit_id);
+    self.filters = {
+      institute: null
     }
-    return units;
-  }
 
-  self.hyp_length = function(x, y) {
-    // Given the length of two side,
-    // return the length of the hypotenuse
-    // of a Right triangle.
-    return Math.sqrt((x * x) + (y * y))
+
+    $('select[class=select-institute]').on('change', self.filterByInstitute);
+
   }
 
   self.populateFilters = function() {
-    $('.select-institute').append('<option value=1>My option</option>');
     $.each(self.institutes, function(i, institute) {
       $('.select-institute').append($('<option>', {
         value: institute.id,
@@ -63,10 +55,45 @@ var Graph = function() {
     });
   }
 
+
+  self.filterByInstitute = function(e) {
+    e.preventDefault();
+    self.filters.institute = $(e.currentTarget).val() || null;
+    self.filterAndDraw()
+  }
+
+  self.filterAndDraw = function() {
+    var filters = self.filters;
+    var results = self.data.results;
+
+    if(self.filters.institute) {
+      results = _.filter(results, function(result) {
+        return result.institute.id == filters.institute
+      });
+    }
+    self.results = results;
+    self.attachData();
+  }
+
   self.createScales = function() {
     var h = self.h,
         w = self.w,
         padding = self.padding;
+
+    var hyp_length = function(x, y) {
+      // Given the length of two side,
+      // return the length of the hypotenuse
+      // of a Right triangle.
+      return Math.sqrt((x * x) + (y * y))
+    }
+
+    var getUnits = function () {
+      var units = new Set();
+      for (var i = 0; i < self.results.length; i++) {
+        units.add(self.results[i].unit_id);
+      }
+      return units;
+    }
 
     self.xScale = d3.scale.linear()
     .domain([0, 9])
@@ -78,14 +105,14 @@ var Graph = function() {
 
     self.zScale = d3.scale.linear()
     .domain([0, 9])
-    .range([0, self.hyp_length(self.xScale(9) - padding, self.yScale(0) - padding)]);
+    .range([0, hyp_length(self.xScale(9) - padding, self.yScale(0) - padding)]);
 
     self.rScale = d3.scale.linear()
     .domain([0, 4])
     .range([10, 30]);
 
     self.colorScale = d3.scale.category20()
-    .domain(self.units);
+    .domain(getUnits());
 
     self.discScale = d3.scale.linear()
     .domain([0, 4])

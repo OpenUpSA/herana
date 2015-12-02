@@ -21,11 +21,11 @@ class ResultsView(View):
 
         data = {}
 
-        data['institutes'] = json.dumps([i.as_dict() for i in institutes])
-        data['results'] = json.dumps([p.as_dict() for p in projects])
+        data['institutes'] = [i.as_dict() for i in institutes]
+        data['results'] = [p.as_dict() for p in projects]
 
         context = {
-          "data": data,
+          "data": json.dumps(data),
         }
 
         return render(
