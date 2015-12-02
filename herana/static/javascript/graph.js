@@ -1,182 +1,209 @@
-var dataset = [
-  {"x": 5, "y": 7, "r": 0, "unit_id":"1", "level": "1", "status":"1"},
-  {"x": 3, "y": 6, "r": 1, "unit_id":"3", "level": "1", "status":"2"},
-  {"x": 6, "y": 1, "r": 2, "unit_id":"3", "level": "1", "status":"2"},
-  {"x": 7, "y": 3, "r": 3, "unit_id":"4", "level": "1", "status":"2"},
-  {"x": 2, "y": 5, "r": 4, "unit_id":"5", "level": "1", "status":"1"},
-]
+var Graph = function() {
+  var self = this;
 
-var results = dataset;
+  // Test data
+  var data = [
+    {"x": 5, "y": 7, "r": 0, "unit_id":"1", "level": "1", "status":"1"},
+    {"x": 3, "y": 6, "r": 1, "unit_id":"3", "level": "1", "status":"2"},
+    {"x": 6, "y": 1, "r": 2, "unit_id":"3", "level": "1", "status":"2"},
+    {"x": 7, "y": 3, "r": 3, "unit_id":"4", "level": "1", "status":"2"},
+    {"x": 2, "y": 5, "r": 4, "unit_id":"5", "level": "1", "status":"1"},
+    {"x": 1, "y": 4, "r": 5, "unit_id":"1", "level": "2", "status":"1"},
+    {"x": 7, "y": 6, "r": 3, "unit_id":"2", "level": "2", "status":"2"},
+    {"x": 3, "y": 1, "r": 1, "unit_id":"3", "level": "2", "status":"2"},
+  ]
 
-function get_units(results) {
-  var units = new Set();
-  for (var i = 0; i < results.length; i++) {
-    units.add(results[i].unit_id);
-  }
-  return units;
-}
+  self.w = 700,
+  self.h = 700,
+  self.padding = 150;
 
-var units = get_units(results);
+  self.results = data;
 
-// Set the size of the graph
-var w = 700;
-var h = 700;
-var padding = 150;
-
-
-function hyp_length(x, y) {
-  // Given the length of two side,
-  // return the length of the hypotenuse
-  // of a Right triangle.
-  return Math.sqrt((x * x) + (y * y))
-}
-
-// Where the graph will be attached
-var svg = d3.select("#graph")
+  self.svg = d3.select("#graph")
   .append("svg")
-  .attr("width", w)
-  .attr("height", h);
+  .attr("width", self.w)
+  .attr("height", self.h);
 
-// Set the scales
-var xScale = d3.scale.linear()
-  .domain([0, 9])
-  .range([padding, w-padding]);
+  self.init = function() {
+    self.units = getUnits();
+    self.createScales();
+    self.createAxes();
+    self.drawAxes();
+    self.rotateAxes()
+    self.attachData()
+  }
 
-var yScale = d3.scale.linear()
-  .domain([0, 9])
-  .range([h-padding, padding]);
+  self.hyp_length = function(x, y) {
+    // Given the length of two side,
+    // return the length of the hypotenuse
+    // of a Right triangle.
+    return Math.sqrt((x * x) + (y * y))
+  }
 
-var zScale = d3.scale.linear()
-  .domain([0, 9])
-  .range([0, hyp_length(xScale(9) - padding, yScale(0) - padding)]);
+  var getUnits = function () {
+    var units = new Set();
+    for (var i = 0; i < self.results.length; i++) {
+      units.add(self.results[i].unit_id);
+    }
+    return units;
+  }
 
-var rScale = d3.scale.linear()
-  .domain([0, 4])
-  .range([10, 30])
+  self.createScales = function() {
+    var h = self.h,
+        w = self.w,
+        padding = self.padding;
 
-var colorScale = d3.scale.category20()
-  .domain(units);
+    self.xScale = d3.scale.linear()
+    .domain([0, 9])
+    .range([padding, w-padding]);
 
-var discScale = d3.scale.linear()
-  .domain([0, 4])
-  .range([5, 15])
+    self.yScale = d3.scale.linear()
+    .domain([0, 9])
+    .range([h-self.padding, padding]);
 
+    self.zScale = d3.scale.linear()
+    .domain([0, 9])
+    .range([0, self.hyp_length(self.xScale(9) - padding, self.yScale(0) - padding)]);
 
-// Create the axes
-var xAxis = d3.svg.axis()
-  .scale(xScale)
-  .orient("bottom")
-  .tickPadding(-4)
-  .innerTickSize(0)
-  .outerTickSize(0);
+    self.rScale = d3.scale.linear()
+    .domain([0, 4])
+    .range([10, 30]);
 
-var yAxis = d3.svg.axis()
-  .scale(yScale)
-  .orient("left")
-  .tickPadding(-4)
-  .innerTickSize(0)
-  .outerTickSize(0);
+    self.colorScale = d3.scale.category20()
+    .domain(self.units);
 
-var zAxis = d3.svg.axis()
-  .scale(zScale)
-  .orient("bottom")
-  .tickPadding(-4)
-  .innerTickSize(0)
-  .outerTickSize(0);
+    self.discScale = d3.scale.linear()
+    .domain([0, 4])
+    .range([5, 15]);
+  }
 
+  self.createAxes = function () {
+    self.xAxis = d3.svg.axis()
+      .scale(self.xScale)
+      .orient("bottom")
+      .tickPadding(-4)
+      .innerTickSize(0)
+      .outerTickSize(0);
 
-// Attach the data
-var point = svg.selectAll("circle").data(results);
+    self.yAxis = d3.svg.axis()
+      .scale(self.yScale)
+      .orient("left")
+      .tickPadding(-4)
+      .innerTickSize(0)
+      .outerTickSize(0);
 
-point.exit()
-  .transition().attr("r", 0).remove();
+    self.zAxis = d3.svg.axis()
+      .scale(self.zScale)
+      .orient("bottom")
+      .tickPadding(-4)
+      .innerTickSize(0)
+      .outerTickSize(0);
+  }
 
-point.enter()
-  .append("circle")
-  .attr("cx", function(d) {
-      return xScale(d.x);
-   })
-   .attr("cy", function(d) {
-      return yScale(d.y);
-   })
-   .attr("r", 0)
-   .transition()
-   .attr("r", function(d) {
-      return rScale(d.r);
-   })
-   .attr("fill", function(d){
-      return colorScale(d.unit_id);
-   });
+  self.drawAxes = function () {
+    var h = self.h,
+        w = self.w,
+        padding = self.padding,
+        svg = self.svg;
 
-var ongoing = svg.selectAll('circle.ongoing')
-  .data(results.filter(
-    function(d, i) {
-      return d.status == '1';
-    }));
+    svg.append("g")
+      .attr("class", "axis")
+      .attr("transform", "translate(0," + (h - self.yScale(4.5)) + ")")
+      .call(self.xAxis)
+      .selectAll("text")
+      .attr("transform", "rotate(45)");
 
-ongoing.exit().transition().attr("r", 0).remove();
+    svg.append("g")
+      .attr("class", "axis")
+      .attr("transform", "translate(" + self.xScale(4.5) + ",0)")
+      .call(self.yAxis)
+      .selectAll("text")
+      .attr("transform", "rotate(45)");
 
-ongoing.enter()
-  .append("circle")
-  .attr("cx", function(d) {
-      return xScale(d.x);
-   })
-   .attr("cy", function(d) {
-      return yScale(d.y);
-   })
-   .attr("r", function(d) {
-      return discScale(d.r);
-   })
-   .attr("fill", "#fff")
-   .attr("class", "ongoing");
+    // Draw gridlines
+    svg.selectAll("line.horizontalGrid").data(self.yScale.ticks(9)).enter()
+      .append("line")
+      .attr({
+        "class":"horizontalGrid grid",
+        "x1" : padding,
+        "x2" : w - padding,
+        "y1" : function(d){ return self.yScale(d);},
+        "y2" : function(d){ return self.yScale(d);},
+      });
 
+    svg.selectAll("line.verticalGrid").data(self.xScale.ticks(9)).enter()
+      .append("line")
+      .attr({
+        "class":"verticalGrid grid",
+        "y1" : padding,
+        "y2" : h - padding,
+        "x1" : function(d){ return self.xScale(d);},
+        "x2" : function(d){ return self.xScale(d);},
+      });
 
+    var z_x = padding,
+        z_y = h - padding;
 
-svg.append("g")
-  .attr("class", "axis")
-  .attr("transform", "translate(0," + (h - yScale(4.5)) + ")")
-  .call(xAxis)
-  .selectAll("text")
-  .attr("transform", "rotate(45)");
+    svg.append("g")
+      .attr("class", "axis z-axis")
+      .attr("transform",
+            "translate(" + z_x + "," + z_y +") rotate(-45 0 0)")
+      .call(self.zAxis)
+      .selectAll("text")
+      .attr("transform", "rotate(90)");
+  }
 
-svg.append("g")
-  .attr("class", "axis")
-  .attr("transform", "translate(" + xScale(4.5) + ",0)")
-  .call(yAxis)
-  .selectAll("text")
-  .attr("transform", "rotate(45)");
+  self.rotateAxes = function () {
+    self.svg.attr("transform", "rotate(-45, " + self.w/2 + ", " + self.h/2 + ")");
+  }
 
-svg.selectAll("line.horizontalGrid").data(yScale.ticks(9)).enter()
-    .append("line")
-        .attr(
-        {
-            "class":"horizontalGrid grid",
-            "x1" : padding,
-            "x2" : w - padding,
-            "y1" : function(d){ return yScale(d);},
-            "y2" : function(d){ return yScale(d);},
-        });
+  self.attachData = function () {
+    var svg = self.svg,
+        point = svg.selectAll("circle").data(self.results);
 
-svg.selectAll("line.verticalGrid").data(xScale.ticks(9)).enter()
-    .append("line")
-        .attr(
-        {
-            "class":"verticalGrid grid",
-            "y1" : padding,
-            "y2" : h - padding,
-            "x1" : function(d){ return xScale(d);},
-            "x2" : function(d){ return xScale(d);},
-        });
+    point.exit()
+      .transition().attr("r", 0).remove();
 
-var z_x = padding,
-    z_y = h - padding;
+    point.enter()
+      .append("circle")
+      .attr("cx", function(d) {
+          return self.xScale(d.x);
+       })
+       .attr("cy", function(d) {
+          return self.yScale(d.y);
+       })
+       .attr("r", 0)
+       .transition()
+       .attr("r", function(d) {
+          return self.rScale(d.r);
+       })
+       .attr("fill", function(d){
+          return self.colorScale(d.unit_id);
+       });
 
-svg.append("g")
-  .attr("class", "axis z-axis")
-  .attr("transform",
-        "translate(" + z_x + "," + z_y +") rotate(-45 0 0)")
-  .call(zAxis)
-  .selectAll("text")
-  .attr("transform", "rotate(90)");
+    var ongoing = svg.selectAll('circle.ongoing')
+      .data(self.results.filter(
+        function(d, i) {
+          return d.status == '1';
+        }));
 
-svg.attr("transform", "rotate(-45, " + w/2 + ", " + h/2 + ")");
+    ongoing.exit().transition().attr("r", 0).remove();
+
+    ongoing.enter()
+      .append("circle")
+      .attr("cx", function(d) {
+          return self.xScale(d.x);
+       })
+       .attr("cy", function(d) {
+          return self.yScale(d.y);
+       })
+       .attr("r", function(d) {
+          return self.discScale(d.r);
+       })
+       .attr("fill", "#fff")
+       .attr("class", "ongoing");
+  }
+}
+
+var graph = new Graph();
+graph.init()
