@@ -15,6 +15,7 @@ var Graph = function() {
   //   ]
   // }
 
+
   self.init = function() {
     // self.data = DATA;
     // self.results = self.data.results;
@@ -43,10 +44,12 @@ var Graph = function() {
 
     self.attachData()
     self.filters = {
-      institute: null
+      institute: null,
+      org_level: null
     }
 
     $('select[class=select-institute]').on('change', self.filterByInstitute);
+    $('select[class=select-org-level]').on('change', self.filterByOrgLevel);
 
   }
 
@@ -67,8 +70,9 @@ var Graph = function() {
       select.append($('<option>', {
         value: level,
         text: self.selected_institute['org_level_' + level + '_name']
-      })).val('1')
+      }))
     });
+    self.filters.org_level = select.first('option').val();
   }
 
   self.filterByInstitute = function(e) {
@@ -83,6 +87,13 @@ var Graph = function() {
     self.filterAndDraw()
   }
 
+  self.filterByOrgLevel = function(e) {
+    e.preventDefault();
+    self.filters.org_level = $(e.currentTarget).val() || null;
+
+    self.filterAndDraw();
+  }
+
   self.filterAndDraw = function() {
     var filters = self.filters;
     // All unfiltered results
@@ -92,8 +103,14 @@ var Graph = function() {
       results = _.filter(results, function(result) {
         return result.institute.id == filters.institute
       });
-
     }
+
+    if(self.filters.org_level) {
+      results = _.filter(results, function(result) {
+        return result['org_level_' + self.filters.org_level];
+      });
+    }
+
     self.results = results;
     self.attachData();
   }
