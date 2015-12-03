@@ -42,7 +42,6 @@ var Graph = function() {
     self.createAxes();
     self.drawAxes();
 
-    self.attachData()
     self.filters = {
       institute: null,
       org_level: null
