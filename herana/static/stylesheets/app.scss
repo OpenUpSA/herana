@@ -93,6 +93,13 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
 }
 
 // Graph
+.chart-controls {
+  label,
+  input,
+  select {
+    display: block;
+  }
+}
 
 .axis {
   path, line {
