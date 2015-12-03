@@ -21,61 +21,11 @@ class ResultsView(View):
 
         data = {}
 
+        data['projects'] = [p.as_dict() for p in projects]
         data['institutes'] = [i.as_dict() for i in institutes]
-        data['results'] = [p.as_dict() for p in projects]
 
         context = {
           "data": json.dumps(data),
-        }
-
-        return render(
-            request,
-            self.template_name,
-            context=context)
-
-
-    def post(self, request, *args, **kwargs):
-        institute = None
-        org_level_form = None
-        results = []
-
-        if 'get_institute' in request.POST:
-            institute_form = SelectInstituteForm(request.POST)
-        elif 'get_org_level' in request.POST:
-            form = SelectOrgLevelForm(request.POST)
-
-        if institute_form.is_valid():
-            level = 1
-            institute = institute_form.cleaned_data['institute']
-            org_level_form = SelectOrgLevelForm(institute=institute)
-
-            # Get all projects for the institute which are:
-            # Final, not rejected, and not marked as deleted
-            projects = ProjectDetail.objects.filter(
-                institute=institute,
-                record_status=2,
-                is_rejected=False,
-                is_deleted=False)
-
-            results = []
-            for project in projects:
-                x, y = project.calc_score()
-                duration = project.calc_duration()
-                unit_id = project.__getattribute__('org_level_%s' % level).id
-                results.append({
-                    'x': x,
-                    'y': y,
-                    'r': duration,
-                    'unit_id': unit_id,
-                })
-
-            results = json.dumps(results)
-
-        context = {
-            "institute": institute,
-            "institute_form": institute_form,
-            "org_level_form": org_level_form,
-            "results": results
         }
 
         return render(

@@ -2,27 +2,14 @@ var Graph = function() {
   var self = this;
 
   // Test data
-  // var test_data = {
-  //   'results':[
-  //   {"x": 5, "y": 7, "r": 0, "unit_id":"1", "level": "1", "status":"1", "institute": {"id": "1"}},
-  //   {"x": 3, "y": 6, "r": 1, "unit_id":"3", "level": "1", "status":"2", "institute": {"id": "1"}},
-  //   {"x": 6, "y": 1, "r": 2, "unit_id":"3", "level": "1", "status":"2", "institute": {"id": "1"}},
-  //   {"x": 7, "y": 3, "r": 3, "unit_id":"4", "level": "1", "status":"2", "institute": {"id": "2"}},
-  //   {"x": 2, "y": 5, "r": 4, "unit_id":"5", "level": "1", "status":"1", "institute": {"id": "2"}},
-  //   {"x": 1, "y": 4, "r": 5, "unit_id":"1", "level": "2", "status":"1", "institute": {"id": "3"}},
-  //   {"x": 7, "y": 6, "r": 3, "unit_id":"2", "level": "2", "status":"2", "institute": {"id": "2"}},
-  //   {"x": 3, "y": 1, "r": 1, "unit_id":"3", "level": "2", "status":"2", "institute": {"id": "2"}},
-  //   ]
-  // }
 
+  var test_data = {"institutes": [{"org_level_1_name": "College", "org_level_3_name": "Department", "org_level_2_name": "School or Institute or Centre ", "id": 9, "name": "Makerere University"}, {"org_level_1_name": "Test", "org_level_3_name": "", "org_level_2_name": "", "id": 8, "name": "Test"}, {"org_level_1_name": "Faculty", "org_level_3_name": "", "org_level_2_name": "Department", "id": 10, "name": "University of Fort Hare"}, {"org_level_1_name": "College", "org_level_3_name": "Department", "org_level_2_name": "School, Institute or Centre", "id": 5, "name": "University of Ghana"}, {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}], "projects": [{"status": 1, "duration": 0, "score": [3.0, 4.75], "name": "National Programme on Sustainable Consumption and Production for Mauritius", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 10, "org_level_1": {"name": "Faculty of Engineering"}, "org_level_2": {"name": "Department of Civil Engineering (CE)"}}, {"status": 1, "duration": 0, "score": [2.5, 3.25], "name": "Development of value-added product from breadfruit", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 19, "org_level_1": {"name": "Faculty of Agriculture"}, "org_level_2": {"name": "Department of Agricultural Production & Systems (APS)"}}, {"status": 1, "duration": 0, "score": [4.0, 5.0], "name": "Green Economy Fiscal Policy Scoping Study", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 4, "org_level_1": {"name": "Faculty of Social Studies & Humanities"}, "org_level_2": {"name": "Department of Economics & Statistics"}}, {"status": 1, "duration": 2, "score": [5.25, 5.25], "name": "National Dialogue Session and Building Institutional Capacity of Mauritian and Seychelles Press", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 9, "org_level_1": {"name": "Faculty of Social Studies & Humanities"}, "org_level_2": {"name": "Department of Social Studies"}}, {"status": 2, "duration": 3, "score": [2.75, 5.5], "name": "Development of a seaweed industry in Mauritius and Rodrigues: Potential of local seaweeds as alternative feed ingredients in pig diets", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 8, "org_level_1": {"name": "Faculty of Agriculture"}, "org_level_2": {"name": "Department of Agricultural Production & Systems (APS)"}}, {"status": 1, "duration": 4, "score": [5.0, 4.25], "name": "Maurice Ile Durable project", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 11, "org_level_1": {"name": "Faculty of Engineering"}, "org_level_2": {"name": "Department of Mechanical and Production Engineering (MPE)"}}, {"status": 1, "duration": 1, "score": [7.5, 4.25], "name": "EMBEDDING WORK-BASED LEARNING AT THE UNIVERSITY", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 12, "org_level_1": {"name": "Centre for Innovative and Lifelong Learning (CILL)"}, "org_level_2": null}, {"status": 1, "duration": 0, "score": [3.0, 4.0], "name": "Workshop on solar dehydration of fruits and vegetables for SMEs", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 13, "org_level_1": {"name": "Faculty of Agriculture"}, "org_level_2": {"name": "Department of Agriculture and Food Science (AFS)"}}, {"status": 1, "duration": 0, "score": [0.0, 4.5], "name": "Training Programme for National Women Entrepreneur Council, Mauritius", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 14, "org_level_1": {"name": "Faculty of Engineering"}, "org_level_2": {"name": "Department of Applied Sustainability and Enterprise Development (DASED)"}}, {"status": 1, "duration": 1, "score": [3.0, 4.0], "name": "Setting-up of a Bio-based Industry in Mauritius", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 17, "org_level_1": {"name": "ANDI Centre for BioMaterials and Biomedical Research"}, "org_level_2": {"name": "Department of Chemistry"}}, {"status": 1, "duration": 0, "score": [6.0, 2.75], "name": "IAEA-UNESCO Project on Submarine Groundwater Discharge in Coastal Zones in Mauritius", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 15, "org_level_1": {"name": "Faculty of Science"}, "org_level_2": {"name": "Department of Chemistry"}}, {"status": 1, "duration": 2, "score": [5.0, 4.5], "name": "Developing Education, Skills and Capacity in Forensic Awareness and Forensic Science in the Southern African Development Community and Caribbean", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 16, "org_level_1": {"name": "Faculty of Science"}, "org_level_2": {"name": "Department of Chemistry"}}, {"status": 1, "duration": 0, "score": [1.25, 2.75], "name": "Action Plan to fight against Gender Based Violence in Rodrigues ", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 18, "org_level_1": {"name": "Faculty of Social Studies & Humanities"}, "org_level_2": {"name": "Department of Social Studies"}}, {"status": 2, "duration": 4, "score": [1.5, 4.5], "name": "Provision of Continuous Medical Education (CME) through the Medical Update Group", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 20, "org_level_1": {"name": "SSR Resource Centre"}, "org_level_2": {"name": "Department of Medicine"}}, {"status": 2, "duration": 3, "score": [3.25, 5.25], "name": "Diagnostic Test for Preeclampsia in Mauritius: Inositol Phosphoglycan-P type", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 21, "org_level_1": {"name": "Faculty of Science"}, "org_level_2": {"name": "Department of Medicine"}}, {"status": 2, "duration": 4, "score": [5.5, 3.75], "name": "Towards effective control of Buruli ulcer in Ghana-Stop BU", "institute": {"org_level_1_name": "College", "org_level_3_name": "Department", "org_level_2_name": "School, Institute or Centre", "id": 5, "name": "University of Ghana"}, "org_level_3": null, "id": 22, "org_level_1": {"name": "College of Health Sciences"}, "org_level_2": {"name": "Noguchi Memorial Institute for Medical Research"}}, {"status": 2, "duration": 1, "score": [1.5, 1.5], "name": "Beyond Domestic Violence Laws: Women's Experiences and Perceptions of Protection Services in Ghana", "institute": {"org_level_1_name": "College", "org_level_3_name": "Department", "org_level_2_name": "School, Institute or Centre", "id": 5, "name": "University of Ghana"}, "org_level_3": null, "id": 23, "org_level_1": {"name": "College of Humanities"}, "org_level_2": {"name": "Centre for Gender Studies and Advocacy"}}, {"status": 1, "duration": 0, "score": [2.0, 3.5], "name": "Inventory of hazardous wastes generated in Mauritius and recommendations on solutions for recycling and disposal", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 24, "org_level_1": {"name": "Faculty of Science"}, "org_level_2": {"name": "Department of Chemistry"}}, {"status": 1, "duration": 0, "score": [1.25, 4.0], "name": "Sustainable Management of Persistent Organic Pollutants (POPs) in Mauritius - Responsible Care Programme", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 3, "org_level_1": {"name": "Faculty of Science"}, "org_level_2": {"name": "Department of Chemistry"}}, {"status": 1, "duration": 1, "score": [4.5, 6.25], "name": "Clinical trial on  the effects of black tea consumption on Ischaemic heart diseases among the Mauritian population", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 25, "org_level_1": {"name": "Faculty of Science"}, "org_level_2": {"name": "Department of Biosciences"}}, {"status": 1, "duration": 0, "score": [3.0, 3.75], "name": "Sensory Integration and Multi-Sensory Stimulation ", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 26, "org_level_1": {"name": "Faculty of Science"}, "org_level_2": {"name": "Department of Health Sciences"}}, {"status": 1, "duration": 0, "score": [0.75, 3.25], "name": "Sustainable Waste Management Practices at Petit Verger Prison, Mauritius", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 27, "org_level_1": {"name": "Faculty of Engineering"}, "org_level_2": {"name": "Department of Chemical & Environmental Engineering (CEE)"}}, {"status": 1, "duration": 1, "score": [5.5, 3.75], "name": "SIDECAP Project (Staff Innovation in Distributed Education in Caribbean, African, and Pacific countries)", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 28, "org_level_1": {"name": "Centre for Innovative and Lifelong Learning (CILL)"}, "org_level_2": null}, {"status": 1, "duration": 0, "score": [2.0, 3.0], "name": "Unionisation in Mauritius", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 29, "org_level_1": {"name": "Faculty of Law & Management"}, "org_level_2": {"name": "Department of Management"}}, {"status": 1, "duration": 0, "score": [2.75, 3.5], "name": "Young Ambassadors for Chemistry (YAC): Developing Education Skills of the Secondary School Teachers and Public Awareness", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 30, "org_level_1": {"name": "Faculty of Science"}, "org_level_2": {"name": "Department of Chemistry"}}, {"status": 1, "duration": 1, "score": [2.0, 3.5], "name": "Mercury action plan for Mauritius", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 31, "org_level_1": {"name": "Faculty of Engineering"}, "org_level_2": {"name": "Department of Chemical & Environmental Engineering (CEE)"}}, {"status": 2, "duration": 4, "score": [6.75, 5.25], "name": "Setting up of a monolingual dictionary for Mauritian Creole ", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 32, "org_level_1": {"name": "Faculty of Social Studies & Humanities"}, "org_level_2": {"name": "Department of French Studies"}}, {"status": 2, "duration": 0, "score": [5.0, 3.25], "name": "ESEFA SAP ERP (The Enterprise Systems for Africa)", "institute": {"org_level_1_name": "Faculty or Centre", "org_level_3_name": "", "org_level_2_name": "Department", "id": 6, "name": "University of Mauritius"}, "org_level_3": null, "id": 35, "org_level_1": {"name": "Faculty of Engineering"}, "org_level_2": {"name": "Department of Mechanical and Production Engineering (MPE)"}}]}
 
   self.init = function() {
     // self.data = DATA;
-    // self.results = self.data.results;
-    // self.institutes = self.data.institutes;
 
     self.data = test_data;
-    self.results = self.data.results;
+    self.projects = self.data.projects;
     self.institutes = self.data.institutes;
 
     self.w = 700;
@@ -37,7 +24,9 @@ var Graph = function() {
       .attr("width", self.w)
       .attr("height", self.h);
 
-    self.populateFilters()
+    self.populateInstituteFilter()
+    self.units = self.getLevelUnits()
+
     self.createScales();
     self.createAxes();
     self.drawAxes();
@@ -52,7 +41,17 @@ var Graph = function() {
 
   }
 
-  self.populateFilters = function() {
+  self.getLevelUnits = function () {
+    // Return a set of unique unit names which exist for the current chosen level.
+    var units = [];
+    var org_level = 'org_level_' + self.org_level
+    for (var i = 0; i < self.projects.length; i++) {
+      units.push(self.projects[i][org_level].name);
+    }
+    return _.uniq(units);
+  }
+
+  self.populateInstituteFilter = function() {
     $.each(self.institutes, function(i, institute) {
       $('.select-institute').append($('<option>', {
         value: institute.id,
@@ -61,10 +60,10 @@ var Graph = function() {
     });
   }
 
-  self.populateOrgLevelsFilter = function () {
+  self.populateOrgLevelsFilter = function() {
     var select = $('.select-org-level');
 
-    select.find('option').remove().end();
+    select.find('option').remove();
     $.each([1,2,3], function(i, level) {
       select.append($('<option>', {
         value: level,
@@ -74,43 +73,54 @@ var Graph = function() {
     self.filters.org_level = select.first('option').val();
   }
 
-  self.filterByInstitute = function(e) {
-    e.preventDefault();
-    self.filters.institute = $(e.currentTarget).val() || null;
+  self.populateUnitFilter = function() {
+    $('.units').children().remove();
+    $.each(self.units, function(i, unit) {
+      $('.units')
+        .append($('<li><label>').html(unit))
+        .append($('<input type="checkbox">', {
+          value: i
+        }));
+    });
+  }
+
+  self.filterByInstitute = function() {
+    self.filters.institute = $(this).val() || null;
 
     self.selected_institute = _.find(self.institutes, function(institute) {
         return institute.id == self.filters.institute
     });
 
     self.populateOrgLevelsFilter()
+    self.units = self.getLevelUnits()
+    self.populateUnitFilter()
     self.filterAndDraw()
   }
 
-  self.filterByOrgLevel = function(e) {
-    e.preventDefault();
-    self.filters.org_level = $(e.currentTarget).val() || null;
+  self.filterByOrgLevel = function() {
+    self.filters.org_level = $(this).val() || null;
 
     self.filterAndDraw();
   }
 
   self.filterAndDraw = function() {
     var filters = self.filters;
-    // All unfiltered results
-    var results = self.data.results;
+    // All unfiltered projects
+    var projects = self.data.projects;
 
     if(self.filters.institute) {
-      results = _.filter(results, function(result) {
+      projects = _.filter(projects, function(result) {
         return result.institute.id == filters.institute
       });
     }
 
     if(self.filters.org_level) {
-      results = _.filter(results, function(result) {
+      projects = _.filter(projects, function(result) {
         return result['org_level_' + self.filters.org_level];
       });
     }
 
-    self.results = results;
+    self.projects = projects;
     self.attachData();
   }
 
@@ -124,16 +134,6 @@ var Graph = function() {
       // return the length of the hypotenuse
       // of a Right triangle.
       return Math.sqrt((x * x) + (y * y))
-    }
-
-    var getLevelUnits = function () {
-      // Return a set of unique unit names which exist for the current chosen level.
-      var units = new Set();
-      var org_level = 'org_level_' + self.org_level
-      for (var i = 0; i < self.results.length; i++) {
-        units.add(self.results[i][org_level].name);
-      }
-      return units;
     }
 
     self.xScale = d3.scale.linear()
@@ -153,7 +153,7 @@ var Graph = function() {
     .range([10, 30]);
 
     self.colorScale = d3.scale.category20()
-    .domain(getLevelUnits());
+    .domain(self.units);
 
     self.discScale = d3.scale.linear()
     .domain([0, 4])
@@ -240,7 +240,7 @@ var Graph = function() {
 
   self.attachData = function () {
     var svg = self.svg,
-        point = svg.selectAll("circle").data(self.results);
+        point = svg.selectAll("circle").data(self.projects);
 
     point.exit()
       .transition().attr("r", 0).remove();
@@ -267,7 +267,7 @@ var Graph = function() {
       });
 
     // var ongoing = svg.selectAll('circle.ongoing')
-    //   .data(self.results.filter(
+    //   .data(self.projects.filter(
     //     function(d, i) {
     //       return d.status == '1';
     //     }));

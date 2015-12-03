@@ -8,24 +8,36 @@
 {% block page-content %}
 <div class="container">
   <div class="row">
-    <div class="col-sm-6">
-      <form>
-        <label>Select institute</label>
-        <select class="select-institute">
-          <option value="" selected="selected" disabled="disabled"></option>
-        </select>
-      </form>
+    <div class="col-sm-4">
+      <label>Select institute</label>
+      <select class="select-institute">
+        <option value="" selected="selected" disabled="disabled"></option>
+      </select>
     </div>
-    <div class="col-sm-6">
-      <form>
-        <label>View results by:</label>
-        <select class="select-org-level">
-          <option value="" selected="selected" disabled="disabled"></option>
-        </select>
-      </form>
+    <div class="col-sm-4">
+      <label>View results by:</label>
+      <select class="select-org-level">
+        <option value="" selected="selected" disabled="disabled"></option>
+      </select>
+    </div>
+    <div class="col-sm-4">
+      <label>Status of project:</label>
+      <select class="select-status">
+        <option value="0" selected="selected">All</option>
+        <option value="1">Ongoing</option>
+        <option value="2">Complete</option>
+      </select>
     </div>
   </div>
-  <div id="graph"></div>
+  <div class="row">
+    <div class="col-sm-9">
+      <div id="graph"></div>
+    </div>
+    <div class="col-sm-3">
+      <ul class="units">
+      </ul>
+  </div>
+
 </div>
 {% endblock %}
 
