@@ -35,13 +35,15 @@ var Graph = function() {
 
     self.filters = {
       institute: null,
-      org_level: null
+      org_level: null,
+      // map from unit name to true/false
+      units: {},
     }
 
     $('select[class=select-institute]').on('change', self.filterByInstitute);
     $('select[class=select-org-level]').on('change', self.filterByOrgLevel);
     $('select[class=select-status]').on('change', self.filterByStatus);
-
+    $('.units').on('click', 'input[type=checkbox]', self.unitChanged);
   }
 
   self.getLevelUnits = function () {
@@ -80,11 +82,8 @@ var Graph = function() {
     $('.units').children().remove();
     $.each(self.units, function(i, unit) {
       $('.units')
-        .append($('<li><label>').html(unit))
-        .append($('<input type="checkbox">', {
-          value: i
-        }));
-    });
+        .append($('<li><label><input type="checkbox" checked value="' + unit + '"> ' + unit + '</label>'));
+      });
   }
 
   self.filterByInstitute = function() {
@@ -96,6 +95,10 @@ var Graph = function() {
 
     self.populateOrgLevelsFilter()
     self.units = self.getLevelUnits()
+    self.filters.units = {};
+    _.each(self.units, function(u) {
+      self.filters.units[u] = true;
+    })
     self.populateUnitFilter()
     self.filterAndDraw()
   }
@@ -103,12 +106,18 @@ var Graph = function() {
   self.filterByOrgLevel = function() {
     self.filters.org_level = $(this).val() || null;
     self.filterAndDraw();
-  }
+  };
 
   self.filterByStatus = function() {
     self.filters.status = $(this).val() || null;
     self.filterAndDraw();
-  }
+  };
+
+  self.unitChanged = function(e) {
+    var $chk = $(this);
+    self.filters.units[$chk.val()] = $chk.prop('checked');
+    self.filterAndDraw();
+  };
 
   self.filterAndDraw = function() {
     var filters = self.filters;
@@ -132,6 +141,12 @@ var Graph = function() {
         return result.status == self.filters.status;
       });
     }
+
+    // units
+    projects = _.filter(projects, function(p) {
+      var org = p['org_level_' + self.filters.org_level];
+      return org && self.filters.units[org.name];
+    });
 
     self.projects = projects;
     self.attachData();
