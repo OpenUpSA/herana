@@ -15,6 +15,7 @@ var Graph = function() {
     self.w = 700;
     self.h = 700;
     self.padding = 150;
+    self.stroke = 6;
 
     self.selected_institute = null;
     self.org_level = 1;
@@ -39,6 +40,7 @@ var Graph = function() {
 
     $('select[class=select-institute]').on('change', self.filterByInstitute);
     $('select[class=select-org-level]').on('change', self.filterByOrgLevel);
+    $('select[class=select-status]').on('change', self.filterByStatus);
 
   }
 
@@ -100,7 +102,11 @@ var Graph = function() {
 
   self.filterByOrgLevel = function() {
     self.filters.org_level = $(this).val() || null;
+    self.filterAndDraw();
+  }
 
+  self.filterByStatus = function() {
+    self.filters.status = $(this).val() || null;
     self.filterAndDraw();
   }
 
@@ -109,15 +115,21 @@ var Graph = function() {
     // All unfiltered projects
     var projects = self.data.projects;
 
-    if(self.filters.institute) {
+    if (self.filters.institute) {
       projects = _.filter(projects, function(result) {
         return result.institute.id == filters.institute
       });
     }
 
-    if(self.filters.org_level) {
+    if (self.filters.org_level) {
       projects = _.filter(projects, function(result) {
         return result['org_level_' + self.filters.org_level];
+      });
+    }
+
+    if (self.filters.status) {
+      projects = _.filter(projects, function(result) {
+        return result.status == self.filters.status;
       });
     }
 
@@ -257,37 +269,24 @@ var Graph = function() {
        .attr("r", 0)
        .transition()
        .attr("r", function(d) {
-          return self.rScale(d.duration);
+          var r = self.rScale(d.duration);
+          // ensure outer edge of stroke is at where the edge of a filled circle would be
+          if (d.status == '1') r -= self.stroke / 2;
+          return r;
        })
-       .attr("fill", function(d){
-          return self.colorScale(d['org_level_' + self.org_level].name);
+       .attr("fill", function(d) {
+          // no fill for ongoing
+          return d.status == '1' ? 'none' : self.colorScale(d['org_level_' + self.org_level].name);
        })
+       .attr("stroke", function(d) {
+          // stroke only for ongoing
+          return d.status == '1' ? self.colorScale(d['org_level_' + self.org_level].name) : 'none';
+       })
+       .attr("stroke-width", self.stroke)
        .attr("z", function(d){
           // Display smaller circles above larger ones.
           return 100 / self.rScale(d.duration);
       });
-
-    // var ongoing = svg.selectAll('circle.ongoing')
-    //   .data(self.projects.filter(
-    //     function(d, i) {
-    //       return d.status == '1';
-    //     }));
-
-    // ongoing.exit().transition().attr("r", 0).remove();
-
-    // ongoing.enter()
-    //   .append("circle")
-    //   .attr("cx", function(d) {
-    //       return self.xScale(d.score[0]);
-    //    })
-    //    .attr("cy", function(d) {
-    //       return self.yScale(d.score[1]);
-    //    })
-    //    .attr("r", function(d) {
-    //       return self.discScale(d.duration);
-    //    })
-    //    .attr("fill", "#fff")
-    //    .attr("class", "ongoing");
   }
 }
 
