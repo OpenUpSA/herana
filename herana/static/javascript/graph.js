@@ -253,7 +253,7 @@ var Graph = function() {
 
   self.attachData = function () {
     var svg = self.svg,
-        point = svg.selectAll("circle").data(self.projects);
+        point = svg.selectAll("circle").data(self.projects, function(d) { return d.id });
 
     point.exit()
       .transition().attr("r", 0).remove();
