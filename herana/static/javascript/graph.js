@@ -22,7 +22,8 @@ var Graph = function() {
     self.svg = d3.select("#graph")
       .append("svg")
       .attr("width", self.w)
-      .attr("height", self.h);
+      .attr("height", self.h)
+      .append("g");
 
     self.populateInstituteFilter()
     self.units = self.getLevelUnits()
