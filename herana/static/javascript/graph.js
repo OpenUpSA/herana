@@ -2,16 +2,18 @@ var Graph = function() {
   var self = this;
 
   // Test data
-  var test_data = [
-    {"x": 5, "y": 7, "r": 0, "unit_id":"1", "level": "1", "status":"1", "institute": {"id": "1"}},
-    {"x": 3, "y": 6, "r": 1, "unit_id":"3", "level": "1", "status":"2", "institute": {"id": "1"}},
-    {"x": 6, "y": 1, "r": 2, "unit_id":"3", "level": "1", "status":"2", "institute": {"id": "1"}},
-    {"x": 7, "y": 3, "r": 3, "unit_id":"4", "level": "1", "status":"2", "institute": {"id": "2"}},
-    {"x": 2, "y": 5, "r": 4, "unit_id":"5", "level": "1", "status":"1", "institute": {"id": "2"}},
-    {"x": 1, "y": 4, "r": 5, "unit_id":"1", "level": "2", "status":"1", "institute": {"id": "3"}},
-    {"x": 7, "y": 6, "r": 3, "unit_id":"2", "level": "2", "status":"2", "institute": {"id": "2"}},
-    {"x": 3, "y": 1, "r": 1, "unit_id":"3", "level": "2", "status":"2", "institute": {"id": "2"}},
-  ]
+  // var test_data = {
+  //   'results':[
+  //   {"x": 5, "y": 7, "r": 0, "unit_id":"1", "level": "1", "status":"1", "institute": {"id": "1"}},
+  //   {"x": 3, "y": 6, "r": 1, "unit_id":"3", "level": "1", "status":"2", "institute": {"id": "1"}},
+  //   {"x": 6, "y": 1, "r": 2, "unit_id":"3", "level": "1", "status":"2", "institute": {"id": "1"}},
+  //   {"x": 7, "y": 3, "r": 3, "unit_id":"4", "level": "1", "status":"2", "institute": {"id": "2"}},
+  //   {"x": 2, "y": 5, "r": 4, "unit_id":"5", "level": "1", "status":"1", "institute": {"id": "2"}},
+  //   {"x": 1, "y": 4, "r": 5, "unit_id":"1", "level": "2", "status":"1", "institute": {"id": "3"}},
+  //   {"x": 7, "y": 6, "r": 3, "unit_id":"2", "level": "2", "status":"2", "institute": {"id": "2"}},
+  //   {"x": 3, "y": 1, "r": 1, "unit_id":"3", "level": "2", "status":"2", "institute": {"id": "2"}},
+  //   ]
+  // }
 
   self.init = function() {
     // self.data = DATA;
@@ -19,12 +21,15 @@ var Graph = function() {
     // self.institutes = self.data.institutes;
 
     self.data = test_data;
-    self.results = test_data;
-    self.institutes = DATA.institutes;
+    self.results = self.data.results;
+    self.institutes = self.data.institutes;
 
     self.w = 700;
     self.h = 700;
     self.padding = 150;
+
+    self.selected_institute = null;
+    self.org_level = 1;
 
     self.svg = d3.select("#graph")
       .append("svg")
@@ -41,7 +46,6 @@ var Graph = function() {
       institute: null
     }
 
-
     $('select[class=select-institute]').on('change', self.filterByInstitute);
 
   }
@@ -55,21 +59,40 @@ var Graph = function() {
     });
   }
 
+  self.populateOrgLevelsFilter = function () {
+    var select = $('.select-org-level');
+
+    select.find('option').remove().end();
+    $.each([1,2,3], function(i, level) {
+      select.append($('<option>', {
+        value: level,
+        text: self.selected_institute['org_level_' + level + '_name']
+      })).val('1')
+    });
+  }
 
   self.filterByInstitute = function(e) {
     e.preventDefault();
     self.filters.institute = $(e.currentTarget).val() || null;
+
+    self.selected_institute = _.find(self.institutes, function(institute) {
+        return institute.id == self.filters.institute
+    });
+
+    self.populateOrgLevelsFilter()
     self.filterAndDraw()
   }
 
   self.filterAndDraw = function() {
     var filters = self.filters;
+    // All unfiltered results
     var results = self.data.results;
 
     if(self.filters.institute) {
       results = _.filter(results, function(result) {
         return result.institute.id == filters.institute
       });
+
     }
     self.results = results;
     self.attachData();
@@ -87,10 +110,12 @@ var Graph = function() {
       return Math.sqrt((x * x) + (y * y))
     }
 
-    var getUnits = function () {
+    var getLevelUnits = function () {
+      // Return a set of unique unit names which exist for the current chosen level.
       var units = new Set();
+      var org_level = 'org_level_' + self.org_level
       for (var i = 0; i < self.results.length; i++) {
-        units.add(self.results[i].unit_id);
+        units.add(self.results[i][org_level].name);
       }
       return units;
     }
@@ -112,7 +137,7 @@ var Graph = function() {
     .range([10, 30]);
 
     self.colorScale = d3.scale.category20()
-    .domain(getUnits());
+    .domain(getLevelUnits());
 
     self.discScale = d3.scale.linear()
     .domain([0, 4])
@@ -207,41 +232,45 @@ var Graph = function() {
     point.enter()
       .append("circle")
       .attr("cx", function(d) {
-          return self.xScale(d.x);
+          return self.xScale(d.score[0]);
        })
        .attr("cy", function(d) {
-          return self.yScale(d.y);
+          return self.yScale(d.score[1]);
        })
        .attr("r", 0)
        .transition()
        .attr("r", function(d) {
-          return self.rScale(d.r);
+          return self.rScale(d.duration);
        })
        .attr("fill", function(d){
-          return self.colorScale(d.unit_id);
-       });
-
-    var ongoing = svg.selectAll('circle.ongoing')
-      .data(self.results.filter(
-        function(d, i) {
-          return d.status == '1';
-        }));
-
-    ongoing.exit().transition().attr("r", 0).remove();
-
-    ongoing.enter()
-      .append("circle")
-      .attr("cx", function(d) {
-          return self.xScale(d.x);
+          return self.colorScale(d['org_level_' + self.org_level].name);
        })
-       .attr("cy", function(d) {
-          return self.yScale(d.y);
-       })
-       .attr("r", function(d) {
-          return self.discScale(d.r);
-       })
-       .attr("fill", "#fff")
-       .attr("class", "ongoing");
+       .attr("z", function(d){
+          // Display smaller circles above larger ones.
+          return 100 / self.rScale(d.duration);
+      });
+
+    // var ongoing = svg.selectAll('circle.ongoing')
+    //   .data(self.results.filter(
+    //     function(d, i) {
+    //       return d.status == '1';
+    //     }));
+
+    // ongoing.exit().transition().attr("r", 0).remove();
+
+    // ongoing.enter()
+    //   .append("circle")
+    //   .attr("cx", function(d) {
+    //       return self.xScale(d.score[0]);
+    //    })
+    //    .attr("cy", function(d) {
+    //       return self.yScale(d.score[1]);
+    //    })
+    //    .attr("r", function(d) {
+    //       return self.discScale(d.duration);
+    //    })
+    //    .attr("fill", "#fff")
+    //    .attr("class", "ongoing");
   }
 }
 
