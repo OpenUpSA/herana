@@ -23,8 +23,6 @@ var Graph = function() {
     self.padding = 150;
     self.stroke = 6;
 
-    self.selected_institute = null;
-
     self.svg = d3.select("#graph")
       .append("svg")
       .attr("width", self.w)
@@ -87,7 +85,7 @@ var Graph = function() {
     $.each([1,2,3], function(i, level) {
       select.append($('<option>', {
         value: level,
-        text: self.selected_institute['org_level_' + level + '_name']
+        text: self.filters.institute['org_level_' + level + '_name']
       }))
     });
   }
@@ -107,17 +105,16 @@ var Graph = function() {
   }
 
   self.instituteChanged = function() {
+    var instutute_id = $(this).val();
     self.resetFilters()
 
     // TODO: UPdate this code to store object in filters
-    self.filters.institute = $(this).val() || null;
-
-    self.selected_institute = _.find(self.institutes, function(institute) {
-        return institute.id == self.filters.institute
+    self.filters.institute = _.find(self.institutes, function(institute) {
+        return institute.id == instutute_id;
     });
 
     self.institute_projects = _.filter(self.all_projects, function(project) {
-        return project.institute.id == self.filters.institute
+        return project.institute.id == self.filters.institute.id
     });
 
     self.updateOrgLevels()
