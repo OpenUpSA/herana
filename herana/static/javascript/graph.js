@@ -40,9 +40,9 @@ var Graph = function() {
       units: {},
     }
 
-    $('select[class=select-institute]').on('change', self.filterByInstitute);
-    $('select[class=select-org-level]').on('change', self.filterByOrgLevel);
-    $('select[class=select-status]').on('change', self.filterByStatus);
+    $('select[class=select-institute]').on('change', self.instituteChange);
+    $('select[class=select-org-level]').on('change', self.orgLevelChange);
+    $('select[class=select-status]').on('change', self.statusChange);
     $('.units').on('click', 'input[type=checkbox]', self.unitChanged);
   }
 
@@ -86,7 +86,7 @@ var Graph = function() {
       });
   }
 
-  self.filterByInstitute = function() {
+  self.instituteChange = function() {
     self.filters.institute = $(this).val() || null;
 
     self.selected_institute = _.find(self.institutes, function(institute) {
@@ -103,12 +103,12 @@ var Graph = function() {
     self.filterAndDraw()
   }
 
-  self.filterByOrgLevel = function() {
+  self.orgLevelChange = function() {
     self.filters.org_level = $(this).val() || null;
     self.filterAndDraw();
   };
 
-  self.filterByStatus = function() {
+  self.statusChange = function() {
     self.filters.status = $(this).val() || null;
     self.filterAndDraw();
   };
