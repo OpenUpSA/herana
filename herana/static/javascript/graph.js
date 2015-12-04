@@ -55,18 +55,14 @@ var Graph = function() {
     // Return a set of unique unit names,
     // which exist for the current chosen level,
     // for current instututes.
-
-    var units = [],
-        org_level = 'org_level_' + self.filters.org_level;
-
-    var projects = _.filter(self.institute_projects, function(project) {
-      return project[org_level]
-    });
-
-    _.each(projects, function(project){
-      units.push(project[org_level].name);
-    });
-    return _.uniq(units);
+    var org_level = 'org_level_' + self.filters.org_level
+    return _.uniq(
+      _.map(
+        _.filter(
+          self.institute_projects, function(project) {
+            return project[org_level]
+          }),
+        function(p) { return p[org_level].name; }));
   }
 
   self.updateInstitutes = function() {
@@ -105,12 +101,11 @@ var Graph = function() {
   }
 
   self.instituteChanged = function() {
-    var instutute_id = $(this).val();
+    var institute_id = $(this).val();
     self.resetFilters()
 
-    // TODO: UPdate this code to store object in filters
     self.filters.institute = _.find(self.institutes, function(institute) {
-        return institute.id == instutute_id;
+        return institute.id == institute_id;
     });
 
     self.institute_projects = _.filter(self.all_projects, function(project) {
