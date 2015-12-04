@@ -1,6 +1,6 @@
 from django import forms
 
-from models import ProjectDetail
+from models import ProjectDetail, Institute
 
 class ProjectDetailForm(forms.ModelForm):
     class Meta:
@@ -96,3 +96,19 @@ class ProjectDetailAdminForm(forms.ModelForm):
         model = ProjectDetail
         exclude = ('proj_leader', 'created_at', 'record_status', 'reporting_period', 'is_deleted')
         admin_editable = ['is_rejected', 'rejected_detail', 'is_flagged']
+
+
+class SelectInstituteForm(forms.Form):
+    institute = forms.ModelChoiceField(queryset=Institute.objects.all())
+
+class SelectOrgLevelForm(forms.Form):
+    org_level = forms.ChoiceField(choices=[], label='Select the organisational level')
+
+    def __init__(self, *args, **kwargs):
+        institute = None
+        if kwargs.get('institute'):
+            institute = kwargs.pop('institute')
+        super(SelectOrgLevelForm, self).__init__(*args, **kwargs)
+        if institute:
+            self.fields['org_level'].choices = institute.get_org_levels()
+

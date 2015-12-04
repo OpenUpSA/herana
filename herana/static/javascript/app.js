@@ -13,4 +13,3 @@
 (function($){
   $.datepicker._defaults.changeYear = true;
 })(grp.jQuery);
-

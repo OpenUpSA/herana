@@ -91,3 +91,59 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
     margin-bottom: 10px;
   }
 }
+
+// Graph
+.chart-controls {
+  label,
+  input,
+  select {
+    display: block;
+  }
+}
+
+.axis {
+  path, line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+}
+
+.grid {
+  stroke: #9D9D9D;
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke-dasharray: 3;
+  stroke-width: 1px;
+}
+
+.axis .z-axis {
+  line{
+    stroke-dasharray: 2,2;
+  }
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+.results {
+  .checkbox {
+    list-style: none;
+  }
+
+  .checkbox label {
+    min-height: 20px;
+    padding-left: 20px;
+    margin-bottom: 0px;
+    font-weight: normal;
+    cursor: pointer;
+  }
+
+  .checkbox input[type="checkbox"] {
+    margin-top: 2px;
+  }
+}
+
+
