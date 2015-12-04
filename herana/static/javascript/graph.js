@@ -272,6 +272,54 @@ var Graph = function() {
       .selectAll("text")
       .attr("transform", "rotate(90)");
 
+    // Draw the labels
+    svg.append("text")
+      .attr("class", "x label")
+      .attr("x", w - (padding - 10))
+      .attr("y", h - self.yScale(4.5))
+      .text("Strengthening the academic core")
+      .attr("transform", "rotate(45,"+ (w - (padding - 10)) + "," + (h - self.yScale(4.5)) + ")");
+
+    svg.append("text")
+      .attr("class", "x label")
+      .attr("text-anchor", "end")
+      .attr("x", padding - 10)
+      .attr("y", h - self.yScale(4.5))
+      .text("Weakening the academic core")
+      .attr("transform", "rotate(45,"+ ((padding - 10)) + "," + (h - self.yScale(4.5)) + ")");
+
+    svg.append("text")
+      .attr("class", "y label")
+      .attr("text-anchor", "end")
+      .attr("x", w - self.xScale(4.5))
+      .attr("y", padding - 10)
+      .text("Strong articulation")
+      .attr("transform", "rotate(45,"+ ((w - self.xScale(4.5))) + "," + (padding - 10) + ")");
+
+    svg.append("text")
+      .attr("class", "y label")
+      .attr("x", w - self.xScale(4.5))
+      .attr("y", h - (padding - 10))
+      .text("Weak articulation")
+      .attr("transform", "rotate(45,"+ ((w - self.xScale(4.5))) + "," + (h - (padding - 10)) + ")");
+
+    svg.append("text")
+      .attr("class", "z label")
+      .attr("text-anchor", "middle")
+      .attr("x", w - (padding - 10))
+      .attr("y", padding - 10)
+      .text("Interconnected")
+      .attr("transform", "rotate(45,"+ (w - (padding - 10)) + "," + (padding - 10) + ")");
+
+    svg.append("text")
+      .attr("class", "z label")
+      .attr("text-anchor", "middle")
+      .attr("x", padding - 10)
+      .attr("y", h - (padding - 10))
+      .text("Disconnected")
+      .attr("transform", "rotate(45,"+ (padding - 10) + "," + (h - (padding - 10)) + ")");
+
+    // Rotate the graph
     self.svg.attr("transform", "rotate(-45, " + self.w/2 + ", " + self.h/2 + ")");
   }
 
