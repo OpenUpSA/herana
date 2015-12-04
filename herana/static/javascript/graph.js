@@ -157,7 +157,7 @@ var Graph = function() {
       return org && self.filters.units[org.name];
     });
 
-    self.projects = projects;
+    self.filtered_projects = _.sortBy(projects, 'duration').reverse();
     self.drawResults()
   }
 
@@ -325,7 +325,7 @@ var Graph = function() {
 
   self.drawResults = function () {
     var svg = self.svg,
-        point = svg.selectAll("circle").data(self.projects, function(d) { return d.id });
+        point = svg.selectAll("circle").data(self.filtered_projects, function(d) { return d.id }).order();
 
     point.exit()
       .transition().attr("r", 0).remove();
@@ -355,10 +355,6 @@ var Graph = function() {
           return d.status == '1' ? self.colorScale(d['org_level_' + self.filters.org_level].name) : 'none';
        })
        .attr("stroke-width", self.stroke)
-       .attr("z", function(d){
-          // Display smaller circles above larger ones.
-          return 100 / self.rScale(d.duration);
-      });
   }
 }
 
