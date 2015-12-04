@@ -92,43 +92,54 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
   }
 }
 
-// Graph
-.chart-controls {
-  label,
-  input,
-  select {
-    display: block;
-  }
-}
-
-.axis {
-  path, line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
-  }
-}
-
-.grid {
-  stroke: #9D9D9D;
-  fill: none;
-  shape-rendering: crispEdges;
-  stroke-dasharray: 3;
-  stroke-width: 1px;
-}
-
-.axis .z-axis {
-  line{
-    stroke-dasharray: 2,2;
-  }
-}
-
-.axis text {
-    font-family: sans-serif;
-    font-size: 11px;
-}
 
 .results {
+  // Graph
+  .chart-controls {
+    label,
+    input,
+    select {
+      display: block;
+    }
+  }
+
+  .axis {
+    path, line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+  }
+
+  .grid {
+    stroke: #9D9D9D;
+    fill: none;
+    shape-rendering: crispEdges;
+    stroke-dasharray: 3;
+    stroke-width: 1px;
+  }
+
+  .axis .z-axis {
+    line{
+      stroke-dasharray: 2,2;
+    }
+  }
+
+  .axis text {
+      font-family: sans-serif;
+      font-size: 11px;
+  }
+
+  .label {
+    font-size: 12px;
+    font-weight: normal;
+  }
+
+  .z {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
   .checkbox {
     list-style: none;
   }
