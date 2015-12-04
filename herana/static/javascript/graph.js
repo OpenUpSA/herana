@@ -49,6 +49,9 @@ var Graph = function() {
       // map from unit name to true/false
       units: {},
     }
+
+    // Set status select option to the default
+    $('select[class=select-status]').val("");
   }
 
   self.getLevelUnits = function () {
