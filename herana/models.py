@@ -43,6 +43,15 @@ class Institute(models.Model):
     org_level_2_name = models.CharField(max_length=128, null=True, blank=True)
     org_level_3_name = models.CharField(max_length=128, null=True, blank=True)
 
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'org_level_1_name': self.org_level_1_name,
+            'org_level_2_name': self.org_level_2_name,
+            'org_level_3_name': self.org_level_3_name,
+        }
+
     def __unicode__(self):
         return self.name
 
@@ -51,6 +60,19 @@ class Institute(models.Model):
 
     def get_logo_path(self):
         return self.logo.storage.url(self.logo.name)
+
+    def get_org_levels(self):
+        """
+        Return is list of (level_no, level_name) tuples
+        for the institute to be used as choices in a form.
+        Levels 2 and 3 are optional.
+        """
+        levels = [(1, self.org_level_1_name)]
+        if self.org_level_2_name:
+            levels.append((2, self.org_level_2_name))
+        if self.org_level_3_name:
+            levels.append((3, self.org_level_3_name))
+        return levels
 
 
 class StrategicObjective(models.Model):
@@ -73,6 +95,11 @@ class OrgLevel(models.Model):
 
     def __unicode__(self):
         return u"%s" % self.name
+
+    def as_dict(self):
+        return {
+            'name': self.name,
+        }
 
     @staticmethod
     def autocomplete_search_fields():
@@ -385,6 +412,19 @@ class ProjectDetail(models.Model):
     def __unicode__(self):
         return '%s - %s' % (self.name, self.reporting_period.name)
 
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'institute': self.institute.as_dict(),
+            'score': self.calc_score(),
+            'duration': self.calc_duration(),
+            'status': self.project_status,
+            'org_level_1': self.org_level_1.as_dict() if self.org_level_1 else None,
+            'org_level_2': self.org_level_2.as_dict() if self.org_level_2 else None,
+            'org_level_3': self.org_level_3.as_dict() if self.org_level_3 else None,
+        }
+
     class Meta:
         verbose_name = 'Engagement project'
         verbose_name_plural = 'Engagement projects'
@@ -497,7 +537,7 @@ class ProjectDetail(models.Model):
         i_score = 0.0
         for i in self.student_nature.all():
             i_score += 0.25
-            if i_scrore == 0.5:
+            if i_score == 0.5:
                 break
         x += i_score
 
@@ -511,6 +551,20 @@ class ProjectDetail(models.Model):
 
         return x, y
 
+    def calc_duration(self):
+        from_date = self.start_date
+        to_date = self.end_date or self.created_at
+        duration = (to_date - from_date).days / 365.25
+        if duration < 2.0:
+            return 0
+        elif duration < 3.0:
+            return 1
+        elif duration < 4.0:
+            return 2
+        elif duration < 5.0:
+            return 3
+        else:
+            return 4
 
 # ------------------------------------------------------------------------------
 # Custom User

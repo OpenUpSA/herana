@@ -93,6 +93,13 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
 }
 
 // Graph
+.chart-controls {
+  label,
+  input,
+  select {
+    display: block;
+  }
+}
 
 .axis {
   path, line {
@@ -120,3 +127,23 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
     font-family: sans-serif;
     font-size: 11px;
 }
+
+.results {
+  .checkbox {
+    list-style: none;
+  }
+
+  .checkbox label {
+    min-height: 20px;
+    padding-left: 20px;
+    margin-bottom: 0px;
+    font-weight: normal;
+    cursor: pointer;
+  }
+
+  .checkbox input[type="checkbox"] {
+    margin-top: 2px;
+  }
+}
+
+
