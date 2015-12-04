@@ -82,7 +82,7 @@ var Graph = function() {
     $('.units').children().remove();
     $.each(self.units, function(i, unit) {
       $('.units')
-        .append($('<li><label><input type="checkbox" checked value="' + unit + '"> ' + unit + '</label>'));
+        .append($('<li class="checkbox"><label><input type="checkbox" checked value="' + unit + '"> ' + unit + '</label>'));
       });
   }
 
