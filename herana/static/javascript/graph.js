@@ -10,9 +10,9 @@ var Graph = function() {
 
     self.data = test_data;
 
-    self.all_projects = self.institute_projects = self.data.projects;
-    // self.institute_projects = null
-    self.filtered_projects = null
+    self.all_projects = self.data.projects;
+    self.institute_projects = []
+    self.filtered_projects = []
 
     self.institutes = self.data.institutes;
 
