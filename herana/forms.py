@@ -41,6 +41,9 @@ class ProjectDetailForm(forms.ModelForm):
             if len(self.cleaned_data['strategic_objectives']) > 4:
                 msg = "Please select only 4 options."
                 self.add_error('strategic_objectives', msg)
+        elif not cleaned_data.get('strategic_objectives'):
+            msg = "Please select at least on strategic objective"
+            self.add_error('strategic_objectives', msg)
 
         if cleaned_data.get('public_domain') == 'Y' and cleaned_data.get('public_domain_url') == '':
             msg = "If yes was selected above, please provide the URL."
