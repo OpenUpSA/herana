@@ -525,7 +525,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         """
         Only show is_flagged field to admin users
         """
-        if request.user.is_institute_admin() or request.user.is_superuser:
+        if request.user.is_institute_admin or request.user.is_superuser:
             list_display = self.list_display + (invert_flagged, invert_deleted)
             return list_display
         return self.list_display
@@ -540,14 +540,13 @@ class ProjectDetailAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         if not request.user.is_superuser:
-            qs = self.model.objects\
-                    .filter(is_deleted=False)\
-                    .filter(proj_leader__institute=request.user.get_user_institute())
-            if user_has_perm(request, self.opts, 'view'):
-                # Don't include draft records
-                return qs.exclude(record_status=1)
-            if user_has_perm(request, self.opts, 'change'):
-                return qs
+            qs = self.model.objects.filter(is_deleted=False)
+            if request.user.is_institute_admin:
+                return qs \
+                    .filter(proj_leader__institute=request.user.get_user_institute()) \
+                    .exclude(record_status=1) # Don't include draft records
+            if request.user.is_proj_leader:
+                return qs.filter(proj_leader=request.user.project_leader)
         return super(ProjectDetailAdmin, self).get_queryset(request)
 
     def get_readonly_fields(self, request, obj=None):
@@ -563,7 +562,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         # Global and institute admin have readonly views and are able to reject or flag a project
-        if request.user.is_institute_admin() or request.user.is_superuser:
+        if request.user.is_institute_admin or request.user.is_superuser:
             self.form = ProjectDetailAdminForm
         return super(ProjectDetailAdmin, self).get_form(request, obj=obj, **kwargs)
 

@@ -613,6 +613,26 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+    @property
+    def is_institute_admin(self):
+        try:
+            g = Group.objects.get(name='InstituteAdmins')
+        except ObjectDoesNotExist:
+            return False
+        if g in self.groups.all():
+            return True
+        return False
+
+    @property
+    def is_proj_leader(self):
+        try:
+            g = Group.objects.get(name='ProjectLeaders')
+        except ObjectDoesNotExist:
+            return False
+        if g in self.groups.all():
+            return True
+        return False
+
     def get_full_name(self):
         """
         Returns the first_name plus the last_name, with a space in between.
@@ -629,24 +649,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         Sends an email to this User.
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
-
-    def is_institute_admin(self):
-        try:
-            g = Group.objects.get(name='InstituteAdmins')
-        except ObjectDoesNotExist:
-            return False
-        if g in self.groups.all():
-            return True
-        return False
-
-    def is_project_leader(self):
-        try:
-            g = Group.objects.get(name='ProjectLeaders')
-        except ObjectDoesNotExist:
-            return False
-        if g in self.groups.all():
-            return True
-        return False
 
     def get_user_institute(self):
         """
