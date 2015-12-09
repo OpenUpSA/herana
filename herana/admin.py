@@ -411,7 +411,6 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 class ProjectDetailAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'record_status')
     list_display_links = ('__unicode__',)
-    list_filter = []
     form = ProjectDetailForm
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
@@ -531,10 +530,10 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return self.list_display
 
     def get_list_filter(self, request):
-        """
-        Enable filtering by Repoting period for institute users
-        """
-        if not request.user.is_superuser:
+        self.list_filter = []
+        if request.user.is_superuser:
+            self.list_filter.append('institute')
+        else:
             self.list_filter.append(ReportingPeriodFilter)
         return super(ProjectDetailAdmin, self).get_list_filter(request)
 
