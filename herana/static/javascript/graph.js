@@ -292,22 +292,22 @@ var Graph = function() {
 
     svg.append("text")
       .attr("class", "y label")
-      .attr("text-anchor", "beginning")
-      .attr("x", w - self.xScale(4.5) - 30)
+      .attr("text-anchor", "end")
+      .attr("x", w - self.xScale(4.5))
       .attr("y", padding - 25)
       .attr("transform", "rotate(45,"+ ((w - self.xScale(4.5))) + "," + (padding - 20) + ")")
-      .text("Strong")
-      .append("tspan")
-      .text("articulation")
-      .attr("dx", -50)
-      .attr("dy", 12);
+      .text("Strong articulation");
 
     svg.append("text")
       .attr("class", "y label")
       .attr("x", w - self.xScale(4.5))
       .attr("y", h - (padding - 20))
-      .text("Weak articulation")
-      .attr("transform", "rotate(45,"+ ((w - self.xScale(4.5))) + "," + (h - (padding - 20)) + ")");
+      .attr("transform", "rotate(45,"+ ((w - self.xScale(4.5))) + "," + (h - (padding - 20)) + ")")
+      .text("Weak")
+      .append("tspan")
+      .text("articulation")
+      .attr("dx", -50)
+      .attr("dy", 12);
 
     svg.append("text")
       .attr("class", "z label")
@@ -331,15 +331,16 @@ var Graph = function() {
 
   self.drawLegend = function() {
     var svg = self.svg.select(".legend"),
-        legendHeight = 310;
+        legendHeight = 260,
+        legendWidth = 150;
 
-    svg.attr("transform", "translate(1, 1)");
+    svg.attr("transform", "translate(" + (self.w - legendWidth) + ", " + (self.h - legendHeight - 1) + ")");
 
     svg.append("rect")
       .attr({
         x: 0,
         y: 0,
-        width: 220,
+        width: legendWidth,
         height: legendHeight,
       });
 
@@ -387,7 +388,7 @@ var Graph = function() {
       .attr("class", "label")
       .attr("text-ancher", "middle")
       .attr("x", 80)
-      .attr("y", function(d) { return d.y; })
+      .attr("y", function(d) { return d.y + 5; })
       .text(function(d) { return d.label; });
   };
 
