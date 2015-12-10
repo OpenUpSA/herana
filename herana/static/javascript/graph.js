@@ -292,11 +292,15 @@ var Graph = function() {
 
     svg.append("text")
       .attr("class", "y label")
-      .attr("text-anchor", "end")
-      .attr("x", w - self.xScale(4.5))
-      .attr("y", padding - 20)
-      .text("Strong articulation")
-      .attr("transform", "rotate(45,"+ ((w - self.xScale(4.5))) + "," + (padding - 20) + ")");
+      .attr("text-anchor", "beginning")
+      .attr("x", w - self.xScale(4.5) - 30)
+      .attr("y", padding - 25)
+      .attr("transform", "rotate(45,"+ ((w - self.xScale(4.5))) + "," + (padding - 20) + ")")
+      .text("Strong")
+      .append("tspan")
+      .text("articulation")
+      .attr("dx", -50)
+      .attr("dy", 12);
 
     svg.append("text")
       .attr("class", "y label")
@@ -329,7 +333,7 @@ var Graph = function() {
     var svg = self.svg.select(".legend"),
         legendHeight = 310;
 
-    svg.attr("transform", "translate(1, " + (self.h - legendHeight - 1) + ")");
+    svg.attr("transform", "translate(1, 1)");
 
     svg.append("rect")
       .attr({
@@ -339,13 +343,20 @@ var Graph = function() {
         height: legendHeight,
       });
 
-    svg.append("text")
+    // titles
+    var txt = svg.append("text")
       .attr("class", "label")
-      .attr("x", 20)
-      .attr("y", 18)
-      .attr("text-ancher", "middle")
-      .text("Ongoing");
+      .attr("x", 10)
+      .attr("y", 10)
+      .attr("text-ancher", "middle");
+    txt.append("tspan")
+      .text("Duration of");
+    txt.append("tspan")
+      .text("project (years)")
+      .attr("dy", 12)
+      .attr("dx", -67);
 
+    // year labels
     var labels = ['0-1.99', '2-2.99', '3-3.99', '4-4.99', '5+'],
         years = [];
 
@@ -375,23 +386,9 @@ var Graph = function() {
       .append("text")
       .attr("class", "label")
       .attr("text-ancher", "middle")
-      .attr("x", 150)
+      .attr("x", 80)
       .attr("y", function(d) { return d.y; })
       .text(function(d) { return d.label; });
-
-    var txt = svg.append("text")
-      .attr("class", "label")
-      .attr("x", 135)
-      .attr("y", legendHeight - 20)
-      .attr("text-ancher", "middle");
-
-    txt.append("tspan")
-      .text("Duration of");
-
-    txt.append("tspan")
-      .text("project (years)")
-      .attr("dy", 10)
-      .attr("dx", -67);
   };
 
   self.drawResults = function () {
