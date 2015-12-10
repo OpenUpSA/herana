@@ -13,7 +13,6 @@ class ProjectDetailForm(forms.ModelForm):
 
     def _clean_fields(self):
         # If we are saving a draft, only the name field is required.
-        import ipdb; ipdb.set_trace()
         if '_draft' in self.data:
             for name, field in self.fields.items():
                 if not name == 'name':
@@ -21,7 +20,6 @@ class ProjectDetailForm(forms.ModelForm):
         super(ProjectDetailForm, self)._clean_fields()
 
     def clean(self):
-        import ipdb; ipdb.set_trace()
         if not '_draft' in self.data:
             cleaned_data = super(ProjectDetailForm, self).clean()
 
