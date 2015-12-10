@@ -5,12 +5,12 @@ var Graph = function() {
     self.data = DATA;
 
     self.all_projects = self.data.projects;
-    self.institute_projects = []
-    self.filtered_projects = []
+    self.institute_projects = [];
+    self.filtered_projects = [];
 
     self.institutes = self.data.institutes;
 
-    self.resetFilters()
+    self.resetFilters();
 
     self.w = 700;
     self.h = 700;
@@ -23,8 +23,8 @@ var Graph = function() {
       .attr("height", self.h)
       .append("g");
 
-    self.updateInstitutes()
-    self.units = self.getLevelUnits()
+    self.updateInstitutes();
+    self.units = self.getLevelUnits();
 
     self.createScales();
     self.createAxes();
@@ -34,7 +34,7 @@ var Graph = function() {
     $('select[class=select-org-level]').on('change', self.orgLevelChanged);
     $('select[class=select-status]').on('change', self.statusChanged);
     $('.units').on('click', 'input[type=checkbox]', self.unitChanged);
-  }
+  };
 
   self.resetFilters = function () {
     self.filters = {
@@ -42,25 +42,25 @@ var Graph = function() {
       org_level: "1",
       // map from unit name to true/false
       units: {},
-    }
+    };
 
     // Set status select option to the default
     $('select[class=select-status]').val("");
-  }
+  };
 
   self.getLevelUnits = function () {
     // Return a set of unique unit names,
     // which exist for the current chosen level,
     // for current instututes.
-    var org_level = 'org_level_' + self.filters.org_level
+    var org_level = 'org_level_' + self.filters.org_level;
     return _.uniq(
       _.map(
         _.filter(
           self.institute_projects, function(project) {
-            return project[org_level]
+            return project[org_level];
           }),
         function(p) { return p[org_level].name; }));
-  }
+  };
 
   self.updateInstitutes = function() {
     $.each(self.institutes, function(i, institute) {
@@ -69,7 +69,7 @@ var Graph = function() {
         text: institute.name
       }));
     });
-  }
+  };
 
   self.updateOrgLevels = function() {
     var select = $('.select-org-level');
@@ -79,44 +79,44 @@ var Graph = function() {
       select.append($('<option>', {
         value: level,
         text: self.filters.institute['org_level_' + level + '_name']
-      }))
+      }));
     });
-  }
+  };
 
   self.updateUnits = function () {
-    self.units = self.getLevelUnits()
+    self.units = self.getLevelUnits();
     self.filters.units = {};
     _.each(self.units, function(u) {
       self.filters.units[u] = true;
-    })
+    });
 
     $('.units').children().remove();
     $.each(self.units, function(i, unit) {
       $('.units')
         .append($('<li class="checkbox"><label><input type="checkbox" checked value="' + unit + '"> ' + unit + '</label>'));
       });
-  }
+  };
 
   self.instituteChanged = function() {
     var institute_id = $(this).val();
-    self.resetFilters()
+    self.resetFilters();
 
     self.filters.institute = _.find(self.institutes, function(institute) {
         return institute.id == institute_id;
     });
 
     self.institute_projects = _.filter(self.all_projects, function(project) {
-        return project.institute.id == self.filters.institute.id
+        return project.institute.id == self.filters.institute.id;
     });
 
-    self.updateOrgLevels()
-    self.updateUnits()
-    self.filterAndDrawProjects()
-  }
+    self.updateOrgLevels();
+    self.updateUnits();
+    self.filterAndDrawProjects();
+  };
 
   self.orgLevelChanged = function() {
     self.filters.org_level = $(this).val() || null;
-    self.updateUnits()
+    self.updateUnits();
     self.filterAndDrawProjects();
   };
 
@@ -158,8 +158,8 @@ var Graph = function() {
     });
 
     self.filtered_projects = _.sortBy(projects, 'duration').reverse();
-    self.drawResults()
-  }
+    self.drawResults();
+  };
 
   self.createScales = function() {
     var h = self.h,
@@ -170,8 +170,8 @@ var Graph = function() {
       // Given the length of two side,
       // return the length of the hypotenuse
       // of a Right triangle.
-      return Math.sqrt((x * x) + (y * y))
-    }
+      return Math.sqrt((x * x) + (y * y));
+    };
 
     self.xScale = d3.scale.linear()
     .domain([0, 9])
@@ -195,7 +195,7 @@ var Graph = function() {
     self.discScale = d3.scale.linear()
     .domain([0, 4])
     .range([5, 15]);
-  }
+  };
 
   self.createAxes = function () {
     self.xAxis = d3.svg.axis()
@@ -218,7 +218,7 @@ var Graph = function() {
       .tickPadding(-4)
       .innerTickSize(0)
       .outerTickSize(0);
-  }
+  };
 
   self.drawAxes = function () {
     var h = self.h,
@@ -321,11 +321,11 @@ var Graph = function() {
 
     // Rotate the graph
     self.svg.attr("transform", "rotate(-45, " + self.w/2 + ", " + self.h/2 + ")");
-  }
+  };
 
   self.drawResults = function () {
     var svg = self.svg,
-        point = svg.selectAll("circle").data(self.filtered_projects, function(d) { return d.id }).order();
+        point = svg.selectAll("circle").data(self.filtered_projects, function(d) { return d.id; }).order();
 
     point.exit()
       .transition().attr("r", 0).remove();
@@ -354,9 +354,9 @@ var Graph = function() {
           // stroke only for ongoing
           return d.status == '1' ? self.colorScale(d['org_level_' + self.filters.org_level].name) : 'none';
        })
-       .attr("stroke-width", self.stroke)
-  }
-}
+       .attr("stroke-width", self.stroke);
+  };
+};
 
 var graph = new Graph();
-graph.init()
+graph.init();
