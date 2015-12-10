@@ -1,4 +1,5 @@
 from datetime import date
+from copy import deepcopy
 
 from django import forms
 from django.contrib import admin
@@ -497,6 +498,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
             'fields': ('course_requirement', 'external_collaboration'),
             'description': ''
         }),
+        # Placeholder for admin user fields displyed in readonly view
         (None, {
             'fields': (),
             'description': ''
@@ -517,17 +519,11 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                     return True
         return False
 
-    def has_change_permission(self, request, obj=None):
-        """
-        Always return true.
-        Displays fields as readonly for admin users
-        """
-        # if not request.user.is_superuser:
-        #     if user_has_perm(request, self.opts, 'change'):
-        #         return True
-        #     if user_has_perm(request, self.opts, 'view'):
-        #         return True
-        return True
+    # def has_change_permission(self, request, obj=None):
+    #     """
+    #     Always return true.
+    #     """
+    #     return True
 
     def get_list_display(self, request):
         """
@@ -558,10 +554,10 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         return super(ProjectDetailAdmin, self).get_queryset(request)
 
     def get_readonly_fields(self, request, obj=None):
-        # For users with view access, all fields are readonly
         if user_has_perm(request, self.opts, 'view'):
             readonly_fields = []
             for field in self.form.base_fields.keys():
+                # Don't display fields which should be excluded
                 if field not in self.form.Meta.exclude:
                     if field not in self.form.Meta.admin_editable:
                         readonly_fields.append(field)
@@ -572,6 +568,8 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         # Global and institute admin have readonly views and are able to reject or flag a project
         if request.user.is_institute_admin or request.user.is_superuser:
             self.form = ProjectDetailAdminForm
+        else:
+            self.form = ProjectDetailForm
         return super(ProjectDetailAdmin, self).get_form(request, obj=obj, **kwargs)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -589,19 +587,21 @@ class ProjectDetailAdmin(admin.ModelAdmin):
             db_field, request, **kwargs)
 
     def get_fieldsets(self, request, obj=None):
-        fieldsets = super(ProjectDetailAdmin, self).get_fieldsets(request, obj=obj)
+        fieldsets = deepcopy(super(ProjectDetailAdmin, self).get_fieldsets(request, obj=obj))
         if not request.user.is_superuser:
+            # Org levels may vary.
+            # Only include levels which have been set up.
             institute = request.user.get_user_institute()
-            field_list = []
+            org_level_fields = []
             for field in ORG_LEVEL_FIELDS:
-                if getattr(institute, '%s_name' % field) != '':
-                    field_list.append(field)
-            fields = tuple(field_list)
-            fieldsets[1][1]['fields'] = fields
+                if getattr(institute, '%s_name' % field):
+                    org_level_fields.append(field)
+            fieldsets[1][1]['fields'] = tuple(org_level_fields)
 
         if user_has_perm(request, self.opts, 'view'):
+            # add the fiedls to the empty fieldset
             # Global + institute admin
-            fieldsets[len(fieldsets)-1][1]['fields'] = ('is_rejected', 'rejected_detail', 'is_flagged')
+            fieldsets[-1][1]['fields'] = ('is_rejected', 'rejected_detail', 'is_flagged')
         return fieldsets
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
