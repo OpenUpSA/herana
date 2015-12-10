@@ -189,7 +189,7 @@ var Graph = function() {
 
     self.rScale = d3.scale.linear()
     .domain([0, 4])
-    .range([10, 30]);
+    .range([5, 25]);
 
     self.colorScale = d3.scale.category20()
     .domain(self.units);
