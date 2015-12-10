@@ -99,6 +99,15 @@ def invert_deleted(obj):
 invert_deleted.boolean = True
 invert_deleted.short_description = 'Active / Deleted'
 
+def invert_rejected(obj):
+    # Inverts the icon, so it makes more sense when viewing i.e.
+    # Red:   Rejected
+    # Green: Not rejected
+    return not obj.is_rejected
+
+invert_rejected.boolean = True
+invert_rejected.short_description = 'Accepted / Rejected'
+
 # ------------------------------------------------------------------------------
 # Formsets
 # ------------------------------------------------------------------------------
@@ -409,7 +418,7 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
 
 class ProjectDetailAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'record_status')
+    list_display = ('__unicode__', 'record_status', invert_rejected)
     list_display_links = ('__unicode__',)
     form = ProjectDetailForm
     formfield_overrides = {
