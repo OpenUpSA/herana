@@ -162,6 +162,12 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
   .checkbox input[type="checkbox"] {
     margin-top: 2px;
   }
+
+  .legend rect {
+    stroke: #d3d3d3;
+    stroke-width: 2px;
+    fill: none;
+  }
 }
 
 
