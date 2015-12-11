@@ -39,10 +39,9 @@ var Graph = function() {
     $('.units').on('click', 'input[type=checkbox]', self.unitChanged);
 
     // Default to logged in user's institute.
-    if (self.data.user_institute) {
+    if (self.data.user_institute in self.institutes) {
       $('select[class=select-institute]').val(self.data.user_institute.id).change();
     }
-
   };
 
   self.resetFilters = function () {
