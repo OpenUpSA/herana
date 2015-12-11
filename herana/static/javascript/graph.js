@@ -14,13 +14,14 @@ var Graph = function() {
 
     self.w = 700;
     self.h = 700;
+    self.svg_h = 900;
     self.padding = 150;
     self.stroke = 6;
 
     self.svg = d3.select("#graph")
       .append("svg")
       .attr("width", self.w)
-      .attr("height", self.h);
+      .attr("height", self.svg_h);
     self.svg.append("g").attr("class", "graph");
     self.svg.append("g").attr("class", "legend");
 
@@ -334,7 +335,7 @@ var Graph = function() {
         legendHeight = 260,
         legendWidth = 150;
 
-    svg.attr("transform", "translate(" + (self.w - legendWidth) + ", " + (self.h - legendHeight - 1) + ")");
+    svg.attr("transform", "translate(0, " + (self.svg_h - legendHeight - 1) + ")");
 
     svg.append("rect")
       .attr({
@@ -346,16 +347,23 @@ var Graph = function() {
 
     // titles
     var txt = svg.append("text")
-      .attr("class", "label")
-      .attr("x", 10)
+      .attr("class", "label legend")
+      .attr("text-anchor", "middle")
+      .attr("x", legendWidth / 2)
       .attr("y", 10)
-      .attr("text-ancher", "middle");
-    txt.append("tspan")
-      .text("Duration of");
-    txt.append("tspan")
-      .text("project (years)")
-      .attr("dy", 12)
-      .attr("dx", -67);
+      .attr("text-ancher", "middle")
+      .text("Duration of project (years)");
+
+    svg.append("text")
+      .attr("text-anchor", "middle")
+      .attr("dy", legendHeight - 2)
+      .attr("dx", 40)
+      .text("Ongoing");
+    svg.append("text")
+      .attr("text-anchor", "middle")
+      .attr("dy", legendHeight - 2)
+      .attr("dx", 100)
+      .text("Complete");
 
     // year labels
     var labels = ['0-1.99', '2-2.99', '3-3.99', '4-4.99', '5+'],
@@ -370,16 +378,28 @@ var Graph = function() {
       });
     }
 
-    // empty circles
-    svg.selectAll("circle").data(years).enter()
+    // Ongoing circles
+    svg.selectAll("circle.ongoing").data(years).enter()
       .append("circle")
       .attr({
+        class: "ongoing",
         cx: 40,
         cy: function(d) { return d.y; },
-        r: function(d) { return self.rScale(d.i); },
+        r: function(d) { return self.rScale(d.i) - self.stroke / 2; },
         fill: 'none',
         stroke: '#ccc',
         'stroke-width': self.stroke,
+      });
+
+    // Complete circles
+    svg.selectAll("circle.complete").data(years).enter()
+      .append("circle")
+      .attr({
+        class: "complete",
+        cx: 100,
+        cy: function(d) { return d.y; },
+        r: function(d) { return self.rScale(d.i); },
+        fill: '#ccc',
       });
 
     // year labels
@@ -387,7 +407,7 @@ var Graph = function() {
       .append("text")
       .attr("class", "label")
       .attr("text-ancher", "middle")
-      .attr("x", 80)
+      .attr("x", 140)
       .attr("y", function(d) { return d.y + 5; })
       .text(function(d) { return d.label; });
   };
