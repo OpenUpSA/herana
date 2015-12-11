@@ -333,7 +333,10 @@ var Graph = function() {
   self.drawLegend = function() {
     var svg = self.svg.select(".legend"),
         legendHeight = 260,
-        legendWidth = 150;
+        legendWidth = 150,
+        ongoing_x = 40,
+        complete_x = 100,
+        label_x = 140;
 
     svg.attr("transform", "translate(0, " + (self.svg_h - legendHeight - 1) + ")");
 
@@ -357,12 +360,12 @@ var Graph = function() {
     svg.append("text")
       .attr("text-anchor", "middle")
       .attr("dy", legendHeight - 2)
-      .attr("dx", 40)
+      .attr("dx", ongoing_x)
       .text("Ongoing");
     svg.append("text")
       .attr("text-anchor", "middle")
       .attr("dy", legendHeight - 2)
-      .attr("dx", 100)
+      .attr("dx", complete_x)
       .text("Complete");
 
     // year labels
@@ -383,7 +386,7 @@ var Graph = function() {
       .append("circle")
       .attr({
         class: "ongoing",
-        cx: 40,
+        cx: ongoing_x,
         cy: function(d) { return d.y; },
         r: function(d) { return self.rScale(d.i) - self.stroke / 2; },
         fill: 'none',
@@ -396,7 +399,7 @@ var Graph = function() {
       .append("circle")
       .attr({
         class: "complete",
-        cx: 100,
+        cx: complete_x,
         cy: function(d) { return d.y; },
         r: function(d) { return self.rScale(d.i); },
         fill: '#ccc',
@@ -407,7 +410,7 @@ var Graph = function() {
       .append("text")
       .attr("class", "label")
       .attr("text-ancher", "middle")
-      .attr("x", 140)
+      .attr("x", label_x)
       .attr("y", function(d) { return d.y + 5; })
       .text(function(d) { return d.label; });
   };
