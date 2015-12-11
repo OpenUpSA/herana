@@ -37,6 +37,12 @@ var Graph = function() {
     $('select[class=select-org-level]').on('change', self.orgLevelChanged);
     $('select[class=select-status]').on('change', self.statusChanged);
     $('.units').on('click', 'input[type=checkbox]', self.unitChanged);
+
+    // Default to logged in user's institute.
+    if (self.data.user_institute) {
+      $('select[class=select-institute]').val(self.data.user_institute.id).change();
+    }
+
   };
 
   self.resetFilters = function () {
