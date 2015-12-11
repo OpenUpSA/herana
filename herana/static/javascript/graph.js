@@ -5,36 +5,39 @@ var Graph = function() {
     self.data = DATA;
 
     self.all_projects = self.data.projects;
-    self.institute_projects = []
-    self.filtered_projects = []
+    self.institute_projects = [];
+    self.filtered_projects = [];
 
     self.institutes = self.data.institutes;
 
-    self.resetFilters()
+    self.resetFilters();
 
     self.w = 700;
     self.h = 700;
+    self.svg_h = 900;
     self.padding = 150;
     self.stroke = 6;
 
     self.svg = d3.select("#graph")
       .append("svg")
       .attr("width", self.w)
-      .attr("height", self.h)
-      .append("g");
+      .attr("height", self.svg_h);
+    self.svg.append("g").attr("class", "graph");
+    self.svg.append("g").attr("class", "legend");
 
-    self.updateInstitutes()
-    self.units = self.getLevelUnits()
+    self.updateInstitutes();
+    self.units = self.getLevelUnits();
 
     self.createScales();
     self.createAxes();
     self.drawAxes();
+    self.drawLegend();
 
     $('select[class=select-institute]').on('change', self.instituteChanged);
     $('select[class=select-org-level]').on('change', self.orgLevelChanged);
     $('select[class=select-status]').on('change', self.statusChanged);
     $('.units').on('click', 'input[type=checkbox]', self.unitChanged);
-  }
+  };
 
   self.resetFilters = function () {
     self.filters = {
@@ -42,25 +45,25 @@ var Graph = function() {
       org_level: "1",
       // map from unit name to true/false
       units: {},
-    }
+    };
 
     // Set status select option to the default
     $('select[class=select-status]').val("");
-  }
+  };
 
   self.getLevelUnits = function () {
     // Return a set of unique unit names,
     // which exist for the current chosen level,
     // for current instututes.
-    var org_level = 'org_level_' + self.filters.org_level
+    var org_level = 'org_level_' + self.filters.org_level;
     return _.uniq(
       _.map(
         _.filter(
           self.institute_projects, function(project) {
-            return project[org_level]
+            return project[org_level];
           }),
         function(p) { return p[org_level].name; }));
-  }
+  };
 
   self.updateInstitutes = function() {
     $.each(self.institutes, function(i, institute) {
@@ -69,7 +72,7 @@ var Graph = function() {
         text: institute.name
       }));
     });
-  }
+  };
 
   self.updateOrgLevels = function() {
     var select = $('.select-org-level');
@@ -79,44 +82,44 @@ var Graph = function() {
       select.append($('<option>', {
         value: level,
         text: self.filters.institute['org_level_' + level + '_name']
-      }))
+      }));
     });
-  }
+  };
 
   self.updateUnits = function () {
-    self.units = self.getLevelUnits()
+    self.units = self.getLevelUnits();
     self.filters.units = {};
     _.each(self.units, function(u) {
       self.filters.units[u] = true;
-    })
+    });
 
     $('.units').children().remove();
     $.each(self.units, function(i, unit) {
       $('.units')
         .append($('<li class="checkbox"><label><input type="checkbox" checked value="' + unit + '"> ' + unit + '</label>'));
       });
-  }
+  };
 
   self.instituteChanged = function() {
     var institute_id = $(this).val();
-    self.resetFilters()
+    self.resetFilters();
 
     self.filters.institute = _.find(self.institutes, function(institute) {
         return institute.id == institute_id;
     });
 
     self.institute_projects = _.filter(self.all_projects, function(project) {
-        return project.institute.id == self.filters.institute.id
+        return project.institute.id == self.filters.institute.id;
     });
 
-    self.updateOrgLevels()
-    self.updateUnits()
-    self.filterAndDrawProjects()
-  }
+    self.updateOrgLevels();
+    self.updateUnits();
+    self.filterAndDrawProjects();
+  };
 
   self.orgLevelChanged = function() {
     self.filters.org_level = $(this).val() || null;
-    self.updateUnits()
+    self.updateUnits();
     self.filterAndDrawProjects();
   };
 
@@ -158,8 +161,8 @@ var Graph = function() {
     });
 
     self.filtered_projects = _.sortBy(projects, 'duration').reverse();
-    self.drawResults()
-  }
+    self.drawResults();
+  };
 
   self.createScales = function() {
     var h = self.h,
@@ -170,8 +173,8 @@ var Graph = function() {
       // Given the length of two side,
       // return the length of the hypotenuse
       // of a Right triangle.
-      return Math.sqrt((x * x) + (y * y))
-    }
+      return Math.sqrt((x * x) + (y * y));
+    };
 
     self.xScale = d3.scale.linear()
     .domain([0, 9])
@@ -187,7 +190,7 @@ var Graph = function() {
 
     self.rScale = d3.scale.linear()
     .domain([0, 4])
-    .range([10, 30]);
+    .range([5, 25]);
 
     self.colorScale = d3.scale.category20()
     .domain(self.units);
@@ -195,7 +198,7 @@ var Graph = function() {
     self.discScale = d3.scale.linear()
     .domain([0, 4])
     .range([5, 15]);
-  }
+  };
 
   self.createAxes = function () {
     self.xAxis = d3.svg.axis()
@@ -218,13 +221,13 @@ var Graph = function() {
       .tickPadding(-4)
       .innerTickSize(0)
       .outerTickSize(0);
-  }
+  };
 
   self.drawAxes = function () {
     var h = self.h,
         w = self.w,
         padding = self.padding,
-        svg = self.svg;
+        svg = self.svg.select(".graph");
 
     svg.append("g")
       .attr("class", "axis")
@@ -292,16 +295,20 @@ var Graph = function() {
       .attr("class", "y label")
       .attr("text-anchor", "end")
       .attr("x", w - self.xScale(4.5))
-      .attr("y", padding - 20)
-      .text("Strong articulation")
-      .attr("transform", "rotate(45,"+ ((w - self.xScale(4.5))) + "," + (padding - 20) + ")");
+      .attr("y", padding - 25)
+      .attr("transform", "rotate(45,"+ ((w - self.xScale(4.5))) + "," + (padding - 20) + ")")
+      .text("Strong articulation");
 
     svg.append("text")
       .attr("class", "y label")
       .attr("x", w - self.xScale(4.5))
       .attr("y", h - (padding - 20))
-      .text("Weak articulation")
-      .attr("transform", "rotate(45,"+ ((w - self.xScale(4.5))) + "," + (h - (padding - 20)) + ")");
+      .attr("transform", "rotate(45,"+ ((w - self.xScale(4.5))) + "," + (h - (padding - 20)) + ")")
+      .text("Weak")
+      .append("tspan")
+      .text("articulation")
+      .attr("dx", -50)
+      .attr("dy", 12);
 
     svg.append("text")
       .attr("class", "z label")
@@ -320,12 +327,97 @@ var Graph = function() {
       .attr("transform", "rotate(45,"+ (padding - 20) + "," + (h - (padding - 20)) + ")");
 
     // Rotate the graph
-    self.svg.attr("transform", "rotate(-45, " + self.w/2 + ", " + self.h/2 + ")");
-  }
+    svg.attr("transform", "rotate(-45, " + self.w/2 + ", " + self.h/2 + ")");
+  };
+
+  self.drawLegend = function() {
+    var svg = self.svg.select(".legend"),
+        legendHeight = 260,
+        legendWidth = 150,
+        ongoing_x = 40,
+        complete_x = 100,
+        label_x = 140;
+
+    svg.attr("transform", "translate(0, " + (self.svg_h - legendHeight - 1) + ")");
+
+    svg.append("rect")
+      .attr({
+        x: 0,
+        y: 0,
+        width: legendWidth,
+        height: legendHeight,
+      });
+
+    // titles
+    var txt = svg.append("text")
+      .attr("class", "label legend")
+      .attr("text-anchor", "middle")
+      .attr("x", legendWidth / 2)
+      .attr("y", 10)
+      .attr("text-ancher", "middle")
+      .text("Duration of project (years)");
+
+    svg.append("text")
+      .attr("text-anchor", "middle")
+      .attr("dy", legendHeight - 2)
+      .attr("dx", ongoing_x)
+      .text("Ongoing");
+    svg.append("text")
+      .attr("text-anchor", "middle")
+      .attr("dy", legendHeight - 2)
+      .attr("dx", complete_x)
+      .text("Complete");
+
+    // year labels
+    var labels = ['0-1.99', '2-2.99', '3-3.99', '4-4.99', '5+'],
+        years = [];
+
+    for (var i = 0; i < labels.length; i++) {
+      var y = i === 0 ? legendHeight - 10 : years[years.length-1].y;
+      years.push({
+        i: i,
+        y: y - self.rScale(i) * 2 - 8,
+        label: labels[i],
+      });
+    }
+
+    // Ongoing circles
+    svg.selectAll("circle.ongoing").data(years).enter()
+      .append("circle")
+      .attr({
+        class: "ongoing",
+        cx: ongoing_x,
+        cy: function(d) { return d.y; },
+        r: function(d) { return self.rScale(d.i) - self.stroke / 2; },
+        fill: 'none',
+        stroke: '#ccc',
+        'stroke-width': self.stroke,
+      });
+
+    // Complete circles
+    svg.selectAll("circle.complete").data(years).enter()
+      .append("circle")
+      .attr({
+        class: "complete",
+        cx: complete_x,
+        cy: function(d) { return d.y; },
+        r: function(d) { return self.rScale(d.i); },
+        fill: '#ccc',
+      });
+
+    // year labels
+    svg.selectAll(".years").data(years).enter()
+      .append("text")
+      .attr("class", "label")
+      .attr("text-ancher", "middle")
+      .attr("x", label_x)
+      .attr("y", function(d) { return d.y + 5; })
+      .text(function(d) { return d.label; });
+  };
 
   self.drawResults = function () {
-    var svg = self.svg,
-        point = svg.selectAll("circle").data(self.filtered_projects, function(d) { return d.id }).order();
+    var svg = self.svg.select(".graph"),
+        point = svg.selectAll("circle").data(self.filtered_projects, function(d) { return d.id; }).order();
 
     point.exit()
       .transition().attr("r", 0).remove();
@@ -354,9 +446,9 @@ var Graph = function() {
           // stroke only for ongoing
           return d.status == '1' ? self.colorScale(d['org_level_' + self.filters.org_level].name) : 'none';
        })
-       .attr("stroke-width", self.stroke)
-  }
-}
+       .attr("stroke-width", self.stroke);
+  };
+};
 
 var graph = new Graph();
-graph.init()
+graph.init();
