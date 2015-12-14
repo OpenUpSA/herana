@@ -36,6 +36,7 @@ var Graph = function() {
     $('select[class=select-institute]').on('change', self.instituteChanged);
     $('select[class=select-org-level]').on('change', self.orgLevelChanged);
     $('select[class=select-status]').on('change', self.statusChanged);
+    $('select[class=select-duration]').on('change', self.durationChanged);
 
     // Default to logged in user's institute.
     if (self.data.user_institute in self.institutes) {
@@ -47,7 +48,9 @@ var Graph = function() {
     self.filters = {
       institute: null,
       org_level: "1",
-      units: {},
+      status: null,
+      duration: null,
+      units: {}
     };
 
     // Set status option to the default
@@ -132,9 +135,13 @@ var Graph = function() {
     self.filterAndDrawProjects();
   };
 
+  self.durationChanged = function() {
+    self.filters.duration = $(this).val() || null;
+    self.filterAndDrawProjects();
+  };
+
   self.unitChanged = function(d) {
     self.filters.units[d] = !self.filters.units[d];
-    // self.drawUnitLegend();
     self.filterAndDrawProjects();
   };
 
@@ -155,6 +162,13 @@ var Graph = function() {
     if (self.filters.status) {
       projects = _.filter(projects, function(project) {
         return project.status == self.filters.status;
+      });
+    }
+
+    // duration
+    if (self.filters.duration) {
+      projects = _.filter(projects, function(project) {
+        return project.duration == self.filters.duration;
       });
     }
 
