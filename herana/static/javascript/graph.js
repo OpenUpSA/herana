@@ -459,10 +459,10 @@ var Graph = function() {
     point.enter()
       .append("circle")
       .attr("cx", function(d) {
-          return self.xScale(d.score[0]);
+          return self.xScale(d.score['x']);
        })
        .attr("cy", function(d) {
-          return self.yScale(d.score[1]);
+          return self.yScale(d.score['y']);
        })
        .attr("r", 0)
        .transition()
@@ -481,6 +481,26 @@ var Graph = function() {
           return d.status == '1' ? self.colorScale(d['org_level_' + self.filters.org_level].name) : 'none';
        })
        .attr("stroke-width", self.stroke);
+       point.on("mouseover", self.showTooltip);
+       point.on("mouseout", self.removeTooltip);
+  };
+
+  self.showTooltip = function (d) {
+    $(this).popover({
+    placement: 'auto top',
+    container: '#graph',
+    trigger: 'manual',
+    html : true,
+    content: function() {
+      return "<span style='font-size: 11px; text-align: center;'>" + d.name + "</span>"; }
+    });
+    $(this).popover('show');
+  };
+
+  self.removeTooltip = function () {
+    $('.popover').each(function() {
+      $(this).remove();
+    });
   };
 };
 
