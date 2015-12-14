@@ -551,11 +551,11 @@ class ProjectDetail(models.Model):
 
         c_2 = x - c_1
 
-        if self.curriculum_changes == 'Y' and self.curriculum_changes_text:
-            x += 1.0
-
         if self.new_courses == 'Y' and NewCourseDetail.objects.filter(project=self.id):
             x += 2.0
+
+        elif self.curriculum_changes == 'Y' and self.curriculum_changes_text:
+            x += 1.0
 
         c_3_a = x - c_1 - c_2
 
