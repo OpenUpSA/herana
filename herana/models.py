@@ -440,6 +440,20 @@ class ProjectDetail(models.Model):
         Maximum for each is 9.0
         x : academic core
         y : articulation
+
+        The breakdown is the following
+
+        a_1 : Alignment of objectives
+        a_2 : Initiation
+        a_3 : External stakeholders
+        a_4 : Funding
+
+        c_1 : New knowledge / product
+        c_2 : Dissemenation
+        c_3_a : Teaching / curriculum development
+        c_3_b : Formal teaching
+        c_4: Academic networks
+
         """
         x, y, i_score = (0.0, 0.0, 0.0)
 
@@ -451,6 +465,7 @@ class ProjectDetail(models.Model):
                 if i_score == 1.0:
                     break
         y += i_score
+        a_1 = y
 
         if self.initiation in [4, 5, 6]:
             y += 1.0
@@ -464,6 +479,8 @@ class ProjectDetail(models.Model):
         if self.adv_group == 'Y' and self.adv_group_freq in [1, 2, 3]:
             y += 0.5
 
+        a_2 = y - a_1
+
         i_score = 0.0
         external_advisory = [rep.code for rep in self.adv_group_rep.all()]
         external_research = [res.code for res in self.team_members.all()]
@@ -473,8 +490,9 @@ class ProjectDetail(models.Model):
                 break
         y += i_score
 
-        if self.new_initiative == 'Y' and self.new_initiative_text:
-            y += 0.25
+        # Under which section should this go?
+        # if self.new_initiative == 'Y' and self.new_initiative_text:
+        #     y += 0.25
 
         if self.new_initiative_party:
             if self.new_initiative_party == 1 and self.new_initiative_party_text:
@@ -483,6 +501,8 @@ class ProjectDetail(models.Model):
                 y += 1
             if self.new_initiative_party == 3 and self.new_initiative_party_text:
                 y += 1
+
+        a_3 = y - a_2 - a_1
 
         i_score = 0.0
         funding = ProjectFunding.objects.filter(project=self.id)
@@ -502,6 +522,8 @@ class ProjectDetail(models.Model):
                 break
         y += i_score
 
+        a_4 = y - a_1 - a_2 - a_3
+
         # Academic score
 
         if self.research and self.research_text:
@@ -517,6 +539,8 @@ class ProjectDetail(models.Model):
             if PHDStudent.objects.filter(project=self.id):
                 x += 0.5
 
+        c_1 = x
+
         i_score = 0.0
         for output in ProjectOutput.objects.filter(project=self.id):
             if output.url or output.doi or output.attachment:
@@ -525,11 +549,15 @@ class ProjectDetail(models.Model):
                     break
         x += i_score
 
+        c_2 = x - c_1
+
         if self.curriculum_changes == 'Y' and self.curriculum_changes_text:
             x += 1.0
 
         if self.new_courses == 'Y' and NewCourseDetail.objects.filter(project=self.id):
             x += 2.0
+
+        c_3_a = x - c_1 - c_2
 
         if self.students_involved == 'Y':
             x += 0.5
@@ -545,11 +573,27 @@ class ProjectDetail(models.Model):
             if CourseReqDetail.objects.filter(project=self.id):
                 x += 1
 
+        c_3_b = x - c_1 - c_2 - c_3_a
+
         if self.external_collaboration == 'Y':
             if Collaborators.objects.filter(project=self.id):
                 x += 1.0
 
-        return x, y
+        c_4 = x - c_1 - c_2 - c_3_a -c_3_b
+
+        return {
+            "x": x,
+            "y": y,
+            "a_1": a_1,
+            "a_2": a_2,
+            "a_3": a_3,
+            "a_4": a_4,
+            "c_1": c_1,
+            "c_2": c_2,
+            "c_3_a": c_3_a,
+            "c_3_b": c_3_b,
+            "c_4": c_4,
+        }
 
     def calc_duration(self):
         from_date = self.start_date
