@@ -486,13 +486,30 @@ var Graph = function() {
   };
 
   self.showTooltip = function (d) {
+    buildTooltip = function(d) {
+      // return "<span style='font-size: 11px; text-align: center;'>" + d.name + "</span>";
+      return "\
+        <ul style='list-style:none;'>\
+          <li>A1: " + d.score['a_1'] + "</li>\
+          <li>A2: " + d.score['a_2'] + "</li>\
+          <li>A3: " + d.score['a_3'] + "</li>\
+          <li>A4: " + d.score['a_4'] + "</li>\
+          <li>C1: " + d.score['c_1'] + "</li>\
+          <li>C2: " + d.score['c_2'] + "</li>\
+          <li>C3A: " + d.score['c_3_a'] + "</li>\
+          <li>C3B: " + d.score['c_3_b'] + "</li>\
+          <li>C4: " + d.score['c_4'] + "</li>\
+        </ul>"
+    }
+
     $(this).popover({
-    placement: 'auto top',
-    container: '#graph',
-    trigger: 'manual',
-    html : true,
-    content: function() {
-      return "<span style='font-size: 11px; text-align: center;'>" + d.name + "</span>"; }
+      placement: 'auto top',
+      container: '#graph',
+      trigger: 'manual',
+      html : true,
+      content: function() {
+        return buildTooltip(d)
+      }
     });
     $(this).popover('show');
   };
