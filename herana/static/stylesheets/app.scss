@@ -163,6 +163,11 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
     margin-top: 2px;
   }
 
+  .units svg {
+    overflow: visible;
+    margin: 20px 10px;
+  }
+
   .legend rect {
     stroke: none;
     fill: none;
