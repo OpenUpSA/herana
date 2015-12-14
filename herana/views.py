@@ -23,8 +23,9 @@ class ResultsView(View):
         data['projects'] = [p.as_dict() for p in projects]
         data['institutes'] = [i.as_dict() for i in institutes]
 
-        if request.user.is_proj_leader or request.user.is_institute_admin:
-            data['user_institute'] =  request.user.get_user_institute().as_dict()
+        if request.user.is_authenticated():
+            if request.user.is_proj_leader or request.user.is_institute_admin:
+                data['user_institute'] =  request.user.get_user_institute().as_dict()
 
         context = {
           "data": json.dumps(data),
