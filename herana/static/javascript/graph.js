@@ -420,8 +420,8 @@ var Graph = function() {
     self.colorScale = d3.scale.category20()
       .domain(self.units);
 
-    $('.units').children().remove();
-    var svg = d3.select(".units")
+    $('#units').children().remove();
+    var svg = d3.select("#units")
       .append("svg")
       .attr('class', 'unit-legend');
 
