@@ -26,7 +26,7 @@ var Graph = function() {
     self.svg.append("g").attr("class", "legend");
 
     self.updateInstitutes();
-    self.units = self.getLevelUnits();
+    self.units = [];
 
     self.createScales();
     self.createAxes();
@@ -36,25 +36,28 @@ var Graph = function() {
     $('select[class=select-institute]').on('change', self.instituteChanged);
     $('select[class=select-org-level]').on('change', self.orgLevelChanged);
     $('select[class=select-status]').on('change', self.statusChanged);
-    $('.units').on('click', 'input[type=checkbox]', self.unitChanged);
+
+    // Default to logged in user's institute.
+    if (self.data.user_institute in self.institutes) {
+      $('select[class=select-institute]').val(self.data.user_institute.id).change();
+    }
   };
 
   self.resetFilters = function () {
     self.filters = {
       institute: null,
       org_level: "1",
-      // map from unit name to true/false
       units: {},
     };
 
-    // Set status select option to the default
+    // Set status option to the default
     $('select[class=select-status]').val("");
   };
 
   self.getLevelUnits = function () {
     // Return a set of unique unit names,
     // which exist for the current chosen level,
-    // for current instututes.
+    // for the current instutute.
     var org_level = 'org_level_' + self.filters.org_level;
     return _.uniq(
       _.map(
@@ -79,10 +82,13 @@ var Graph = function() {
 
     select.find('option').remove();
     $.each([1,2,3], function(i, level) {
-      select.append($('<option>', {
-        value: level,
-        text: self.filters.institute['org_level_' + level + '_name']
-      }));
+      var level_key = 'org_level_' + level + '_name'
+      if (level_key in self.filters.institute) {
+        select.append($('<option>', {
+          value: level,
+          text: self.filters.institute[level_key]
+        }));
+      }
     });
   };
 
@@ -92,12 +98,6 @@ var Graph = function() {
     _.each(self.units, function(u) {
       self.filters.units[u] = true;
     });
-
-    $('.units').children().remove();
-    $.each(self.units, function(i, unit) {
-      $('.units')
-        .append($('<li class="checkbox"><label><input type="checkbox" checked value="' + unit + '"> ' + unit + '</label>'));
-      });
   };
 
   self.instituteChanged = function() {
@@ -113,13 +113,17 @@ var Graph = function() {
     });
 
     self.updateOrgLevels();
+
     self.updateUnits();
+    self.drawUnitLegend();
+
     self.filterAndDrawProjects();
   };
 
   self.orgLevelChanged = function() {
     self.filters.org_level = $(this).val() || null;
     self.updateUnits();
+    self.drawUnitLegend();
     self.filterAndDrawProjects();
   };
 
@@ -128,9 +132,9 @@ var Graph = function() {
     self.filterAndDrawProjects();
   };
 
-  self.unitChanged = function(e) {
-    var $chk = $(this);
-    self.filters.units[$chk.val()] = $chk.prop('checked');
+  self.unitChanged = function(d) {
+    self.filters.units[d] = !self.filters.units[d];
+    // self.drawUnitLegend();
     self.filterAndDrawProjects();
   };
 
@@ -304,11 +308,7 @@ var Graph = function() {
       .attr("x", w - self.xScale(4.5))
       .attr("y", h - (padding - 20))
       .attr("transform", "rotate(45,"+ ((w - self.xScale(4.5))) + "," + (h - (padding - 20)) + ")")
-      .text("Weak")
-      .append("tspan")
-      .text("articulation")
-      .attr("dx", -50)
-      .attr("dy", 12);
+      .text("Weak articulation");
 
     svg.append("text")
       .attr("class", "z label")
@@ -413,6 +413,26 @@ var Graph = function() {
       .attr("x", label_x)
       .attr("y", function(d) { return d.y + 5; })
       .text(function(d) { return d.label; });
+  };
+
+  self.drawUnitLegend = function () {
+    // Set scale to current units
+    self.colorScale = d3.scale.category20()
+      .domain(self.units);
+
+    $('#units').children().remove();
+    var svg = d3.select("#units")
+      .append("svg")
+      .attr('class', 'unit-legend');
+
+    var colorLegend = d3.legend.color()
+      .scale(self.colorScale)
+      .shape('circle')
+      .on('cellclick', function(d) {
+        self.unitChanged(d);
+      });
+
+    svg.call(colorLegend);
   };
 
   self.drawResults = function () {

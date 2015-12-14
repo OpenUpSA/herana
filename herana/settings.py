@@ -175,6 +175,7 @@ PIPELINE_JS = {
             'bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js',
             'bower_components/underscore/underscore-min.js',
             'bower_components/d3/d3.min.js',
+            'bower_components/d3-legend/d3-legend.min.js',
             'javascript/app.js',
         ),
         'output_filename': 'app.js',
