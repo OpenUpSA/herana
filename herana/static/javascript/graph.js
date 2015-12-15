@@ -487,19 +487,49 @@ var Graph = function() {
 
   self.showTooltip = function (d) {
     buildTooltip = function(d) {
-      // return "<span style='font-size: 11px; text-align: center;'>" + d.name + "</span>";
       return "\
-        <ul style='list-style:none;'>\
-          <li>A1: " + d.score['a_1'] + "</li>\
-          <li>A2: " + d.score['a_2'] + "</li>\
-          <li>A3: " + d.score['a_3'] + "</li>\
-          <li>A4: " + d.score['a_4'] + "</li>\
-          <li>C1: " + d.score['c_1'] + "</li>\
-          <li>C2: " + d.score['c_2'] + "</li>\
-          <li>C3A: " + d.score['c_3_a'] + "</li>\
-          <li>C3B: " + d.score['c_3_b'] + "</li>\
-          <li>C4: " + d.score['c_4'] + "</li>\
-        </ul>"
+      <table>\
+        <tr>\
+          <th colspan='2'>Articulation</th>\
+          <th colspan='2'>Academic core</th>\
+        </tr>\
+        <tr>\
+        <td>Alignment of objectives</td>\
+        <td>" + d.score['a_1'] + "</td>\
+        <td>Generates new knowledge or product</td>\
+        <td>" + d.score['c_1'] + "</td>\
+        </tr>\
+        <tr>\
+        <td>Initiation/agenda-setting</td>\
+        <td>" + d.score['a_2'] + "</td>\
+        <td>Dissemination</td>\
+        <td>" + d.score['c_2'] + "</td>\
+        </tr>\
+        <tr>\
+        <td>External stakeholders</td>\
+        <td>" + d.score['a_3'] + "</td>\
+        <td>Teaching/curriculum development</td>\
+        <td>" + d.score['c_3_a'] + "</td>\
+        </tr>\
+        <tr>\
+        <td>Funding</td>\
+        <td>" + d.score['a_4'] + "</td>\
+        <td>Formal teaching/learning of students</td>\
+        <td>" + d.score['c_3_b'] + "</td>\
+        </tr>\
+        <tr>\
+        <tr>\
+        <td colspan='2'>\
+        <td>Links to academic network</td>\
+        <td>" + d.score['c_4'] + "</td>\
+        </tr>\
+        <tr>\
+        <td>Total</td>\
+        <td>" + d.score['y'] + "</td>\
+        <td>Total</td>\
+        <td>" + d.score['x'] + "</td>\
+        </tr>\
+      </table>"
     }
 
     $(this).popover({
