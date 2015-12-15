@@ -180,6 +180,12 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
   .popover {
     max-width: none;
   }
+
+  .legendCells {
+    circle {
+      cursor: pointer;
+    }
+  }
 }
 
 
