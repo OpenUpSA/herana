@@ -459,10 +459,10 @@ var Graph = function() {
     point.enter()
       .append("circle")
       .attr("cx", function(d) {
-          return self.xScale(d.score[0]);
+          return self.xScale(d.score['x']);
        })
        .attr("cy", function(d) {
-          return self.yScale(d.score[1]);
+          return self.yScale(d.score['y']);
        })
        .attr("r", 0)
        .transition()
@@ -481,6 +481,73 @@ var Graph = function() {
           return d.status == '1' ? self.colorScale(d['org_level_' + self.filters.org_level].name) : 'none';
        })
        .attr("stroke-width", self.stroke);
+       point.on("mouseover", self.showTooltip);
+       point.on("mouseout", self.removeTooltip);
+  };
+
+  self.showTooltip = function (d) {
+    buildTooltip = function(d) {
+      return "\
+      <table>\
+        <tr>\
+          <th colspan='2'>Articulation</th>\
+          <th colspan='2'>Academic core</th>\
+        </tr>\
+        <tr>\
+        <td>Alignment of objectives</td>\
+        <td>" + d.score['a_1'] + "</td>\
+        <td>Generates new knowledge or product</td>\
+        <td>" + d.score['c_1'] + "</td>\
+        </tr>\
+        <tr>\
+        <td>Initiation/agenda-setting</td>\
+        <td>" + d.score['a_2'] + "</td>\
+        <td>Dissemination</td>\
+        <td>" + d.score['c_2'] + "</td>\
+        </tr>\
+        <tr>\
+        <td>External stakeholders</td>\
+        <td>" + d.score['a_3'] + "</td>\
+        <td>Teaching/curriculum development</td>\
+        <td>" + d.score['c_3_a'] + "</td>\
+        </tr>\
+        <tr>\
+        <td>Funding</td>\
+        <td>" + d.score['a_4'] + "</td>\
+        <td>Formal teaching/learning of students</td>\
+        <td>" + d.score['c_3_b'] + "</td>\
+        </tr>\
+        <tr>\
+        <tr>\
+        <td colspan='2'>\
+        <td>Links to academic network</td>\
+        <td>" + d.score['c_4'] + "</td>\
+        </tr>\
+        <tr>\
+        <td>Total</td>\
+        <td>" + d.score['y'] + "</td>\
+        <td>Total</td>\
+        <td>" + d.score['x'] + "</td>\
+        </tr>\
+      </table>"
+    }
+
+    $(this).popover({
+      placement: 'auto top',
+      container: '#graph',
+      trigger: 'manual',
+      html : true,
+      content: function() {
+        return buildTooltip(d)
+      }
+    });
+    $(this).popover('show');
+  };
+
+  self.removeTooltip = function () {
+    $('.popover').each(function() {
+      $(this).remove();
+    });
   };
 };
 
