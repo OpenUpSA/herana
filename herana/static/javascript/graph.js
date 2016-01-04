@@ -447,6 +447,15 @@ var Graph = function() {
       });
 
     svg.call(colorLegend);
+
+    // Change opacity of clicked element
+    $('.cell').on('click', function(e) {
+      if ($(this).css('opacity') === '1') {
+        $(this).css('opacity', '0.5');
+      } else {
+        $(this).css('opacity', '1');
+      }
+    });
   };
 
   self.drawResults = function () {
