@@ -308,6 +308,22 @@ class ReportingPeriodFilter(admin.SimpleListFilter):
         else:
             return queryset
 
+class UserInstituteFilter(admin.SimpleListFilter):
+    title = 'Institute'
+    parameter_name = 'institute'
+
+    def lookups(self, request,  model_admin):
+        return ((i.id, i.name) for i in Institute.objects.all())
+
+    def queryset(self, request, queryset):
+        if self.value():
+            filtered_user_ids = []
+            for user in queryset:
+                if user.get_user_institute() and user.get_user_institute().id == int(self.value()):
+                    filtered_user_ids.append(user.id)
+            return queryset.filter(id__in=filtered_user_ids)
+        return queryset
+
 # ------------------------------------------------------------------------------
 # Custom User Admin
 # ------------------------------------------------------------------------------
@@ -322,8 +338,7 @@ class CustomUserAdmin(UserAdmin):
     inlines = [InstituteAdminInline, ProjectLeaderInline]
     add_form = CustomUserCreationForm
 
-    list_display = ('email', 'first_name', 'last_name', 'is_staff')
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
+    list_display = ('email', 'first_name', 'last_name', 'is_active')
 
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
@@ -357,6 +372,12 @@ class CustomUserAdmin(UserAdmin):
                 (_('Personal info'), {'fields': ('first_name', 'last_name')})
             )
         return fieldsets
+
+    def get_list_filter(self, request):
+        self.list_filter = []
+        if request.user.is_superuser:
+            self.list_filter.extend(['groups', UserInstituteFilter])
+        return super(CustomUserAdmin, self).get_list_filter(request)
 
 # ------------------------------------------------------------------------------
 # ModelAdmins
