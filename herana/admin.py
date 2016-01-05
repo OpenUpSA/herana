@@ -234,17 +234,30 @@ class ProjectLeaderInline(admin.StackedInline):
     verbose_name = _('Project Leader')
     extra = 1
 
+class InstituteAdminProjectLeaderInline(ProjectLeaderInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if not request.user.is_superuser:
-            if db_field.name == 'institute':
-                kwargs["queryset"] = Institute.objects.filter(
-                    id=request.user.get_user_institute().id)
-            if db_field.name in ORG_LEVEL_FIELDS:
-                    kwargs["queryset"] = db_field.related_model.objects.filter(
-                        institute=request.user.get_user_institute())
-        return super(ProjectLeaderInline, self).formfield_for_foreignkey(
+        if db_field.name == 'institute':
+            kwargs["queryset"] = Institute.objects.filter(
+                id=request.user.get_user_institute().id)
+        if db_field.name in ORG_LEVEL_FIELDS:
+                kwargs["queryset"] = db_field.related_model.objects.filter(
+                    institute=request.user.get_user_institute())
+        return super(InstituteAdminProjectLeaderInline, self).formfield_for_foreignkey(
             db_field, request, **kwargs)
 
+
+class GlobalAdminProjectLeaderInline(ProjectLeaderInline):
+    """
+    Only enable autocomplete for the global admin user (super user)
+    due to grappelli not easily enabling limiting results.
+
+    The select boxes are filtered by institutes for the institute admin users.
+    """
+    raw_id_fields = ('org_level_1', 'org_level_2', 'org_level_3')
+    autocomplete_lookup_fields = {
+        'fk': ['org_level_1', 'org_level_2', 'org_level_3'],
+        'm2m': [],
+    }
 
 class StrategicObjectiveInline(admin.TabularInline):
     model = StrategicObjective
@@ -335,7 +348,6 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class CustomUserAdmin(UserAdmin):
-    inlines = [InstituteAdminInline, ProjectLeaderInline]
     add_form = CustomUserCreationForm
 
     list_display = ('email', 'first_name', 'last_name', 'is_active')
@@ -378,6 +390,13 @@ class CustomUserAdmin(UserAdmin):
         if request.user.is_superuser:
             self.list_filter.extend(['groups', UserInstituteFilter])
         return super(CustomUserAdmin, self).get_list_filter(request)
+
+    def get_inline_instances(self, request, obj=None):
+        if request.user.is_superuser:
+            self.inlines = [InstituteAdminInline, GlobalAdminProjectLeaderInline]
+        else:
+            self.inlines = [InstituteAdminInline, InstituteAdminProjectLeaderInline]
+        return super(CustomUserAdmin, self).get_inline_instances(request)
 
 # ------------------------------------------------------------------------------
 # ModelAdmins
