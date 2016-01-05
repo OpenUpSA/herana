@@ -802,22 +802,23 @@ def set_user_as_staff(sender, instance, **kwargs):
 def send_welcome_email(sender, instance, created, **kwargs):
     """ Send a welcome email to a new user.
     """
-    if created:
-        # we need the password, use the stack to get the request (ugly!)
-        import inspect
-        request = None
+    if not settings.DEBUG:
+        if created:
+            # we need the password, use the stack to get the request (ugly!)
+            import inspect
+            request = None
 
-        for frame_record in inspect.stack():
-            if frame_record[3] == 'get_response':
-                request = frame_record[0].f_locals['request']
-                break
+            for frame_record in inspect.stack():
+                if frame_record[3] == 'get_response':
+                    request = frame_record[0].f_locals['request']
+                    break
 
-        if request:
-            password1 = request.POST.get('password1')
-            password2 = request.POST.get('password2')
+            if request:
+                password1 = request.POST.get('password1')
+                password2 = request.POST.get('password2')
 
-            if instance.email and password1 and password2 and password1 == password2:
-                message = """
+                if instance.email and password1 and password2 and password1 == password2:
+                    message = """
 Hello {email},
 
 A new account has been created for you on Herana.
@@ -830,10 +831,10 @@ You can login at http://{domain}/ using these details:
 Kind regards,
 The Herana team
 """
-                message = message.format(
-                    password=password1,
-                    email=instance.email,
-                    domain=settings.DOMAIN,
-                )
+                    message = message.format(
+                        password=password1,
+                        email=instance.email,
+                        domain=settings.DOMAIN,
+                    )
 
-                instance.email_user("Welcome to Herana", message)
+                    instance.email_user("Welcome to Herana", message)
