@@ -37,6 +37,7 @@ var Graph = function() {
     $('select[class=select-org-level]').on('change', self.orgLevelChanged);
     $('select[class=select-status]').on('change', self.statusChanged);
     $('select[class=select-duration]').on('change', self.durationChanged);
+    $('.show-all-units').on('click', self.showAllUnits)
 
     // Default to logged in user's institute.
     if (self.data.user_institute in self.institutes) {
@@ -96,6 +97,7 @@ var Graph = function() {
   };
 
   self.updateUnits = function () {
+    $('#unit-legend-meta').css('display', 'block');
     self.units = self.getLevelUnits();
     self.filters.units = {};
     _.each(self.units, function(u) {
@@ -144,6 +146,12 @@ var Graph = function() {
     self.filters.units[d] = !self.filters.units[d];
     self.filterAndDrawProjects();
   };
+
+  self.showAllUnits = function(d) {
+    self.updateUnits()
+    self.drawUnitLegend();
+    self.filterAndDrawProjects();
+  }
 
   self.filterAndDrawProjects = function() {
     var filters = self.filters;
@@ -434,8 +442,8 @@ var Graph = function() {
     self.colorScale = d3.scale.category20()
       .domain(self.units);
 
-    $('#units').children().remove();
-    var svg = d3.select("#units")
+    $('#unit-legend').children().remove();
+    var svg = d3.select("#unit-legend")
       .append("svg")
       .attr('class', 'unit-legend');
 
