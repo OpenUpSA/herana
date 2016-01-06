@@ -12,20 +12,39 @@ def home(request):
 class ResultsView(View):
     template_name = 'results.html'
 
-    def get(self, request, *args, **kwargs):
+    def get_projects(self, active=False, user_institute=None):
         projects = ProjectDetail.objects.filter(
             record_status=2,
             is_rejected=False,
-            is_deleted=False)
-        institutes = {proj.institute for proj in projects}
+            is_deleted=False,
+            reporting_period__is_active=active)
+        if user_institute:
+            projects.filter(institute=user_institute)
+        return projects
+
+
+    def get(self, request, *args, **kwargs):
+        projects = self.get_projects()
+        # institutes = {proj.institute for proj in projects}
+        institutes = Institute.objects.filter(reporting_period__isnull=False)
 
         data = {}
-        data['projects'] = [p.as_dict() for p in projects]
-        data['institutes'] = [i.as_dict() for i in institutes]
 
+        data['institutes'] = [i.as_dict() for i in institutes]
+        data['projects'] = [p.as_dict() for p in projects]
+
+        active_projects = []
         if request.user.is_authenticated():
-            if request.user.is_proj_leader or request.user.is_institute_admin:
-                data['user_institute'] =  request.user.get_user_institute().as_dict()
+            if request.user.is_superuser:
+                active_projects = self.get_projects(active=True)
+            else:
+                user_institute = request.user.get_user_institute()
+                active_projects = self.get_projects(
+                    active=True,
+                    user_institute=user_institute)
+                data['user_institute'] =  user_institute.as_dict()
+
+        data['projects'].extend([p.as_dict() for p in active_projects])
 
         context = {
           "data": json.dumps(data),
