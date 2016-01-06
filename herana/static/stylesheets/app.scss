@@ -163,8 +163,8 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
     margin-top: 2px;
   }
 
-  #units svg {
-    overflow: visible;
+  #unit-legend svg {
+    overflow: overlay;
     margin: 20px 10px;
   }
 
@@ -183,6 +183,19 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
 
   .legendCells {
     .cell {
+      cursor: pointer;
+    }
+  }
+
+  #unit-legend-meta {
+    display: none;
+
+    ul {
+      list-style: none;
+    }
+
+    .show-all-units {
+      font-weight: bold;
       cursor: pointer;
     }
   }
