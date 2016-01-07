@@ -12,7 +12,7 @@
 {% block body-class %}grp-login{% endblock %}
 {% block page-content %}
 
-<div class="container results">
+<div class="container results freetext">
   <h2>Project Interconnectedness</h2>
 
   <div class="row">
@@ -67,8 +67,8 @@
       </div>
     </div>
 
-    <div class="col-md-3 downloads pull-right">
-      <form action="/results/" method="post" class='download-data pull-right'>
+    <div class="col-md-3 downloads">
+      <form action="/results/" method="post" class='download-data'>
       {% csrf_token %}
       <input type="hidden" name="institute_id" value="">
       <input type="submit" class="btn btn-default btn-xs" value="Download data">

@@ -44,14 +44,12 @@ class Institute(models.Model):
     org_level_3_name = models.CharField(max_length=128, null=True, blank=True)
 
     def as_dict(self, user=None):
-
         return {
             'id': self.id,
             'name': self.name,
             'org_level_1_name': self.org_level_1_name,
             'org_level_2_name': self.org_level_2_name,
             'org_level_3_name': self.org_level_3_name,
-            'active_reporting_close_date': self.reporting_period.get(is_active=True).close_date
         }
 
     def __unicode__(self):

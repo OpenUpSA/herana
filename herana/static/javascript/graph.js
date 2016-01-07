@@ -129,6 +129,7 @@ var Graph = function() {
 
   self.updateDownloadForm = function () {
     $('.download-data').css('display', 'block');
+    $('.close-date').val(self.filters.institute['close_date'])
     $('input[name=institute_id]').val(self.filters.institute['id']);
   };
 
