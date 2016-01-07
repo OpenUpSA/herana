@@ -89,7 +89,12 @@ def write_values(ws, col, projects, key, parent_key=None):
     row = 1
     for proj in projects:
         if not parent_key:
-            ws.write(row, col, proj[key])
+            if key == 'duration':
+                ws.write(row, col, DURATION[proj[key]])
+            elif key == 'status':
+                ws.write(row, col, STATUS[proj[key]])
+            else:
+                ws.write(row, col, proj[key])
         else:
             ws.write(row, col, proj[parent_key][key])
         row += 1
@@ -124,10 +129,35 @@ def build_xlsx(institute, projects):
 def create_report_headings(institute):
     return OrderedDict([
         ('name', 'Project Name'),
-        ('org_level_1', institute.org_level_1_name if institute.org_level_1_name else None),
+        ('org_level_1', '1 - %s' % (institute.org_level_1_name if institute.org_level_1_name else '')),
+        ('org_level_2', '2 - %s' % (institute.org_level_2_name if institute.org_level_2_name else '')),
+        ('org_level_3', '3 - %s' % (institute.org_level_3_name if institute.org_level_3_name else '')),
+        ('reporting_period', 'Period captured'),
         ('duration', 'Duration'),
+        ('status', 'Status'),
         ('score', OrderedDict([
             ('a_1', 'Alignment of objectives'),
-            ('y', 'Articulation Total')
+            ('a_2', 'Dissemination'),
+            ('a_3', 'External stakeholders'),
+            ('a_4', 'Funding'),
+            ('y', 'Articulation Total'),
+            ('c_1', 'Generates new knowledge or product'),
+            ('c_2', 'Dissemination'),
+            ('c_3_a', 'Teaching/curriculum development'),
+            ('c_3_b', 'Formal teaching/learning of students'),
+            ('c_4', 'Links to academic network'),
+            ('x', 'Academic Core Total')
         ]))
     ])
+
+DURATION = {
+    0: '0-1.99',
+    1: '2-2.99',
+    2: '3-3.99',
+    3: '4-4.99',
+    4: '5+'}
+
+STATUS = {
+    0: 'Ongoing',
+    1: 'Complete'
+}
