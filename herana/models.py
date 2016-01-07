@@ -422,9 +422,9 @@ class ProjectDetail(models.Model):
             'score': self.calc_score(),
             'duration': self.calc_duration(),
             'status': self.project_status,
-            'org_level_1': self.org_level_1.as_dict() if self.org_level_1 else None,
-            'org_level_2': self.org_level_2.as_dict() if self.org_level_2 else None,
-            'org_level_3': self.org_level_3.as_dict() if self.org_level_3 else None,
+            'org_level_1': self.org_level_1.name if self.org_level_1 else None,
+            'org_level_2': self.org_level_2.name if self.org_level_2 else None,
+            'org_level_3': self.org_level_3.name if self.org_level_3 else None,
         }
 
     class Meta:

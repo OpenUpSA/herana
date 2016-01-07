@@ -4,6 +4,11 @@
 
 {% block title %}Project Interconnectedness{% endblock %}
 
+{% block head-meta %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+{% endblock %}
+
+
 {% block body-class %}grp-login{% endblock %}
 {% block page-content %}
 
@@ -15,7 +20,7 @@
       <div id="graph"></div>
     </div>
 
-    <div class="col-md-4 chart-controls">
+    <div class="col-md-2 chart-controls">
 
       <div class="form-group">
         <label>Choose institute:</label>
@@ -44,11 +49,11 @@
         <label>Duration (years):</label>
         <select class="select-duration">
           <option value="" selected="selected">All</option>
-          <option value="1">0-1.99</option>
-          <option value="2">2-2.99</option>
-          <option value="3">3-3.99</option>
-          <option value="4">4-4.99</option>
-          <option value="5">5+</option>
+          <option value="0">0-1.99</option>
+          <option value="1">2-2.99</option>
+          <option value="2">3-3.99</option>
+          <option value="3">4-4.99</option>
+          <option value="4">5+</option>
         </select>
       </div>
 
@@ -60,6 +65,13 @@
         </div>
         <div id="unit-legend"></div>
       </div>
+    </div>
+
+    <div class="col-md-2 downloads">
+      <form action="/results/" method="post" class='download-data'>
+      {% csrf_token %}
+      <input type="hidden" name="institute_id" value="">
+      <input type="submit" class="grp-button grp-default" value="Download data">
     </div>
 
   </div>

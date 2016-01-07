@@ -12,8 +12,8 @@ var Graph = function() {
 
     self.resetFilters();
 
-    self.w = 700;
-    self.h = 700;
+    self.w = 680;
+    self.h = 680;
     self.svg_h = 900;
     self.padding = 150;
     self.stroke = 6;
@@ -69,7 +69,7 @@ var Graph = function() {
           self.institute_projects, function(project) {
             return project[org_level];
           }),
-        function(p) { return p[org_level].name; }));
+        function(p) { return p[org_level]; }));
   };
 
   self.updateInstitutes = function() {
@@ -123,6 +123,13 @@ var Graph = function() {
     self.drawUnitLegend();
 
     self.filterAndDrawProjects();
+
+    self.updateDownloadForm();
+  };
+
+  self.updateDownloadForm = function () {
+    $('.download-data').css('display', 'block');
+    $('input[name=institute_id]').val(self.filters.institute['id']);
   };
 
   self.orgLevelChanged = function() {
@@ -183,7 +190,7 @@ var Graph = function() {
     // units
     projects = _.filter(projects, function(p) {
       var org = p['org_level_' + self.filters.org_level];
-      return org && self.filters.units[org.name];
+      return org && self.filters.units[org];
     });
 
     self.filtered_projects = _.sortBy(projects, 'duration').reverse();
@@ -491,11 +498,11 @@ var Graph = function() {
        })
        .attr("fill", function(d) {
           // no fill for ongoing
-          return d.status == '1' ? 'none' : self.colorScale(d['org_level_' + self.filters.org_level].name);
+          return d.status == '1' ? 'none' : self.colorScale(d['org_level_' + self.filters.org_level]);
        })
        .attr("stroke", function(d) {
           // stroke only for ongoing
-          return d.status == '1' ? self.colorScale(d['org_level_' + self.filters.org_level].name) : 'none';
+          return d.status == '1' ? self.colorScale(d['org_level_' + self.filters.org_level]) : 'none';
        })
        .attr("stroke-width", self.stroke);
        point.on("mouseover", self.showTooltip);
