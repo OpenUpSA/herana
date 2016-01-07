@@ -12,15 +12,15 @@
 {% block body-class %}grp-login{% endblock %}
 {% block page-content %}
 
-<div class="container freetext results">
+<div class="container results">
   <h2>Project Interconnectedness</h2>
 
   <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-6">
       <div id="graph"></div>
     </div>
 
-    <div class="col-md-2 chart-controls">
+    <div class="col-md-3 chart-controls">
 
       <div class="form-group">
         <label>Choose institute:</label>
@@ -67,11 +67,11 @@
       </div>
     </div>
 
-    <div class="col-md-2 downloads">
-      <form action="/results/" method="post" class='download-data'>
+    <div class="col-md-3 downloads pull-right">
+      <form action="/results/" method="post" class='download-data pull-right'>
       {% csrf_token %}
       <input type="hidden" name="institute_id" value="">
-      <input type="submit" class="grp-button grp-default" value="Download data">
+      <input type="submit" class="btn btn-default btn-xs" value="Download data">
     </div>
 
   </div>

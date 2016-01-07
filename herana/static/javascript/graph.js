@@ -313,16 +313,24 @@ var Graph = function() {
       .attr("class", "x label")
       .attr("x", w - (padding - 20))
       .attr("y", h - self.yScale(4.5))
-      .text("Strengthening the academic core")
-      .attr("transform", "rotate(45,"+ (w - (padding - 20)) + "," + (h - self.yScale(4.5)) + ")");
+      .attr("transform", "rotate(45,"+ (w - (padding - 20)) + "," + (h - self.yScale(4.5)) + ")")
+      .text("Strengthening the")
+      .append("tspan")
+      .text("academic core")
+      .attr("dx", -85)
+      .attr("dy", 12);
 
     svg.append("text")
       .attr("class", "x label")
       .attr("text-anchor", "end")
       .attr("x", padding - 20)
       .attr("y", h - self.yScale(4.5))
-      .text("Weakening the academic core")
-      .attr("transform", "rotate(45,"+ ((padding - 20)) + "," + (h - self.yScale(4.5)) + ")");
+      .attr("transform", "rotate(45,"+ ((padding - 20)) + "," + (h - self.yScale(4.5)) + ")")
+      .text("Weaking the")
+      .append("tspan")
+      .text("academic core")
+      .attr("dx", -75)
+      .attr("dy", 12);
 
     svg.append("text")
       .attr("class", "y label")
@@ -367,7 +375,7 @@ var Graph = function() {
         complete_x = 100,
         label_x = 140;
 
-    svg.attr("transform", "translate(0, " + (self.svg_h - legendHeight - 1) + ")");
+    svg.attr("transform", "translate(0, " + (self.svg_h - legendHeight - 75) + ")");
 
     svg.append("rect")
       .attr({

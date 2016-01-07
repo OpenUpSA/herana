@@ -94,8 +94,16 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
 
 
 .results {
-  // Graph
+
+  #graph {
+    svg {
+      margin-left: -60px;
+    }
+  }
+
   .chart-controls {
+    padding-left: 55px;
+
     label,
     input,
     select {
