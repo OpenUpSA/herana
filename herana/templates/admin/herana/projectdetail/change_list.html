@@ -7,7 +7,7 @@
     <ul class="grp-object-tools">
         {% block object-tools-items %}
             {% if not user.is_super_user %}
-                <li><a href="{% url 'results' %}" class="grp-state-focus">{% blocktrans with cl.opts.verbose_name as name %}View results{% endblocktrans %}</a></li>
+                <li><a href="{% url 'results' %}" class="grp-state-focus grp-viewsite-link">{% blocktrans with cl.opts.verbose_name as name %}View results{% endblocktrans %}</a></li>
             {% endif %}
             {% if has_add_permission %}
                 {% url cl.opts|admin_urlname:'add' as add_url %}
