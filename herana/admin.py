@@ -458,6 +458,7 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
 
 class ProjectDetailAdmin(admin.ModelAdmin):
+    save_as = True
     list_display = ('__unicode__', 'record_status', 'reporting_period', invert_rejected)
     list_display_links = ('__unicode__',)
     form = ProjectDetailForm
@@ -702,11 +703,15 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                         obj.record_status = 2
                         if obj.reporting_period != reporting_period:
                             obj.reporting_period = reporting_period
-                    elif obj.record_status == 2:
-                        if obj.reporting_period != reporting_period:
+                    # elif obj.record_status == 2:
+                        # if obj.reporting_period != reporting_period:
                             # Save a copy of the instance
-                            obj.reporting_period = reporting_period
-                            obj.pk = None
+                            # obj.reporting_period = reporting_period
+                            # obj.pk = None
+
+                elif request.POST.get('_saveasnew'):
+                    if obj.reporting_period != reporting_period:
+                        obj.reporting_period = reporting_period
 
         # Flag as suspect if other academics is the only chosen team member
         # 7: Other academics
@@ -714,7 +719,8 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         if form.cleaned_data.get('team_members'):
             if other_academics in form.cleaned_data.get('team_members') and len(form.cleaned_data.get('team_members')) == 1:
                 obj.is_flagged = True
-        obj.save()
+        # obj.save()
+        super(ProjectDetailAdmin, self).save_model(request, obj, form, change)
 
 
 admin.site.register(Institute, InstituteModelAdmin)
