@@ -87,7 +87,7 @@ var Graph = function() {
     select.find('option').remove();
     $.each([1,2,3], function(i, level) {
       var level_key = 'org_level_' + level + '_name'
-      if (level_key in self.filters.institute) {
+      if (self.filters.institute[level_key]) {
         select.append($('<option>', {
           value: level,
           text: self.filters.institute[level_key]
