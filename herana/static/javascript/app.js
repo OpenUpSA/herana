@@ -7,6 +7,10 @@
     $('.new_courses').after($('#newcoursedetail_set-group').detach());
     $('.course_requirement').after($('#coursereqdetail_set-group').detach());
     $('.external_collaboration').after($('#collaborators_set-group').detach());
+    $('#print-page').on('click', function(e) {
+      e.preventDefault();
+    window.print();
+  });
   });
 })(django.jQuery);
 

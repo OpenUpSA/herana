@@ -17,6 +17,9 @@
                 {# <a class="grp-button grp-delete-link" href="{% add_preserved_filters delete_url %}">{% trans "Delete" %}</a> #}
                 <input class="grp-button grp-default" type="submit" value="{% trans 'Delete' %}" name="_delete" />
             </li>
+            <li class="grp-float-left">
+                <input id="print-page" class="grp-button grp-default" type="submit" value="{% trans 'Print' %}"/>
+            </li>
             <li><input class="grp-button grp-default" type="submit" value="{% trans 'Submit as final' %}" name="_save" /></li>
 
             {# {% if original.record_status == 2 and original.reporting_period != original.proj_leader.institute.reporing_period.last %} #}
