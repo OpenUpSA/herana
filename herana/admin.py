@@ -458,7 +458,7 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
 
 class ProjectDetailAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'record_status', invert_rejected)
+    list_display = ('__unicode__', 'record_status', 'reporting_period', invert_rejected)
     list_display_links = ('__unicode__',)
     form = ProjectDetailForm
     formfield_overrides = {
