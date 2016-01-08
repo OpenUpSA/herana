@@ -2,6 +2,12 @@
 
 {{ dashboard.media }}
 
+{% if user.is_proj_leader and not user.get_user_institute.has_active_reporting_period %}
+<ul class="grp-messagelist">
+    <li class="grp-warning">Capturing is currently closed. Please check back again soon if you wish to fill out a questionnaire or make changes to any previous projects.</li>
+</ul>
+{% endif %}
+
 
 <div class="g-d-c">
     <div class="g-d-12 g-d-f" id="column_1">

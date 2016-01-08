@@ -684,6 +684,11 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                 # mark object as deleted
                 obj.is_deleted = True
 
+            if request.POST.get('_draft'):
+                # Updating an old draft in a new reporting period
+                if obj.reporting_period != reporting_period:
+                    obj.reporting_period = reporting_period
+
             elif request.POST.get('_save'):
                 # If project is being submitted as final: update record status
                 # If we're in a new reporting period:
