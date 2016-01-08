@@ -31,29 +31,38 @@ class ResultsView(View):
 
     def get(self, request, *args, **kwargs):
         projects = self.get_projects()
-        # institutes = {proj.institute for proj in projects}
-        institutes = Institute.objects.filter(reporting_period__isnull=False)
+        # Get unique instances of institutes for the projects
+        institutes = {proj.institute for proj in projects}
+        # institutes = Institute.objects.filter(reporting_period__isnull=False)
 
         data = {}
 
-        data['institutes'] = [i.as_dict() for i in institutes]
         data['projects'] = [p.as_dict() for p in projects]
 
         active_projects = []
         if request.user.is_authenticated():
             if request.user.is_superuser:
+                # Get all projects captured
                 active_projects = self.get_projects(active=True)
             else:
+                # Only get active period projects for current user institute
                 user_institute = request.user.get_user_institute()
                 active_projects = self.get_projects(
                     active=True,
                     institute=user_institute)
                 data['user_institute'] =  user_institute.as_dict()
 
+        # Add institutes for active period projects
+        institutes.update([proj.institute for proj in active_projects])
+
+        data['institutes'] = [i.as_dict() for i in institutes]
         data['projects'].extend([p.as_dict() for p in active_projects])
+
+        has_results = True if data['institutes'] else False
 
         context = {
           "data": json.dumps(data),
+          "has_results": has_results
         }
 
         return render(
@@ -158,6 +167,6 @@ DURATION = {
     4: '5+'}
 
 STATUS = {
-    0: 'Ongoing',
-    1: 'Complete'
+    1: 'Complete',
+    2: 'Ongoing'
 }
