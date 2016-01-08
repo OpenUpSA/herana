@@ -13,6 +13,14 @@
 {% block page-content %}
 
 <div class="container results freetext">
+
+  {% if not has_results %}
+  <div class="alert alert-warning alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    There are currently no results ready for viewing at the moment. Please check back again soon, or log in to view the results for your institution.
+  </div>
+  {% endif %}
+
   <h2>Project Interconnectedness</h2>
 
   <div class="row">
