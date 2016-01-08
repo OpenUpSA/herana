@@ -65,3 +65,23 @@ header#grp-header #grp-navigation div#grp-branding {
 .user-instructions ul {
   list-style: outside;
 }
+
+@media print {
+
+  #grp-header {
+    display: none;
+  }
+
+  #grp-content {
+    top: 10px;
+  }
+
+  .grp-row {
+    page-break-inside:avoid;
+    page-break-after:auto
+  }
+
+  .submit-row {
+    display: none;
+  }
+}

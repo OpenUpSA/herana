@@ -6,7 +6,8 @@
 
 <!-- CUSTOM STYLES -->
 {% block extrastyle %}
-    <link href="{% static "stylesheets/grappelli/custom_admin.css" %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static "grappelli/stylesheets/screen.css" %}" rel="stylesheet" type="text/css" media="print" />
+    <link href="{% static "stylesheets/grappelli/custom_admin.css" %}" rel="stylesheet" type="text/css" media="all" />
 {% endblock %}
 
 {% block extrahead %}
