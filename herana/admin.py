@@ -548,15 +548,17 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         js = ('javascript/app.js',)
 
     def has_add_permission(self, request, obj=None):
-        if not request.user.is_superuser:
-            if user_has_perm(request, self.opts, 'add'):
-                # Can only add if a reporting period is open
-                institute = request.user.project_leader.institute
-                if ReportingPeriod.objects\
-                            .filter(institute=institute)\
-                            .filter(is_active=True):
-                    return True
+        if request.user.is_proj_leader:
+            if request.user.get_user_institute().has_active_reporting_period:
+                return True
         return False
+
+    def has_change_permission(self, request, obj=None):
+        # Project leaders cannot make changes to projects if no reporting period is active.
+        if request.user.is_proj_leader:
+            if not request.user.get_user_institute().has_active_reporting_period:
+                return False
+        return True
 
     def get_list_display(self, request):
         """
@@ -668,42 +670,43 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         else:
             institute = request.user.get_user_institute()
 
-        reporting_period = institute.reporting_period.get(is_active=True)
-        if not change:
-            # New project being saved
-            obj.reporting_period = reporting_period
-            if request.POST.get('_draft'):
-                obj.record_status = 1
-            else:
-                obj.record_status = 2
-            obj.institute = request.user.get_user_institute()
-            obj.proj_leader = request.user.project_leader
-
-        else:
-            if request.POST.get('_delete'):
-                # mark object as deleted
-                obj.is_deleted = True
-
-            if request.POST.get('_draft'):
-                # Updating an old draft in a new reporting period
-                if obj.reporting_period != reporting_period:
-                    obj.reporting_period = reporting_period
-
-            elif request.POST.get('_save'):
-                # If project is being submitted as final: update record status
-                # If we're in a new reporting period:
-                # - update reporting period if it's a draft that's being saved,
-                # - create a copy of the object if it's a final object that's being saved
-
-                if obj.record_status == 1:
+        reporting_period = institute.reporting_period.filter(is_active=True).first()
+        if reporting_period:
+            if not change:
+                # New project being saved
+                obj.reporting_period = reporting_period
+                if request.POST.get('_draft'):
+                    obj.record_status = 1
+                else:
                     obj.record_status = 2
+                obj.institute = request.user.get_user_institute()
+                obj.proj_leader = request.user.project_leader
+
+            else:
+                if request.POST.get('_delete'):
+                    # mark object as deleted
+                    obj.is_deleted = True
+
+                if request.POST.get('_draft'):
+                    # Updating an old draft in a new reporting period
                     if obj.reporting_period != reporting_period:
                         obj.reporting_period = reporting_period
-                elif obj.record_status == 2:
-                    if obj.reporting_period != reporting_period:
-                        # Save a copy of the instance
-                        obj.reporting_period = reporting_period
-                        obj.pk = None
+
+                elif request.POST.get('_save'):
+                    # If project is being submitted as final: update record status
+                    # If we're in a new reporting period:
+                    # - update reporting period if it's a draft that's being saved,
+                    # - create a copy of the object if it's a final object that's being saved
+
+                    if obj.record_status == 1:
+                        obj.record_status = 2
+                        if obj.reporting_period != reporting_period:
+                            obj.reporting_period = reporting_period
+                    elif obj.record_status == 2:
+                        if obj.reporting_period != reporting_period:
+                            # Save a copy of the instance
+                            obj.reporting_period = reporting_period
+                            obj.pk = None
 
         # Flag as suspect if other academics is the only chosen team member
         # 7: Other academics

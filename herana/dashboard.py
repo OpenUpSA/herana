@@ -57,11 +57,12 @@ class CustomIndexDashboard(Dashboard):
         ))
 
         # append a recent actions module
-        self.children.append(modules.RecentActions(
-            _('Recent Actions'),
-            limit=5,
-            collapsible=False,
-            column=2,
-        ))
+        if not context.request.user.is_proj_leader:
+            self.children.append(modules.RecentActions(
+                _('Recent Actions'),
+                limit=5,
+                collapsible=False,
+                column=2,
+            ))
 
 

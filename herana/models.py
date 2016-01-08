@@ -74,6 +74,7 @@ class Institute(models.Model):
             levels.append((3, self.org_level_3_name))
         return levels
 
+    @property
     def has_active_reporting_period(self):
         return True if self.reporting_period.filter(is_active=True) else False
 
