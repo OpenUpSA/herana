@@ -414,7 +414,7 @@ class ProjectDetail(models.Model):
     created_at = models.DateField(auto_now_add=True)
 
     def __unicode__(self):
-        return '%s - %s' % (self.name, self.reporting_period.name)
+        return '%s' % (self.name)
 
     def as_dict(self):
         return {
