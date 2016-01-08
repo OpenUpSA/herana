@@ -75,11 +75,13 @@
       </div>
     </div>
 
-    <div class="col-md-3 downloads">
+    <div class="col-md-3 user-actions">
       <form action="/results/" method="post" class='download-data'>
-      {% csrf_token %}
-      <input type="hidden" name="institute_id" value="">
-      <input type="submit" class="btn btn-default btn-xs" value="Download data">
+        {% csrf_token %}
+        <input type="hidden" name="institute_id" value="">
+        <input type="submit" class="btn btn-default btn-xs" value="Download data">
+      </form>
+      <input type="submit" class="btn btn-default btn-xs print-graph" value="Save graph as PDF">
     </div>
 
   </div>
