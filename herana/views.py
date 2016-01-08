@@ -92,6 +92,7 @@ class ResultsView(View):
 
         return response
 
+
 def build_xlsx(institute, projects):
     output = StringIO.StringIO()
     workbook = xlsxwriter.Workbook(output)
@@ -144,7 +145,7 @@ def create_report_headings(institute):
         ('status', 'Status'),
         ('score', OrderedDict([
             ('a_1', 'Alignment of objectives'),
-            ('a_2', 'Dissemination'),
+            ('a_2', 'Initiation/agenda-setting'),
             ('a_3', 'External stakeholders'),
             ('a_4', 'Funding'),
             ('y', 'Articulation Total'),
