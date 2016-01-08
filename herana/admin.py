@@ -561,6 +561,9 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                 return False
         return True
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+
     def get_list_display(self, request):
         """
         Only show is_flagged field to admin users
