@@ -1,4 +1,4 @@
-<form action="/admin/login/?next=/admin/" method="post">
+<form action="/admin/login/?next={% url 'admin:index' %}" method="post">
   {% csrf_token %}
   <fieldset class="grp-module grp-module-login">
     <h1>
