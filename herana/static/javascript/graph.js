@@ -38,6 +38,10 @@ var Graph = function() {
     $('select[class=select-status]').on('change', self.statusChanged);
     $('select[class=select-duration]').on('change', self.durationChanged);
     $('.show-all-units').on('click', self.showAllUnits)
+    $('.print-graph').on('click', function(e) {
+      e.preventDefault();
+      window.print();
+    })
 
     // Default to logged in user's institute.
     if (self.data.user_institute in self.institutes) {
@@ -128,7 +132,7 @@ var Graph = function() {
   };
 
   self.updateDownloadForm = function () {
-    $('.download-data').css('display', 'block');
+    $('.user-actions').css('display', 'block');
     $('.close-date').val(self.filters.institute['close_date'])
     $('input[name=institute_id]').val(self.filters.institute['id']);
   };

@@ -209,9 +209,41 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
     }
   }
 
-  .download-data {
+  .user-actions {
     display: none;
+  }
+
+  .download-data {
     margin-top: 12px;
+  }
+
+  .print-graph {
+    margin-top: 12px;
+  }
+}
+
+@media print {
+
+  header {
+    display: none;
+  }
+
+  #site-footer {
+    display: none;
+  }
+
+  .user-actions {
+    display: none;
+  }
+
+  .results #graph svg {
+    margin-left: 0;
+    height: 840px;
+  }
+
+  .chart-controls {
+    page-break-inside:avoid;
+    page-break-after:auto
   }
 }
 
