@@ -92,22 +92,6 @@ class ResultsView(View):
 
         return response
 
-
-def write_values(ws, col, projects, key, parent_key=None):
-    row = 1
-    for proj in projects:
-        if not parent_key:
-            if key == 'duration':
-                ws.write(row, col, DURATION[proj[key]])
-            elif key == 'status':
-                ws.write(row, col, STATUS[proj[key]])
-            else:
-                ws.write(row, col, proj[key])
-        else:
-            ws.write(row, col, proj[parent_key][key])
-        row += 1
-
-
 def build_xlsx(institute, projects):
     output = StringIO.StringIO()
     workbook = xlsxwriter.Workbook(output)
@@ -131,8 +115,23 @@ def build_xlsx(institute, projects):
 
     workbook.close()
     output.seek(0)
-
     return output.read()
+
+
+def write_values(ws, col, projects, key, parent_key=None):
+    row = 1
+    for proj in projects:
+        if not parent_key:
+            if key == 'duration':
+                ws.write(row, col, DURATION[proj[key]])
+            elif key == 'status':
+                ws.write(row, col, STATUS[proj[key]])
+            else:
+                ws.write(row, col, proj[key])
+        else:
+            ws.write(row, col, proj[parent_key][key])
+        row += 1
+
 
 def create_report_headings(institute):
     return OrderedDict([
@@ -167,5 +166,4 @@ DURATION = {
 
 STATUS = {
     1: 'Complete',
-    2: 'Ongoing'
-}
+    2: 'Ongoing'}

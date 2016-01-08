@@ -4,7 +4,6 @@ from copy import deepcopy
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.options import InlineModelAdmin
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from django.forms import CheckboxSelectMultiple
 from django.db import models
@@ -558,12 +557,6 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                             .filter(is_active=True):
                     return True
         return False
-
-    # def has_change_permission(self, request, obj=None):
-    #     """
-    #     Always return true.
-    #     """
-    #     return True
 
     def get_list_display(self, request):
         """

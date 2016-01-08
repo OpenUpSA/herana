@@ -109,6 +109,12 @@ var Graph = function() {
     });
   };
 
+  self.updateDownloadForm = function () {
+    $('.user-actions').css('display', 'block');
+    $('.close-date').val(self.filters.institute['close_date'])
+    $('input[name=institute_id]').val(self.filters.institute['id']);
+  };
+
   self.instituteChanged = function() {
     var institute_id = $(this).val();
     self.resetFilters();
@@ -129,12 +135,6 @@ var Graph = function() {
     self.filterAndDrawProjects();
 
     self.updateDownloadForm();
-  };
-
-  self.updateDownloadForm = function () {
-    $('.user-actions').css('display', 'block');
-    $('.close-date').val(self.filters.institute['close_date'])
-    $('input[name=institute_id]').val(self.filters.institute['id']);
   };
 
   self.orgLevelChanged = function() {
