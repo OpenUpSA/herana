@@ -33,7 +33,6 @@ class ResultsView(View):
         projects = self.get_projects()
         # Get unique instances of institutes for the projects
         institutes = {proj.institute for proj in projects}
-        # institutes = Institute.objects.filter(reporting_period__isnull=False)
 
         data = {}
 
