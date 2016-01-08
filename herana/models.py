@@ -43,7 +43,7 @@ class Institute(models.Model):
     org_level_2_name = models.CharField(max_length=128, null=True, blank=True)
     org_level_3_name = models.CharField(max_length=128, null=True, blank=True)
 
-    def as_dict(self):
+    def as_dict(self, user=None):
         return {
             'id': self.id,
             'name': self.name,
@@ -420,9 +420,10 @@ class ProjectDetail(models.Model):
             'score': self.calc_score(),
             'duration': self.calc_duration(),
             'status': self.project_status,
-            'org_level_1': self.org_level_1.as_dict() if self.org_level_1 else None,
-            'org_level_2': self.org_level_2.as_dict() if self.org_level_2 else None,
-            'org_level_3': self.org_level_3.as_dict() if self.org_level_3 else None,
+            'org_level_1': self.org_level_1.name if self.org_level_1 else None,
+            'org_level_2': self.org_level_2.name if self.org_level_2 else None,
+            'org_level_3': self.org_level_3.name if self.org_level_3 else None,
+            'reporting_period': self.reporting_period.name
         }
 
     class Meta:

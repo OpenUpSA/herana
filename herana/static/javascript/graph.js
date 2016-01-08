@@ -12,8 +12,8 @@ var Graph = function() {
 
     self.resetFilters();
 
-    self.w = 700;
-    self.h = 700;
+    self.w = 680;
+    self.h = 680;
     self.svg_h = 900;
     self.padding = 150;
     self.stroke = 6;
@@ -69,7 +69,7 @@ var Graph = function() {
           self.institute_projects, function(project) {
             return project[org_level];
           }),
-        function(p) { return p[org_level].name; }));
+        function(p) { return p[org_level]; }));
   };
 
   self.updateInstitutes = function() {
@@ -123,6 +123,14 @@ var Graph = function() {
     self.drawUnitLegend();
 
     self.filterAndDrawProjects();
+
+    self.updateDownloadForm();
+  };
+
+  self.updateDownloadForm = function () {
+    $('.download-data').css('display', 'block');
+    $('.close-date').val(self.filters.institute['close_date'])
+    $('input[name=institute_id]').val(self.filters.institute['id']);
   };
 
   self.orgLevelChanged = function() {
@@ -183,7 +191,7 @@ var Graph = function() {
     // units
     projects = _.filter(projects, function(p) {
       var org = p['org_level_' + self.filters.org_level];
-      return org && self.filters.units[org.name];
+      return org && self.filters.units[org];
     });
 
     self.filtered_projects = _.sortBy(projects, 'duration').reverse();
@@ -306,16 +314,24 @@ var Graph = function() {
       .attr("class", "x label")
       .attr("x", w - (padding - 20))
       .attr("y", h - self.yScale(4.5))
-      .text("Strengthening the academic core")
-      .attr("transform", "rotate(45,"+ (w - (padding - 20)) + "," + (h - self.yScale(4.5)) + ")");
+      .attr("transform", "rotate(45,"+ (w - (padding - 20)) + "," + (h - self.yScale(4.5)) + ")")
+      .text("Strengthening the")
+      .append("tspan")
+      .text("academic core")
+      .attr("dx", -85)
+      .attr("dy", 12);
 
     svg.append("text")
       .attr("class", "x label")
       .attr("text-anchor", "end")
       .attr("x", padding - 20)
       .attr("y", h - self.yScale(4.5))
-      .text("Weakening the academic core")
-      .attr("transform", "rotate(45,"+ ((padding - 20)) + "," + (h - self.yScale(4.5)) + ")");
+      .attr("transform", "rotate(45,"+ ((padding - 20)) + "," + (h - self.yScale(4.5)) + ")")
+      .text("Weaking the")
+      .append("tspan")
+      .text("academic core")
+      .attr("dx", -75)
+      .attr("dy", 12);
 
     svg.append("text")
       .attr("class", "y label")
@@ -360,7 +376,7 @@ var Graph = function() {
         complete_x = 100,
         label_x = 140;
 
-    svg.attr("transform", "translate(0, " + (self.svg_h - legendHeight - 1) + ")");
+    svg.attr("transform", "translate(0, " + (self.svg_h - legendHeight - 75) + ")");
 
     svg.append("rect")
       .attr({
@@ -491,11 +507,11 @@ var Graph = function() {
        })
        .attr("fill", function(d) {
           // no fill for ongoing
-          return d.status == '1' ? 'none' : self.colorScale(d['org_level_' + self.filters.org_level].name);
+          return d.status == '1' ? 'none' : self.colorScale(d['org_level_' + self.filters.org_level]);
        })
        .attr("stroke", function(d) {
           // stroke only for ongoing
-          return d.status == '1' ? self.colorScale(d['org_level_' + self.filters.org_level].name) : 'none';
+          return d.status == '1' ? self.colorScale(d['org_level_' + self.filters.org_level]) : 'none';
        })
        .attr("stroke-width", self.stroke);
        point.on("mouseover", self.showTooltip);

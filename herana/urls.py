@@ -7,7 +7,7 @@ admin.site.index_title = 'Dashboard'
 
 urlpatterns = patterns('',
     url(r'^$', 'herana.views.home', name='home'),
-    url(r'^results$', ResultsView.as_view(), name='results'),
+    url(r'^results/$', ResultsView.as_view(), name='results'),
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^accounts/', include('registration.backends.default.urls')),
 
