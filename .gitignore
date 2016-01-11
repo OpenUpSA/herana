@@ -6,3 +6,4 @@ docs/_build
 *.sqlite3
 *.DS_Store
 images/
+attachments/
