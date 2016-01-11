@@ -37,6 +37,9 @@ from forms import ProjectDetailForm, ProjectDetailAdminForm
 
 ORG_LEVEL_FIELDS = ["org_level_1", "org_level_2", "org_level_3"]
 
+# Disable bulk delete action across the site.
+admin.site.disable_action('delete_selected')
+
 # ------------------------------------------------------------------------------
 # General utility classes and functions
 # ------------------------------------------------------------------------------
@@ -417,7 +420,6 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
     fields = ('name', 'description', 'is_active', 'open_date', 'close_date')
     readonly_fields = ('open_date', 'close_date')
     list_display = ('name', 'description', 'open_date', 'close_date', 'is_active')
-
     # actions = ['close_reporting_period']
 
     def get_queryset(self, request):
