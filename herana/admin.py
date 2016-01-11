@@ -458,6 +458,7 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
 
 class ProjectDetailAdmin(admin.ModelAdmin):
+    save_as = True
     list_display = ('__unicode__', 'record_status', 'reporting_period', invert_rejected)
     list_display_links = ('__unicode__',)
     form = ProjectDetailForm
@@ -559,6 +560,9 @@ class ProjectDetailAdmin(admin.ModelAdmin):
             if not request.user.get_user_institute().has_active_reporting_period:
                 return False
         return True
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
     def get_list_display(self, request):
         """
@@ -693,20 +697,20 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                         obj.reporting_period = reporting_period
 
                 elif request.POST.get('_save'):
-                    # If project is being submitted as final: update record status
-                    # If we're in a new reporting period:
-                    # - update reporting period if it's a draft that's being saved,
-                    # - create a copy of the object if it's a final object that's being saved
+                    # For project leaders:
+                    #  - If draft project is being submitted as final: update record status
+                    #  - Update reporting period if we're in a new reporting period:
+                    if request.user.is_proj_leader:
+                        if obj.record_status == 1:
+                            obj.record_status = 2
+                            if obj.reporting_period != reporting_period:
+                                obj.reporting_period = reporting_period
 
-                    if obj.record_status == 1:
-                        obj.record_status = 2
-                        if obj.reporting_period != reporting_period:
-                            obj.reporting_period = reporting_period
-                    elif obj.record_status == 2:
-                        if obj.reporting_period != reporting_period:
-                            # Save a copy of the instance
-                            obj.reporting_period = reporting_period
-                            obj.pk = None
+                elif request.POST.get('_saveasnew'):
+                    # Create a copy of the object if a final object is being saved,
+                    # as a copy in a new reporting period
+                    if obj.reporting_period != reporting_period:
+                        obj.reporting_period = reporting_period
 
         # Flag as suspect if other academics is the only chosen team member
         # 7: Other academics
@@ -714,7 +718,8 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         if form.cleaned_data.get('team_members'):
             if other_academics in form.cleaned_data.get('team_members') and len(form.cleaned_data.get('team_members')) == 1:
                 obj.is_flagged = True
-        obj.save()
+        # obj.save()
+        super(ProjectDetailAdmin, self).save_model(request, obj, form, change)
 
 
 admin.site.register(Institute, InstituteModelAdmin)
