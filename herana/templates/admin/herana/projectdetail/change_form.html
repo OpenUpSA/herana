@@ -10,11 +10,12 @@
         <ul>
         {% if user.is_institute_admin or user.is_superuser%}
             <li><input class="grp-button grp-default" type="submit" value="{% trans 'Save submission' %}" name="_save" /></li>
-            {# <li><input class="grp-button grp-error" type="submit" value="{% trans 'Reject submission' %}" name="_reject" /></li> #}
-        {% else %}
-            {% url opts|admin_urlname:'delete' original.pk|admin_urlquote as delete_url %}
             <li class="grp-float-left">
-                <input class="grp-button grp-default" type="submit" value="{% trans 'Delete' %}" name="_delete" />
+                <input class="grp-button grp-error" type="submit" value="{% trans 'Delete' %}" name="_delete" />
+            </li>
+        {% else %}
+            <li class="grp-float-left">
+                <input class="grp-button grp-error" type="submit" value="{% trans 'Delete' %}" name="_delete" />
             </li>
             <li class="grp-float-left">
                 <input id="print-page" class="grp-button grp-default" type="submit" value="{% trans 'Print' %}"/>

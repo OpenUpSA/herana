@@ -697,22 +697,18 @@ class ProjectDetailAdmin(admin.ModelAdmin):
                         obj.reporting_period = reporting_period
 
                 elif request.POST.get('_save'):
-                    # If project is being submitted as final: update record status
-                    # If we're in a new reporting period:
-                    # - update reporting period if it's a draft that's being saved,
-                    # - create a copy of the object if it's a final object that's being saved
-
-                    if obj.record_status == 1:
-                        obj.record_status = 2
-                        if obj.reporting_period != reporting_period:
-                            obj.reporting_period = reporting_period
-                    # elif obj.record_status == 2:
-                        # if obj.reporting_period != reporting_period:
-                            # Save a copy of the instance
-                            # obj.reporting_period = reporting_period
-                            # obj.pk = None
+                    # For project leaders:
+                    #  - If draft project is being submitted as final: update record status
+                    #  - Update reporting period if we're in a new reporting period:
+                    if request.user.is_proj_leader:
+                        if obj.record_status == 1:
+                            obj.record_status = 2
+                            if obj.reporting_period != reporting_period:
+                                obj.reporting_period = reporting_period
 
                 elif request.POST.get('_saveasnew'):
+                    # Create a copy of the object if a final object is being saved,
+                    # as a copy in a new reporting period
                     if obj.reporting_period != reporting_period:
                         obj.reporting_period = reporting_period
 
