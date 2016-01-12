@@ -19,6 +19,11 @@ class ResultsView(View):
     template_name = 'results.html'
 
     def get_projects(self, active=False, institute=None):
+        """
+        Return a queryset of projects.
+        :: active => Only return results for active reporting period if True
+        :: institute => Return queryset filtered by institute.
+        """
         projects = ProjectDetail.objects.filter(
             record_status=2,
             is_rejected=False,
@@ -30,8 +35,9 @@ class ResultsView(View):
 
 
     def get(self, request, *args, **kwargs):
+        # Get projects for closed reporting periods
         projects = self.get_projects()
-        # Get unique instances of institutes for the projects
+        # Get unique instances of institutes for these projects
         institutes = {proj.institute for proj in projects}
 
         data = {}
@@ -41,7 +47,7 @@ class ResultsView(View):
         active_projects = []
         if request.user.is_authenticated():
             if request.user.is_superuser:
-                # Get all projects captured
+                # Get active period projects for all institutes
                 active_projects = self.get_projects(active=True)
             else:
                 # Only get active period projects for current user institute
@@ -54,7 +60,10 @@ class ResultsView(View):
         # Add institutes for active period projects
         institutes.update([proj.institute for proj in active_projects])
 
-        data['institutes'] = [i.as_dict() for i in institutes]
+        data['institutes'] = [
+            i.as_dict(user=request.user, add_reporting_periods=True)
+            for i in institutes
+        ]
         data['projects'].extend([p.as_dict() for p in active_projects])
 
         has_results = True if data['institutes'] else False
@@ -123,7 +132,9 @@ def write_values(ws, col, projects, key, parent_key=None):
     row = 1
     for proj in projects:
         if not parent_key:
-            if key == 'duration':
+            if key == 'reporting_period':
+                ws.write(row, col, proj[key]['name'])
+            elif key == 'duration':
                 ws.write(row, col, DURATION[proj[key]])
             elif key == 'status':
                 ws.write(row, col, STATUS[proj[key]])

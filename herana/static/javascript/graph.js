@@ -34,6 +34,7 @@ var Graph = function() {
     self.drawLegend();
 
     $('select[class=select-institute]').on('change', self.instituteChanged);
+    $('select[class=select-reporting-period]').on('change', self.reportingPeriodChanged);
     $('select[class=select-org-level]').on('change', self.orgLevelChanged);
     $('select[class=select-status]').on('change', self.statusChanged);
     $('select[class=select-duration]').on('change', self.durationChanged);
@@ -52,6 +53,7 @@ var Graph = function() {
   self.resetFilters = function () {
     self.filters = {
       institute: null,
+      reporting_period: null,
       org_level: "1",
       status: null,
       duration: null,
@@ -82,6 +84,17 @@ var Graph = function() {
         value: institute.id,
         text: institute.name
       }));
+    });
+  };
+
+  self.updateReportingPeriods = function() {
+    var select = $('.select-reporting-period');
+    select.find('option').remove();
+    $.each(self.filters.institute.reporting_periods, function(i, reporting_period) {
+      select.append($('<option>', {
+        value: reporting_period.id,
+        text: reporting_period.name
+      }))
     });
   };
 
@@ -123,19 +136,26 @@ var Graph = function() {
         return institute.id == institute_id;
     });
 
+    self.filters.reporting_period = self.filters.institute.reporting_periods[0].id
+
     self.institute_projects = _.filter(self.all_projects, function(project) {
         return project.institute.id == self.filters.institute.id;
     });
 
+    self.updateReportingPeriods();
     self.updateOrgLevels();
-
     self.updateUnits();
-    self.drawUnitLegend();
 
+    self.drawUnitLegend();
     self.filterAndDrawProjects();
 
     self.updateDownloadForm();
   };
+
+  self.reportingPeriodChanged = function() {
+    self.filters.reporting_period = $(this).val() || null;
+    self.filterAndDrawProjects();
+  }
 
   self.orgLevelChanged = function() {
     self.filters.org_level = $(this).val() || null;
@@ -170,6 +190,13 @@ var Graph = function() {
 
     // All unfiltered projects for currrent institute
     var projects = self.institute_projects;
+
+    // reporting period
+    if (self.filters.reporting_period) {
+      projects = _.filter(projects, function(project) {
+        return project.reporting_period.id == self.filters.reporting_period;
+      });
+    }
 
     // org level
     if (self.filters.org_level) {

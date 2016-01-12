@@ -43,14 +43,34 @@ class Institute(models.Model):
     org_level_2_name = models.CharField(max_length=128, null=True, blank=True)
     org_level_3_name = models.CharField(max_length=128, null=True, blank=True)
 
-    def as_dict(self, user=None):
-        return {
+    def as_dict(self, user=None, add_reporting_periods=False):
+        inst_dict = {
             'id': self.id,
             'name': self.name,
             'org_level_1_name': self.org_level_1_name,
             'org_level_2_name': self.org_level_2_name,
-            'org_level_3_name': self.org_level_3_name,
+            'org_level_3_name': self.org_level_3_name
         }
+
+        if add_reporting_periods:
+            if user:
+                if user.is_superuser:
+                    # Return active and closed periods for all institutes
+                    reporting_periods = self.reporting_period.all().order_by('start_date')
+                else:
+                    # Only return active periods for user institute,
+                    # and only closed periods for all other institutes
+                    if self == user.get_user_institute():
+                        reporting_periods = self.reporting_period.all()
+                    else:
+                        reporting_periods = self.reporting_period.filter(is_active=False).order_by('start_date')
+            else:
+                # Anonymous user, only return closed reporting periods
+                reporting_periods = self.reporting_period.filter(is_active=False)
+            inst_dict['reporting_periods'] = [
+                rp.as_dict() for rp in reporting_periods.order_by('-open_date')]
+
+        return inst_dict
 
     def __unicode__(self):
         return self.name
@@ -154,6 +174,12 @@ class ReportingPeriod(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def as_dict(self, user=None):
+        return {
+            'id': self.id,
+            'name': self.name
+        }
 
 
 # ------------------------------------------------------------------------------
@@ -430,7 +456,7 @@ class ProjectDetail(models.Model):
             'org_level_1': self.org_level_1.name if self.org_level_1 else None,
             'org_level_2': self.org_level_2.name if self.org_level_2 else None,
             'org_level_3': self.org_level_3.name if self.org_level_3 else None,
-            'reporting_period': self.reporting_period.name
+            'reporting_period': self.reporting_period.as_dict()
         }
 
     class Meta:
