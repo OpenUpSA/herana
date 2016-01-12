@@ -68,7 +68,7 @@ class Institute(models.Model):
                 # Anonymous user, only return closed reporting periods
                 reporting_periods = self.reporting_period.filter(is_active=False)
             inst_dict['reporting_periods'] = [
-                rp.name for rp in reporting_periods.order_by('-open_date')]
+                rp.as_dict() for rp in reporting_periods.order_by('-open_date')]
 
         return inst_dict
 
@@ -176,7 +176,10 @@ class ReportingPeriod(models.Model):
         return self.name
 
     def as_dict(self, user=None):
-        return ()
+        return {
+            'id': self.id,
+            'name': self.name
+        }
 
 
 # ------------------------------------------------------------------------------
@@ -453,7 +456,7 @@ class ProjectDetail(models.Model):
             'org_level_1': self.org_level_1.name if self.org_level_1 else None,
             'org_level_2': self.org_level_2.name if self.org_level_2 else None,
             'org_level_3': self.org_level_3.name if self.org_level_3 else None,
-            'reporting_period': self.reporting_period.name
+            'reporting_period': self.reporting_period.as_dict()
         }
 
     class Meta:

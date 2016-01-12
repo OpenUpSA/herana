@@ -132,7 +132,9 @@ def write_values(ws, col, projects, key, parent_key=None):
     row = 1
     for proj in projects:
         if not parent_key:
-            if key == 'duration':
+            if key == 'reporting_period':
+                ws.write(row, col, proj[key]['name'])
+            elif key == 'duration':
                 ws.write(row, col, DURATION[proj[key]])
             elif key == 'status':
                 ws.write(row, col, STATUS[proj[key]])
