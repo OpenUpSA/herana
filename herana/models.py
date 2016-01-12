@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from django.core.mail import send_mail
 from django.db import models
@@ -23,7 +24,7 @@ from model_utils import *  # noqa
 def image_filename(instance, filename):
     """ Make S3 image filenames
     """
-    return 'images/%s/%s' % (instance.id, os.path.basename(filename))
+    return 'images/%s_%s' % (uuid.uuid4(), os.path.basename(filename))
 
 
 def attachment_filename(instance, filename):
