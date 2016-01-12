@@ -85,3 +85,8 @@ header#grp-header #grp-navigation div#grp-branding {
     display: none;
   }
 }
+
+.grp-object-tools li a.view-results, .grp-object-tools li a[target="_blank"] {
+  background: #DE3A0F;
+  border: none;
+}
