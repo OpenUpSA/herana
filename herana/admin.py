@@ -115,9 +115,9 @@ invert_rejected.short_description = 'Accepted / Rejected'
 # Formsets
 # ------------------------------------------------------------------------------
 
-class ProjectDetailFormSet(forms.models.BaseInlineFormSet):
+class InlineValidationFormSet(forms.models.BaseInlineFormSet):
     def is_valid(self):
-        return super(ProjectDetailFormSet, self).is_valid() and \
+        return super(InlineValidationFormSet, self).is_valid() and \
                     not any([bool(e) for e in self.errors])
 
     def clean(self, error_msg):
@@ -139,33 +139,46 @@ The following clean methods ensure that further detail is provided
 where the project leader selected "Yes" for the related formset fields.
 """
 
-class PHDStudentFormSet(ProjectDetailFormSet):
+class PHDStudentFormSet(InlineValidationFormSet):
     def clean(self):
         if self.instance.phd_research == 'Y':
             error_msg = 'Please enter the PhD student\'s name.'
             super(PHDStudentFormSet, self).clean(error_msg)
 
 
-class NewCourseDetailFormSet(ProjectDetailFormSet):
+class NewCourseDetailFormSet(InlineValidationFormSet):
     def clean(self):
         if self.instance.new_courses == 'Y':
             error_msg = 'Please enter the course\'s details.'
             super(NewCourseDetailFormSet, self).clean(error_msg)
 
 
-class CourseReqDetailFormSet(ProjectDetailFormSet):
+class CourseReqDetailFormSet(InlineValidationFormSet):
     def clean(self):
         if self.instance.course_requirement == 'Y':
             error_msg = 'Please enter the course\'s details.'
             super(CourseReqDetailFormSet, self).clean(error_msg)
 
 
-class CollaboratorsFormSet(ProjectDetailFormSet):
+class CollaboratorsFormSet(InlineValidationFormSet):
     def clean(self):
         if self.instance.external_collaboration == 'Y':
             error_msg = 'Please enter the collaborator\'s details.'
             super(CollaboratorsFormSet, self).clean(error_msg)
 
+
+class ProjectLeaderFormset(InlineValidationFormSet):
+    def clean(self):
+        if self.instance:
+            error_msg = 'Please enter the project leader\'s details.'
+            super(ProjectLeaderFormset, self).clean(error_msg)
+
+
+class InstituteAdminFormSet(InlineValidationFormSet):
+    def clean(self):
+        if self.instance:
+            error_msg = 'Please enter the institute admin\'s details.'
+            super(ProjectLeaderFormset, self).clean(error_msg)
 
 # ------------------------------------------------------------------------------
 # Inlines
@@ -227,6 +240,7 @@ class CollaboratorsInline(ReadOnlyMixin, ProjectTabularInline):
 class InstituteAdminInline(admin.TabularInline):
     model = InstituteAdmin
     can_delete = False
+    formset = InstituteAdminFormSet
 
 
 class ProjectLeaderInline(admin.StackedInline):
@@ -235,6 +249,8 @@ class ProjectLeaderInline(admin.StackedInline):
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('Project Leader')
     extra = 1
+    formset = ProjectLeaderFormset
+
 
 class InstituteAdminProjectLeaderInline(ProjectLeaderInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
