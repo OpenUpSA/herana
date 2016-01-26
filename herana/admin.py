@@ -176,9 +176,16 @@ class ProjectLeaderFormset(InlineValidationFormSet):
 
 class InstituteAdminFormSet(InlineValidationFormSet):
     def clean(self):
-        if self.instance:
+        """
+        This is the only thing I could think of to ensure either a
+        project leader or institute admin is created when the global
+        admin creates a user
+        If project leader details are not entered, give an error when InstituteAdmin
+        is not created.
+        """
+        if self.instance and not self.data.get('project_leader-0-institute'):
             error_msg = 'Please enter the institute admin\'s details.'
-            super(ProjectLeaderFormset, self).clean(error_msg)
+            super(InstituteAdminFormSet, self).clean(error_msg)
 
 # ------------------------------------------------------------------------------
 # Inlines
@@ -249,10 +256,11 @@ class ProjectLeaderInline(admin.StackedInline):
     inline_classes = ('grp-collapse grp-open',)
     verbose_name = _('Project Leader')
     extra = 1
-    formset = ProjectLeaderFormset
 
 
 class InstituteAdminProjectLeaderInline(ProjectLeaderInline):
+    formset = ProjectLeaderFormset
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'institute':
             kwargs["queryset"] = Institute.objects.filter(
@@ -413,7 +421,7 @@ class CustomUserAdmin(UserAdmin):
         if request.user.is_superuser:
             self.inlines = [InstituteAdminInline, GlobalAdminProjectLeaderInline]
         else:
-            self.inlines = [InstituteAdminInline, InstituteAdminProjectLeaderInline]
+            self.inlines = [InstituteAdminProjectLeaderInline]
         return super(CustomUserAdmin, self).get_inline_instances(request)
 
     def save_model(self, request, obj, form, change):
