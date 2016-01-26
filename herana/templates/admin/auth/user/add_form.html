@@ -1,0 +1,19 @@
+{% extends "admin/change_form.html" %}
+
+{% load i18n admin_modify admin_urls %}
+
+<!-- Submit-Row -->
+{% block submit_buttons_bottom %}
+<div class="submit-row">
+  <footer class="grp-module grp-submit-row grp-fixed-footer">
+      <header style="display:none"><h1>Submit Options</h1></header>
+      <ul>
+          {% if show_delete_link %}
+              <li class="grp-float-left"><a href="delete/" class="grp-button grp-delete-link">{% trans "Delete" %}</a></li>
+          {% endif %}
+          <li><input type="submit" value="{% trans 'Save' %}" class="grp-button grp-default" name="_save" /></li>
+          <li><input type="submit" value="{% trans 'Save and Send Email' %}" class="grp-button grp-default" name="_save_email" /></li>
+      </ul>
+  </footer>
+</div>
+{% endblock %}
