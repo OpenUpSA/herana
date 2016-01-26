@@ -416,6 +416,14 @@ class CustomUserAdmin(UserAdmin):
             self.inlines = [InstituteAdminInline, InstituteAdminProjectLeaderInline]
         return super(CustomUserAdmin, self).get_inline_instances(request)
 
+    def save_model(self, request, obj, form, change):
+        """
+        This is to ensure the user gets created when Save and Email is selected.
+        """
+        if request.POST.get('_save_email'):
+            request.POST.__setitem__('_save', 'Save')
+        super(CustomUserAdmin, self).save_model(request, obj, form, change)
+
 # ------------------------------------------------------------------------------
 # ModelAdmins
 # ------------------------------------------------------------------------------
@@ -736,7 +744,7 @@ class ProjectDetailAdmin(admin.ModelAdmin):
         if form.cleaned_data.get('team_members'):
             if other_academics in form.cleaned_data.get('team_members') and len(form.cleaned_data.get('team_members')) == 1:
                 obj.is_flagged = True
-        # obj.save()
+
         super(ProjectDetailAdmin, self).save_model(request, obj, form, change)
 
 

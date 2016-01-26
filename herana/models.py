@@ -849,11 +849,12 @@ def send_welcome_email(sender, instance, created, **kwargs):
                     break
 
             if request:
-                password1 = request.POST.get('password1')
-                password2 = request.POST.get('password2')
+                if request.POST.get('_save_email'):
+                    password1 = request.POST.get('password1')
+                    password2 = request.POST.get('password2')
 
-                if instance.email and password1 and password2 and password1 == password2:
-                    message = """
+                    if instance.email and password1 and password2 and password1 == password2:
+                        message = """
 Hello {email},
 
 A new account has been created for you on Herana.
@@ -866,10 +867,10 @@ You can login at http://{domain}/ using these details:
 Kind regards,
 The Herana team
 """
-                    message = message.format(
-                        password=password1,
-                        email=instance.email,
-                        domain=settings.DOMAIN,
-                    )
+                        message = message.format(
+                            password=password1,
+                            email=instance.email,
+                            domain=settings.DOMAIN,
+                        )
 
-                    instance.email_user("Welcome to Herana", message)
+                        instance.email_user("Welcome to Herana", message)
