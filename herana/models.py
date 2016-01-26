@@ -202,8 +202,8 @@ class ProjectLeader(models.Model):
     org_level_1 = models.ForeignKey('OrgLevel1')
     org_level_2 = models.ForeignKey('OrgLevel2', null=True, blank=True)
     org_level_3 = models.ForeignKey('OrgLevel3', null=True, blank=True)
-    staff_no = models.CharField(max_length=64)
-    position = models.CharField(max_length=128)
+    staff_no = models.CharField(max_length=64, null=True, blank=True)
+    position = models.CharField(max_length=128, null=True, blank=True)
 
     def __unicode__(self):
         return self.user.email
