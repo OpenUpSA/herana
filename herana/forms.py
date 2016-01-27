@@ -20,8 +20,7 @@ class ProjectDetailForm(forms.ModelForm):
                     field.required = False
         elif '_delete' in self.data:
             for name, field in self.fields.items():
-                if not name == 'name':
-                    field.required = False
+                field.required = False
         super(ProjectDetailForm, self)._clean_fields()
 
     def clean(self):
