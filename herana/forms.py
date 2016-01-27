@@ -13,14 +13,21 @@ class ProjectDetailForm(forms.ModelForm):
 
     def _clean_fields(self):
         # If we are saving a draft, only the name field is required.
+        # If a user is marking a project as deleted, no fields are required.
         if '_draft' in self.data:
+            for name, field in self.fields.items():
+                if not name == 'name':
+                    field.required = False
+        elif '_delete' in self.data:
             for name, field in self.fields.items():
                 if not name == 'name':
                     field.required = False
         super(ProjectDetailForm, self)._clean_fields()
 
     def clean(self):
-        if not '_draft' in self.data:
+        import ipdb; ipdb.set_trace()
+        # If we're not saving a draft, or deleting the project, do additional checks
+        if not ('_draft' in self.data) and not ('_delete' in self.data):
             cleaned_data = super(ProjectDetailForm, self).clean()
 
             if cleaned_data.get('project_status') == 1 and cleaned_data.get('end_date') == None:
