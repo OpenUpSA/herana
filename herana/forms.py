@@ -25,7 +25,6 @@ class ProjectDetailForm(forms.ModelForm):
         super(ProjectDetailForm, self)._clean_fields()
 
     def clean(self):
-        import ipdb; ipdb.set_trace()
         # If we're not saving a draft, or deleting the project, do additional checks
         if not ('_draft' in self.data) and not ('_delete' in self.data):
             cleaned_data = super(ProjectDetailForm, self).clean()
