@@ -533,16 +533,19 @@ var Graph = function() {
        .attr("r", function(d) {
           var r = self.rScale(d.duration);
           // ensure outer edge of stroke is at where the edge of a filled circle would be
-          if (d.status == '1') r -= self.stroke / 2;
+          // status: 1 = complete, 2 = ongoing
+          if (d.status == '2') r -= self.stroke / 2;
           return r;
        })
        .attr("fill", function(d) {
           // no fill for ongoing
-          return d.status == '1' ? 'none' : self.colorScale(d['org_level_' + self.filters.org_level]);
+          // status: 1 = complete, 2 = ongoing
+          return d.status == '2' ? 'none' : self.colorScale(d['org_level_' + self.filters.org_level]);
        })
        .attr("stroke", function(d) {
           // stroke only for ongoing
-          return d.status == '1' ? self.colorScale(d['org_level_' + self.filters.org_level]) : 'none';
+          // status: 1 = complete, 2 = ongoing
+          return d.status == '2' ? self.colorScale(d['org_level_' + self.filters.org_level]) : 'none';
        })
        .attr("stroke-width", self.stroke);
        point.on("mouseover", self.showTooltip);
