@@ -24,13 +24,18 @@ class ResultsView(View):
         :: active => Only return results for active reporting period if True
         :: institute => Return queryset filtered by institute.
         """
-        projects = ProjectDetail.objects.filter(
-            record_status=2,
-            is_rejected=False,
-            is_deleted=False,
-            reporting_period__is_active=active)
+        projects = ProjectDetail.objects\
+            .filter(
+                record_status=2,
+                is_rejected=False,
+                is_deleted=False,
+                reporting_period__is_active=active)\
+            .prefetch_related('institute', 'strategic_objectives', 'student_nature', 'student_types',
+                              'org_level_1', 'org_level_2', 'org_level_3',
+                              'org_level_1__institute', 'org_level_2__institute', 'org_level_3__institute',
+                              'adv_group_rep', 'team_members', 'focus_area')
         if institute:
-            projects.filter(institute=institute)
+            projects = projects.filter(institute=institute)
         return projects
 
 
@@ -94,7 +99,7 @@ class ResultsView(View):
 
         xlsx = build_xlsx(institute, [p.as_dict() for p in projects])
 
-        filename = 'Herana results - : %s - %s' % (institute.name, date.today())
+        filename = 'Herana results - %s - %s' % (institute.name, date.today())
 
         response = HttpResponse(xlsx, content_type='application/vnd.ms-excel')
         response['Content-Disposition'] = 'attachment; filename=%s.xlsx' % filename
@@ -138,6 +143,8 @@ def write_values(ws, col, projects, key, parent_key=None):
                 ws.write(row, col, DURATION[proj[key]])
             elif key == 'status':
                 ws.write(row, col, STATUS[proj[key]])
+            elif key == 'institute':
+                ws.write(row, col, proj['institute']['name'])
             else:
                 ws.write(row, col, proj[key])
         else:
@@ -147,6 +154,7 @@ def write_values(ws, col, projects, key, parent_key=None):
 
 def create_report_headings(institute):
     return OrderedDict([
+        ('institute', 'Institute'),
         ('name', 'Project Name'),
         ('org_level_1', '1 - %s' % (institute.org_level_1_name if institute.org_level_1_name else '')),
         ('org_level_2', '2 - %s' % (institute.org_level_2_name if institute.org_level_2_name else '')),
