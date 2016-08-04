@@ -169,8 +169,6 @@ CAPTURE_LABELS = {
 CAPTURE_HELP = {
     'focus_areas': _(
         '''Select ALL applicable<br>'''),
-    'strategic_objectives': (
-        '''Only select 4 options. <br>'''),
     'research_text': _(
         '''If <b>1, 2 or 3</b> selected, please provide a short description of the data collected or the original research conducted <br> If <b>4 or 5</b> selected, please explain why it was not necessary to collect new data or conduct original research''')
 }

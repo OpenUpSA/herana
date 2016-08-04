@@ -374,8 +374,7 @@ class ProjectDetail(models.Model):
     classification = models.PositiveIntegerField(choices=CLASSIFICATION, null=True,
                                                  verbose_name=CAPTURE_LABELS['classification'])
     strategic_objectives = models.ManyToManyField('StrategicObjective',
-                                                  verbose_name=CAPTURE_LABELS['strategic_objectives'],
-                                                  help_text=CAPTURE_HELP['strategic_objectives'])
+                                                  verbose_name=CAPTURE_LABELS['strategic_objectives'])
     outcomes = models.TextField(null=True,
                                 verbose_name=CAPTURE_LABELS['outcomes'])
     beneficiaries = models.TextField(null=True,
@@ -494,12 +493,13 @@ class ProjectDetail(models.Model):
 
         # Articulation score
 
+        # correct answers to score 0.25 and incorrect answers to score -0.125, where the maximum score is 1 and the minimum is zero
         for obj in self.strategic_objectives.all():
             if obj.is_true:
                 i_score += 0.25
-                if i_score == 1.0:
-                    break
-        y += i_score
+            else:
+                i_score -= 0.125
+        y += max([0, min([1.0, i_score])])
         a_1 = y
 
         if self.initiation in [4, 5, 6]:
