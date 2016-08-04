@@ -374,8 +374,7 @@ class ProjectDetail(models.Model):
     classification = models.PositiveIntegerField(choices=CLASSIFICATION, null=True,
                                                  verbose_name=CAPTURE_LABELS['classification'])
     strategic_objectives = models.ManyToManyField('StrategicObjective',
-                                                  verbose_name=CAPTURE_LABELS['strategic_objectives'],
-                                                  help_text=CAPTURE_HELP['strategic_objectives'])
+                                                  verbose_name=CAPTURE_LABELS['strategic_objectives'])
     outcomes = models.TextField(null=True,
                                 verbose_name=CAPTURE_LABELS['outcomes'])
     beneficiaries = models.TextField(null=True,
