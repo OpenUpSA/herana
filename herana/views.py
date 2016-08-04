@@ -138,6 +138,8 @@ def write_values(ws, col, projects, key, parent_key=None):
                 ws.write(row, col, DURATION[proj[key]])
             elif key == 'status':
                 ws.write(row, col, STATUS[proj[key]])
+            elif key == 'institute':
+                ws.write(row, col, proj['institute']['name'])
             else:
                 ws.write(row, col, proj[key])
         else:
@@ -147,6 +149,7 @@ def write_values(ws, col, projects, key, parent_key=None):
 
 def create_report_headings(institute):
     return OrderedDict([
+        ('institute', 'Institute'),
         ('name', 'Project Name'),
         ('org_level_1', '1 - %s' % (institute.org_level_1_name if institute.org_level_1_name else '')),
         ('org_level_2', '2 - %s' % (institute.org_level_2_name if institute.org_level_2_name else '')),
