@@ -24,11 +24,16 @@ class ResultsView(View):
         :: active => Only return results for active reporting period if True
         :: institute => Return queryset filtered by institute.
         """
-        projects = ProjectDetail.objects.filter(
-            record_status=2,
-            is_rejected=False,
-            is_deleted=False,
-            reporting_period__is_active=active)
+        projects = ProjectDetail.objects\
+            .filter(
+                record_status=2,
+                is_rejected=False,
+                is_deleted=False,
+                reporting_period__is_active=active)\
+            .prefetch_related('institute', 'strategic_objectives', 'student_nature', 'student_types',
+                              'org_level_1', 'org_level_2', 'org_level_3',
+                              'org_level_1__institute', 'org_level_2__institute', 'org_level_3__institute',
+                              'adv_group_rep', 'team_members', 'focus_area')
         if institute:
             projects = projects.filter(institute=institute)
         return projects
