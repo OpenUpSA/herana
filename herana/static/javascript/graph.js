@@ -492,7 +492,9 @@ var Graph = function() {
     $('#unit-legend').children().remove();
     var svg = d3.select("#unit-legend")
       .append("svg")
-      .attr('class', 'unit-legend');
+      .attr('class', 'unit-legend')
+      .append("g")
+      .attr("transform", "translate(10, 10)");
 
     var colorLegend = d3.legend.color()
       .scale(self.colorScale)

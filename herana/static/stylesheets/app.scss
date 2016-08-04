@@ -171,9 +171,12 @@ $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
     margin-top: 2px;
   }
 
+  #unit-legend {
+    margin-top: 10px;
+  }
+
   #unit-legend svg {
     overflow: overlay;
-    margin: 20px 10px;
     height: 650px;
   }
 
