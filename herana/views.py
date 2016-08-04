@@ -30,7 +30,7 @@ class ResultsView(View):
             is_deleted=False,
             reporting_period__is_active=active)
         if institute:
-            projects.filter(institute=institute)
+            projects = projects.filter(institute=institute)
         return projects
 
 
@@ -94,7 +94,7 @@ class ResultsView(View):
 
         xlsx = build_xlsx(institute, [p.as_dict() for p in projects])
 
-        filename = 'Herana results - : %s - %s' % (institute.name, date.today())
+        filename = 'Herana results - %s - %s' % (institute.name, date.today())
 
         response = HttpResponse(xlsx, content_type='application/vnd.ms-excel')
         response['Content-Disposition'] = 'attachment; filename=%s.xlsx' % filename
