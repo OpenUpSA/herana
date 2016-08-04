@@ -109,7 +109,11 @@ class StrategicObjective(models.Model):
     is_true = models.BooleanField(default=False, verbose_name='Statement is true')
 
     def __unicode__(self):
-        return self.statement
+        request = get_request()
+        if request and (request.user.is_superuser or request.user.is_institute_admin):
+            return self.statement + (u' (CORRECT)' if self.is_true else u' (INCORRECT)')
+        else:
+            return self.statement
 
 
 class OrgLevel(models.Model):
@@ -840,14 +844,7 @@ def send_welcome_email(sender, instance, created, **kwargs):
     if not settings.DEBUG:
         if created:
             # we need the password, use the stack to get the request (ugly!)
-            import inspect
-            request = None
-
-            for frame_record in inspect.stack():
-                if frame_record[3] == 'get_response':
-                    request = frame_record[0].f_locals['request']
-                    break
-
+            request = get_request()
             if request:
                 if request.POST.get('_save_email'):
                     password1 = request.POST.get('password1')
@@ -874,3 +871,18 @@ The Herana team
                         )
 
                         instance.email_user("Welcome to Herana", message)
+
+
+def get_request():
+    """
+    HUGE hack to get the current request if we don't have it available.
+    """
+    import inspect
+    request = None
+
+    for frame_record in inspect.stack()[1:]:
+        if frame_record[3] == 'get_response':
+            request = frame_record[0].f_locals['request']
+            break
+
+    return request
